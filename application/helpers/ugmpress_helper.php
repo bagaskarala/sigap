@@ -154,6 +154,18 @@ function get_dropdown_list_book()
     return get_dropdown_list('book', ['book_id', 'book_title'], $condition);
 }
 
+
+function get_customer_list()
+{
+    $condition = function () {
+        $CI = &get_instance();
+        $CI->db->order_by('customer_id', 'asc');
+        return $CI;
+    };
+
+    return get_dropdown_list('customer', ['customer_id', 'name'], $condition);
+}
+
 /**
  * Membuat array draft yang final (draft_status = 14)
  *
@@ -541,6 +553,11 @@ function get_user_levels()
     return ['superadmin', 'admin_penerbitan', 'author', 'reviewer', 'editor', 'layouter', 'author_reviewer', 'admin_percetakan', 'staff_percetakan', 'admin_gudang', 'admin_pemasaran', 'admin_keuangan'];
 }
 
+function get_customer_types()
+{
+    return ['distributor', 'biasalah','pemborong'];
+}
+
 function filter_boolean($data)
 {
     return filter_var($data, FILTER_VALIDATE_BOOLEAN);
@@ -582,6 +599,30 @@ function expand($authors)
     }
     $authors_list .= '</ul>';
     return $authors_list;
+}
+
+function get_invoice_type()
+{
+    return [
+        ''  => null,
+        'credit' => 'Kredit',
+        'cash' => 'Tunai',
+        'online' => 'Online',
+        'showroom' => 'Showroom'
+    ];
+}
+
+function get_invoice_status()
+{
+    return [
+        '' => null,
+        'waiting'           => 'Belum Konfirmasi',
+        'confirm'           => 'Sudah Konfirmasi',
+        'preparing_start'   => 'Diproses',
+        'preparing_end'     => 'Siap Diambil',
+        'finish'            => 'Selesai',
+        'cancel'            => 'Dibatalkan'
+    ];
 }
 
 function get_print_order_category()
