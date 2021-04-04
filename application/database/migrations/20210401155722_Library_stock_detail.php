@@ -12,7 +12,7 @@ class Migration_Library_stock_detail extends CI_Migration{
                 'type' => 'INT',
                 'constraint' => 10,
             ],
-            'library_stock_id' => [
+            'book_stock_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
             ],
