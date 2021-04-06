@@ -58,8 +58,24 @@ $menu_list = [
         'level' => 'superadmin|admin_gudang|admin_keuangan'
     ],
     [
+        'title' => 'Pemasaran',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran|admin_keuangan'
+    ],
+    [
+        'name' => 'Faktur',
+        'url'  => 'invoice',
+        'icon' => 'fa fa-file-invoice',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran'
+    ],
+    [
+        'name' => 'Royalti',
+        'url'  => 'royalty',
+        'icon' => 'fa fa-star',
+        'level' => 'superadmin|admin_gudang|admin_keuangan'
+    ],
+    [
         'title' => 'Data',
-        'level' => 'superadmin|admin_penerbitan|editor|layouter'
+        'level' => 'superadmin|admin_penerbitan|editor|layouter|admin_gudang|admin_pemasaran'
     ],
     [
         'name'  => 'Lembar Kerja',
@@ -80,6 +96,12 @@ $menu_list = [
         'level' => 'superadmin|admin_penerbitan'
     ],
     [
+        'name'  => 'Customer',
+        'url'   => 'customer',
+        'icon'  => 'fa fa-address-card',
+        'level' => 'superadmin|admin_pemasaran|admin_keuangan'
+    ],
+    [
         'name'  => 'Akun User',
         'url'   => 'user',
         'icon'  => 'fa fa-users',
@@ -88,7 +110,7 @@ $menu_list = [
     [
         'name'  => 'Master Data',
         'icon'  => 'fa fa-puzzle-piece',
-        'level' => 'superadmin|admin_penerbitan',
+        'level' => 'superadmin|admin_penerbitan|admin_gudang|admin_pemasaran',
         'child' => [
             [
                 'name'  => 'Kategori Draft',
@@ -114,6 +136,11 @@ $menu_list = [
                 'name'  => 'Fakultas Reviewer',
                 'url'   => 'faculty',
                 'level' => 'superadmin|admin_penerbitan'
+            ],
+            [
+                'name'  => 'Perpustakaan',
+                'url'   => 'library',
+                'level' => 'superadmin|admin_gudang|admin_pemasaran'
             ],
         ]
     ],

@@ -122,17 +122,17 @@ $type_options = [
                                                     type="button"
                                                     class="btn btn-sm btn-danger"
                                                     data-toggle="modal"
-                                                    data-target="#modal-hapus-<?= $customer->customer_id; ?>"
+                                                    data-target="#modal-delete-<?= $customer->customer_id; ?>"
                                                 >
                                                     <i class="fa fa-trash-alt"></i><span class="sr-only">Delete</span>
                                                 </button>
                                             </td>
                                             <div
                                                 class="modal modal-alert fade"
-                                                id="modal-hapus-<?= $customer->customer_id; ?>"
+                                                id="modal-delete-<?= $customer->customer_id; ?>"
                                                 tabindex="-1"
                                                 role="dialog"
-                                                aria-labelledby="modal-hapus"
+                                                aria-labelledby="modal-delete"
                                                 aria-hidden="true"
                                             >
                                                 <div
@@ -193,7 +193,7 @@ $type_options = [
                                 <h5 class="modal-title">Tambah Customer</h5>
                             </div>
                             <form
-                                id="update-customer-form"
+                                id="add-customer-form"
                                 method="post"
                                 action="<?= base_url('customer/add_customer/'); ?>"
                             >
@@ -212,6 +212,7 @@ $type_options = [
                                             id="name"
                                             class="form-control"
                                         />
+                                        <small id="error-name" class="d-none error-message text-danger">Nama wajib diisi!</small>
                                     </div>
                                     <div class="form-group">
                                         <label
@@ -239,6 +240,7 @@ $type_options = [
                                             id="phone-number"
                                             class="form-control"
                                         />
+                                        <small id="error-phone-number" class="d-none error-message text-danger">Nomor telepon wajib diisi!</small>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
@@ -248,7 +250,8 @@ $type_options = [
                                                     class="font-weight-bold"
                                                 >Jenis Customer<abbr title="Required">*</abbr></label>
 
-                                                <?= form_dropdown('type', $customer_type, 0, 'id="editType" class="form-control custom-select d-block"'); ?>
+                                                <?= form_dropdown('type', $customer_type, null, 'id="edit-type" class="form-control custom-select d-block"'); ?>
+                                                <small id="error-type" class="d-none error-message text-danger">Jenis customer wajib diisi!</small>
                                             </div>
                                         </div>
                                     </div>
@@ -286,14 +289,14 @@ $type_options = [
                                 <h5 class="modal-title">Edit Customer</h5>
                             </div>
                             <form
-                                id="update-customer-form"
+                                id="edit-customer-form"
                                 method="post"
-                                action="<?= base_url('customer/update_customer/'); ?>"
+                                action="<?= base_url('customer/edit/'); ?>"
                             >
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <label
-                                            for="name"
+                                            for="edit-name"
                                             class="font-weight-bold"
                                         >
                                             Nama
@@ -301,54 +304,57 @@ $type_options = [
                                         </label>
                                         <input
                                             type="text"
-                                            name="editId"
-                                            id="editId"
+                                            name="edit-id"
+                                            id="edit-id"
                                             class="form-control"
                                             hidden
                                         />
                                         <input
                                             type="text"
-                                            name="editName"
-                                            id="editName"
+                                            name="edit-name"
+                                            id="edit-name"
                                             class="form-control"
                                         />
+                                        <small id="error-edit-name" class="d-none error-message text-danger">Nama customer wajib diisi!</small>
                                     </div>
                                     <div class="form-group">
                                         <label
-                                            for="address"
+                                            for="edit-address"
                                             class="font-weight-bold"
                                         >Alamat
                                         </label>
                                         <input
                                             type="text"
-                                            name="editAddress"
-                                            id="editAddress"
+                                            name="edit-address"
+                                            id="edit-address"
                                             class="form-control"
                                         />
                                     </div>
                                     <div class="form-group">
                                         <label
-                                            for="phone-number"
+                                            for="edit-phone-number"
                                             class="font-weight-bold"
                                         >Nomor Telepon
                                             <abbr title="Required">*</abbr>
                                         </label>
                                         <input
                                             type="text"
-                                            name="editPhone-number"
-                                            id="editPhone-number"
+                                            name="edit-phone-number"
+                                            id="edit-phone-number"
                                             class="form-control"
                                         />
+                                        <small id="error-edit-phone-number" class="d-none error-message text-danger">Nomor telepon customer wajib diisi!</small>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label
-                                                    for="type"
+                                                    for="edit-type"
                                                     class="font-weight-bold"
                                                 >Jenis Customer<abbr title="Required">*</abbr></label>
 
-                                                <?= form_dropdown('editType', $customer_type, $customer->type, 'id="editType" class="form-control custom-select d-block"'); ?>
+                                                <?= form_dropdown('edit-type', $customer_type, null, 'id="edit-type" class="form-control custom-select d-block"'); ?>
+                                                <small id="error-edit-type" class="d-none error-message text-danger">Jenis customer wajib diisi!</small>
                                             </div>
                                         </div>
                                     </div>
@@ -381,11 +387,12 @@ function modalEdit(customerId) {
         dataType: "JSON",
         success: function(res) {
             console.log(res)
-            $('#editId').val(res.customer_id)
-            $('#editName').val(res.name)
-            $('#editAddress').val(res.address)
-            $('#editPhone-number').val(res.phone_number)
-            $('#editType').val(res.type)
+            $('#edit-id').val(res.customer_id)
+            $('#edit-name').val(res.name)
+            $('#edit-address').val(res.address)
+            $('#edit-phone-number').val(res.phone_number)
+            $("#edit-type option").removeAttr('selected'); 
+            $("#edit-type option[value=" + res.type + "]").attr('selected', 'selected');
         },
         error: function(err) {
             alert(err)
@@ -393,4 +400,70 @@ function modalEdit(customerId) {
     });
     $('#modal-edit').modal('show')
 }
+
+$("#add-customer-form").submit(function(e) {
+    e.preventDefault();
+    var form = $(this);
+
+    $.ajax({
+        type: "POST",
+        url: "<?= base_url('customer/add/'); ?>",
+        data: form.serialize(),
+        success: function(res) {
+            // Parse server response to JSON
+            var response = $.parseJSON(res)
+
+            // No validation error
+            if(response.status){
+                location.href = "<?= base_url('customer'); ?>";
+            }
+            else{
+                // Hide all error message
+                $(".error-message").addClass('d-none');
+                for (var i = 0; i < response.inputerror.length; i++) 
+                {
+                    // Show error message
+                    $('#' + response.inputerror[i]).removeClass('d-none');
+                }
+                console.log(response)
+            }
+        },
+        error: function(err) {
+            alert(err)
+        },
+    });
+})
+
+$("#edit-customer-form").submit(function(e) {
+    e.preventDefault();
+    var form = $(this);
+
+    $.ajax({
+        type: "POST",
+        url: "<?= base_url('customer/edit/'); ?>" + $('#edit-id').val(),
+        data: form.serialize(),
+        success: function(res) {
+            // Parse server response to JSON
+            var response = $.parseJSON(res)
+
+            // No validation error
+            if(response.status){
+                location.href = "<?= base_url('customer'); ?>";
+            }
+            else{
+                // Hide all error message
+                $(".error-message").addClass('d-none');
+                for (var i = 0; i < response.inputerror.length; i++) 
+                {
+                    // Show error message
+                    $('#' + response.inputerror[i]).removeClass('d-none');
+                }
+                console.log(response)
+            }
+        },
+        error: function(err) {
+            alert(err)
+        },
+    });
+})
 </script>

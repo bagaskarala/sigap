@@ -17,14 +17,14 @@ class Customer extends MY_Controller
         ];
 
         $customer_type = array(
-            'Distributor'      => 'Distributor',
-            'Reseller'      => 'Reseller',
-            'Penulis'        => 'Penulis',
-            'Member'        => 'Member',
-            'Biasa'        => ' - '
+            'distributor'      => 'Distributor',
+            'reseller'      => 'Reseller',
+            'penulis'        => 'Penulis',
+            'member'        => 'Member',
+            'biasa'        => ' - '
         );
 
-        // custom per page
+        // Customer per page
         $this->customer->per_page = $this->input->get('per_page', true) ?? 10;
 
         $get_data = $this->customer->filter_data($filters, $page);
@@ -37,60 +37,52 @@ class Customer extends MY_Controller
         $this->load->view('template', compact('pagination', 'pages', 'main_view', 'customers', 'total', 'customer_type'));
     }
 
-    public function api_customer_info($customer_id)
+    public function api_customer_info($id)
     {
-        $customer =  $this->customer->get_customer($customer_id);
-        $data = json_encode($customer);
-        echo $data;
+        $customer = $this->customer->where('customer_id', $id)->get();
+        echo json_encode($customer);
     }
 
-    public function add_customer()
+    public function add()
     {
-        $this->load->library('form_validation');
-        $this->form_validation->set_rules('name', 'Nama Customer', 'required');
-        $this->form_validation->set_rules('type', 'Tipe Customer', 'required');
-        $this->form_validation->set_rules('phone-number', 'Nomor HP Customer', 'required');
+        $this->customer->validateModalAdd();
+        $add = [
+            'name'          => $this->input->post('name'),
+            'address'       => $this->input->post('address'),
+            'phone_number'  => $this->input->post('phone-number'),
+            'type'          => $this->input->post('type')
+        ];
+        $this->db->insert('customer', $add);
+        echo json_encode(['status' => TRUE]);
 
-        if ($this->form_validation->run() == FALSE) {
-            $this->session->set_flashdata('error', 'Customer gagal ditambah.');
-            redirect($_SERVER['HTTP_REFERER'], 'refresh');
-        } else {
-            $check = $this->customer->add_customer();
-            if ($check   ==  TRUE) {
-                $this->session->set_flashdata('success', 'Customer berhasil ditambah.');
-                redirect('customer');
-            } else {
-                $this->session->set_flashdata('error', 'Customer gagal ditambah.');
-                redirect($_SERVER['HTTP_REFERER'], 'refresh');
-            }
-        }
+        $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
     }
 
-    public function update_customer()
+    public function edit($id = null)
     {
-        $this->load->library('form_validation');
-        $this->form_validation->set_rules('editName', 'Nama Customer', 'required');
-        $this->form_validation->set_rules('editType', 'Tipe Customer', 'required');
-        $this->form_validation->set_rules('editPhone-number', 'Nomor HP Customer', 'required');
-        if ($this->form_validation->run() == FALSE) {
-            $this->session->set_flashdata('error', 'Customer gagal diupdate.');
-            redirect($_SERVER['HTTP_REFERER'], 'refresh');
-        } else {
-            $check = $this->customer->update_customer();
-            if ($check   ==  TRUE) {
-                $this->session->set_flashdata('success', 'Customer berhasil diupdate.');
-                redirect('customer');
-            } else {
-                $this->session->set_flashdata('error', 'Customer gagal diupdate.');
-                redirect($_SERVER['HTTP_REFERER'], 'refresh');
-            }
-        }
-        redirect('customer');
+        $this->customer->validateModalEdit();
+        $id = $this->input->post('edit-id');
+        $update = [
+            'name'          => $this->input->post('edit-name'),
+            'address'       => $this->input->post('edit-address'),
+            'phone_number'  => $this->input->post('edit-phone-number'),
+            'type'          => $this->input->post('edit-type')
+        ];
+        $this->db->set($update);
+        $this->db->where('customer_id', $id);
+        $this->db->update('customer');
+
+        echo json_encode(['status' => TRUE]);
+
+        $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
     }
 
     public function delete($id = null)
     {
-        $this->customer->delete_customer($id);
+        $this->db->where('customer_id', $id);
+        $this->db->delete('customer');
         redirect('customer');
+
+        $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
     }
 }
