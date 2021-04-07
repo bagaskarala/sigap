@@ -58,6 +58,22 @@ $menu_list = [
         'level' => 'superadmin|admin_gudang|admin_keuangan'
     ],
     [
+        'title' => 'Pemasaran',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran|admin_keuangan'
+    ],
+    [
+        'name' => 'Faktur',
+        'url'  => 'invoice',
+        'icon' => 'fa fa-file-invoice',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran'
+    ],
+    [
+        'name' => 'Royalti',
+        'url'  => 'royalty',
+        'icon' => 'fa fa-star',
+        'level' => 'superadmin|admin_gudang|admin_keuangan'
+    ],
+    [
         'title' => 'Data',
         'level' => 'superadmin|admin_penerbitan|editor|layouter|admin_gudang|admin_pemasaran'
     ],
@@ -78,6 +94,12 @@ $menu_list = [
         'url'   => 'reviewer',
         'icon'  => 'fa fa-user-graduate',
         'level' => 'superadmin|admin_penerbitan'
+    ],
+    [
+        'name'  => 'Customer',
+        'url'   => 'customer',
+        'icon'  => 'fa fa-address-card',
+        'level' => 'superadmin|admin_pemasaran|admin_keuangan'
     ],
     [
         'name'  => 'Akun User',
