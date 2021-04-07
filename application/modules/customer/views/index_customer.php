@@ -6,15 +6,7 @@ $page     = $this->uri->segment(2);
 // data table series number
 $i = isset($page) ? $page * $per_page - $per_page : 0;
 
-
-$type_options = [
-    ''                  => '- Filter Jenis Customer -',
-    'distributor'       => 'Distributor',
-    'reseller'          => 'Reseller',
-    'author'            => 'Penulis',
-    'member'            => 'Member',
-    'general'           => 'Umum'
-];
+$type_options =  array_merge(['' => '- Filter Jenis Customer -'], $customer_type);
 
 ?>
 
