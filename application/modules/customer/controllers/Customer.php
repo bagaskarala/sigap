@@ -17,11 +17,11 @@ class Customer extends MY_Controller
         ];
 
         $customer_type = array(
-            'distributor'      => 'Distributor',
+            'distributor'   => 'Distributor',
             'reseller'      => 'Reseller',
-            'penulis'        => 'Penulis',
+            'author'        => 'Penulis',
             'member'        => 'Member',
-            'biasa'        => ' - '
+            'general'       => 'Umum'
         );
 
         // Customer per page
@@ -45,7 +45,7 @@ class Customer extends MY_Controller
 
     public function add()
     {
-        $this->customer->validateModalAdd();
+        $this->customer->validate_modal_add();
         $add = [
             'name'          => $this->input->post('name'),
             'address'       => $this->input->post('address'),
@@ -60,7 +60,7 @@ class Customer extends MY_Controller
 
     public function edit($id = null)
     {
-        $this->customer->validateModalEdit();
+        $this->customer->validate_modal_edit();
         $id = $this->input->post('edit-id');
         $update = [
             'name'          => $this->input->post('edit-name'),
@@ -81,8 +81,7 @@ class Customer extends MY_Controller
     {
         $this->db->where('customer_id', $id);
         $this->db->delete('customer');
-        redirect('customer');
-
         $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
+        redirect('customer');
     }
 }

@@ -5,27 +5,27 @@ class Customer_model extends MY_Model
     // set public if want to override per_page
     public $per_page;
 
-    public function validateModalAdd()
+    public function validate_modal_add()
     {
         $data = array();
-        $data['inputerror'] = array();
+        $data['input_error'] = array();
         $data['status'] = TRUE;
  
         if($this->input->post('name') == '')
         {
-            $data['inputerror'][] = 'error-name';
+            $data['input_error'][] = 'error-name';
             $data['status'] = FALSE;
         }
  
         if($this->input->post('phone-number') == '')
         {
-            $data['inputerror'][] = 'error-phone-number';
+            $data['input_error'][] = 'error-phone-number';
             $data['status'] = FALSE;
         }
  
         if($this->input->post('type') == '')
         {
-            $data['inputerror'][] = 'error-type';
+            $data['input_error'][] = 'error-type';
             $data['status'] = FALSE;
         }
  
@@ -36,27 +36,27 @@ class Customer_model extends MY_Model
         }
     }
 
-    public function validateModalEdit()
+    public function validate_modal_edit()
     {
         $data = array();
-        $data['inputerror'] = array();
+        $data['input_error'] = array();
         $data['status'] = TRUE;
  
         if($this->input->post('edit-name') == '')
         {
-            $data['inputerror'][] = 'error-edit-name';
+            $data['input_error'][] = 'error-edit-name';
             $data['status'] = FALSE;
         }
  
         if($this->input->post('edit-phone-number') == '')
         {
-            $data['inputerror'][] = 'error-edit-phone-number';
+            $data['input_error'][] = 'error-edit-phone-number';
             $data['status'] = FALSE;
         }
  
         if($this->input->post('edit-type') == '')
         {
-            $data['inputerror'][] = 'error-edit-type';
+            $data['input_error'][] = 'error-edit-type';
             $data['status'] = FALSE;
         }
  

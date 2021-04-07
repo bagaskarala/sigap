@@ -8,12 +8,12 @@ $i = isset($page) ? $page * $per_page - $per_page : 0;
 
 
 $type_options = [
-    ''                  => '- Filter Tipe Customer -',
+    ''                  => '- Filter Jenis Customer -',
     'distributor'       => 'Distributor',
     'reseller'          => 'Reseller',
-    'penulis'           => 'Penulis',
+    'author'            => 'Penulis',
     'member'            => 'Member',
-    'biasa'             => '-'
+    'general'           => 'Umum'
 ];
 
 ?>
@@ -57,8 +57,8 @@ $type_options = [
                                 <?= form_dropdown('per_page', get_per_page_options(), $per_page, 'id="per_page" class="form-control custom-select d-block" title="List per page"'); ?>
                             </div>
                             <div class="col-12 col-md-6 mt-2">
-                                <label for="type">Tipe</label>
-                                <?= form_dropdown('type', $type_options, $type, 'id="type" class="form-control custom-select d-block" title="Invoice Status"'); ?>
+                                <label for="type">Jenis</label>
+                                <?= form_dropdown('type', $type_options, $type, 'id="type" class="form-control custom-select d-block" title="Customer Type"'); ?>
                             </div>
                             <div class="col-12 col-md-8 mt-2">
                                 <label for="status">Pencarian</label>
@@ -98,7 +98,7 @@ $type_options = [
                                         <th scope="col">Nama</th>
                                         <th scope="col">Alamat</th>
                                         <th scope="col">No Telepon</th>
-                                        <th scope="col">Status</th>
+                                        <th scope="col">Jenis Customer</th>
                                         <th style="width:100px; min-width:100px;"> &nbsp; </th>
                                     </tr>
                                 </thead>
@@ -420,10 +420,10 @@ $("#add-customer-form").submit(function(e) {
             else{
                 // Hide all error message
                 $(".error-message").addClass('d-none');
-                for (var i = 0; i < response.inputerror.length; i++) 
+                for (var i = 0; i < response.input_error.length; i++) 
                 {
                     // Show error message
-                    $('#' + response.inputerror[i]).removeClass('d-none');
+                    $('#' + response.input_error[i]).removeClass('d-none');
                 }
                 console.log(response)
             }
@@ -453,10 +453,10 @@ $("#edit-customer-form").submit(function(e) {
             else{
                 // Hide all error message
                 $(".error-message").addClass('d-none');
-                for (var i = 0; i < response.inputerror.length; i++) 
+                for (var i = 0; i < response.input_error.length; i++) 
                 {
                     // Show error message
-                    $('#' + response.inputerror[i]).removeClass('d-none');
+                    $('#' + response.input_error[i]).removeClass('d-none');
                 }
                 console.log(response)
             }
