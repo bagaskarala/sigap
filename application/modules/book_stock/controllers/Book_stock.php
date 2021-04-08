@@ -63,6 +63,16 @@ class Book_stock extends MY_Controller
             redirect($this->pages);
         }
 
+        if(!$_POST){
+            $input = (object) $book_stock;
+        }
+        else{
+            $input = (object) $this->input->post(null, true);
+            // catat orang yang menginput stok buku
+            $input->user_id = $_SESSION['user_id'];
+            
+        }
+
         $pages = $this->pages;
         $main_view = 'book_stock/edit_bookstock';
         $form_action = "book_stock/edit/$book_stock_id";
