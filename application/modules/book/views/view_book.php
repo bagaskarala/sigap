@@ -47,7 +47,7 @@ $level              = check_level();
                         href="#book-data"
                     ><i class="fa fa-info-circle"></i> Detail Buku</a>
                 </li>
-                <?php if ($input->from_outside == 0) : ?>
+                <!-- <?php //if ($input->from_outside == 0) : ?>
                     <li class="nav-item">
                         <a
                             class="nav-link"
@@ -55,7 +55,7 @@ $level              = check_level();
                             href="#stock-data"
                         ><i class="fa fa-poll"></i> Stok Buku</a>
                     </li>
-                <?php endif; ?>
+                <?php //endif; ?> -->
                 <li class="nav-item">
                     <a
                         class="nav-link"
@@ -201,21 +201,21 @@ $level              = check_level();
                 </div>
                 <!-- book-data -->
 
-                <?php if ($input->from_outside == 0) : ?>
+                <?php //if ($input->from_outside == 0) : ?>
                     <!-- stock-data -->
-                    <div
+                    <!-- <div
                         class="tab-pane fade"
                         id="stock-data"
                     >
                         <div id="reload-stock">
-                            <?php if ($level == 'superadmin' || $level == 'admin_penerbitan' || $level == 'admin_percetakan' || $level == 'admin_gudang' || $level == 'admin_pemasaran') : ?>
-                                <?php $i = 1; ?>
+                            <?php //if ($level == 'superadmin' || $level == 'admin_penerbitan' || $level == 'admin_percetakan' || $level == 'admin_gudang' || $level == 'admin_pemasaran') : ?>
+                                <?php //$i = 1; ?>
                                 <div class="row">
                                     <div class="col-6 text-left">
                                         <strong>Stok Buku</strong>
                                     </div>
                                     <div class="col-6 text-right">
-                                        <?php if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
+                                        <?php //if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
                                             <button
                                                 class="btn btn-primary btn-sm "
                                                 title="Ubah Stok"
@@ -223,7 +223,7 @@ $level              = check_level();
                                                 data-toggle="modal"
                                                 data-target="#modal_add_stock"
                                             >Ubah</button>
-                                            <!-- Modal add stock -->
+                                            Modal add stock
                                             <div
                                                 class="modal fade"
                                                 id="modal_add_stock"
@@ -251,7 +251,7 @@ $level              = check_level();
                                                         <div class="modal-body text-left">
                                                             <div class="alert alert-warning"><strong>PERHATIAN!</strong> Fitur ini berfungsi untuk mengubah stok buku.</div>
                                                             <form
-                                                                action="<?= base_url('book/add_book_stock'); ?>"
+                                                                action="<?//= base_url('book/add_book_stock'); ?>"
                                                                 method="post"
                                                             >
                                                                 <div class="form-group">
@@ -259,7 +259,7 @@ $level              = check_level();
                                                                     <input
                                                                         type="text"
                                                                         class="form-control"
-                                                                        value="<?= $input->book_title; ?>"
+                                                                        value="<?//= $input->book_title; ?>"
                                                                         disabled
                                                                     />
                                                                     <input
@@ -267,7 +267,7 @@ $level              = check_level();
                                                                         class="form-control"
                                                                         id="book_id"
                                                                         name="book_id"
-                                                                        value="<?= $input->book_id; ?>"
+                                                                        value="<?//= $input->book_id; ?>"
                                                                     />
                                                                 </div>
                                                                 <div class="form-group">
@@ -316,7 +316,7 @@ $level              = check_level();
                                                                         type="hidden"
                                                                         name="warehouse_past"
                                                                         id="warehouse_past"
-                                                                        value="<?= $input->stock_warehouse; ?>"
+                                                                        value="<?//= $input->stock_warehouse; ?>"
                                                                     >
                                                                 </div>
                                                                 <div class="form-group">
@@ -360,8 +360,8 @@ $level              = check_level();
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- Modal Add Stok -->
-                                        <?php endif; ?>
+                                            Modal Add Stok
+                                        <?php //endif; ?>
                                     </div>
                                 </div>
                                 <hr>
@@ -370,26 +370,28 @@ $level              = check_level();
                                         <tbody>
                                             <tr>
                                                 <td width="160px">Judul Buku</td>
-                                                <td><strong><?= $input->book_title; ?></strong></td>
+                                                <td><strong><?//= $input->book_title; ?></strong></td>
                                             </tr>
                                             <tr>
                                                 <td width="160px">Stok Gudang</td>
-                                                <td><?= $input->stock_warehouse; ?></td>
+                                                <td><?//= $input->stock_warehouse; ?></td>
                                             </tr>
                                             <tr>
                                                 <td width="160px">Perubahan Terakhir</td>
-                                                <td><?php if (empty($stock_last) == FALSE) {
-                                                        echo date('d F Y H:i:s', strtotime($stock_last->date));
-                                                    } else {
-                                                        echo "-";
-                                                    } ?></td>
+                                                <td><?php 
+                                                    // if (empty($stock_last) == FALSE) {
+                                                    //     echo date('d F Y H:i:s', strtotime($stock_last->date));
+                                                    // } else {
+                                                    //     echo "-";
+                                                    // } 
+                                                    ?></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <?php if (empty($stock_history) == FALSE) : ?>
+                                <?php //if (empty($stock_history) == FALSE) : ?>
                                     <hr>
-                                    <!-- Log Perubahan Stok -->
+                                    Log Perubahan Stok
                                     <p class="font-weight-bold">Log Perubahan Stok</p>
                                     <div
                                         class="table-responsive"
@@ -404,29 +406,29 @@ $level              = check_level();
                                                     <th scope="col">User</th>
                                                     <th scope="col">Tanggal</th>
                                                     <th scope="col">Catatan</th>
-                                                    <?php if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
+                                                    <?php //if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
                                                         <th scope="col"></th>
-                                                    <?php endif; ?>
+                                                    <?php //endif; ?>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach ($stock_history as $history) : ?>
+                                                <?php //foreach ($stock_history as $history) : ?>
                                                     <tr class="text-center">
-                                                        <td><?= $i++; ?></td>
-                                                        <td><?= $history->warehouse_past; ?></td>
+                                                        <td><?//= $i++; ?></td>
+                                                        <td><?//= $history->warehouse_past; ?></td>
                                                         <td>
                                                             <?php
-                                                            if ($history->warehouse_operator == "+") {
-                                                                echo /*$history->warehouse_past . */ '<div class="text-success"> ' . $history->warehouse_operator . ' ' . $history->warehouse_modifier . '</div>';
-                                                            } elseif ($history->warehouse_operator == "-") {
-                                                                echo /*$history->warehouse_past . */ '<div class="text-danger"> ' . $history->warehouse_operator . ' ' . $history->warehouse_modifier . '</div>';
-                                                            }
+                                                            // if ($history->warehouse_operator == "+") {
+                                                            //     echo /*$history->warehouse_past . */ '<div class="text-success"> ' . $history->warehouse_operator . ' ' . $history->warehouse_modifier . '</div>';
+                                                            // } elseif ($history->warehouse_operator == "-") {
+                                                            //     echo /*$history->warehouse_past . */ '<div class="text-danger"> ' . $history->warehouse_operator . ' ' . $history->warehouse_modifier . '</div>';
+                                                            // }
                                                             ?>
                                                         </td>
-                                                        <td><?= get_username($history->user_id); ?></td>
-                                                        <td><?= date('d F Y H:i:s', strtotime($history->date)); ?></td>
-                                                        <td><?= $history->notes; ?></td>
-                                                        <?php if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
+                                                        <td><?//= get_username($history->user_id); ?></td>
+                                                        <td><?//= date('d F Y H:i:s', strtotime($history->date)); ?></td>
+                                                        <td><?//= $history->notes; ?></td>
+                                                        <?php //if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
                                                             <td>
                                                                 <button
                                                                     title="Delete"
@@ -438,13 +440,13 @@ $level              = check_level();
                                                                     <i class="fa fa-trash-alt"></i>
                                                                     <span class="sr-only">Delete</span>
                                                                 </button>
-                                                                <!-- Modal Hapus -->
+                                                                Modal Hapus
                                                                 <div
                                                                     class="modal modal-alert fade"
-                                                                    id="modal_delete_stock<?= $history->book_stock_id; ?>"
+                                                                    id="modal_delete_stock<?//= $history->book_stock_id; ?>"
                                                                     tabindex="-1"
                                                                     role="dialog"
-                                                                    aria-labelledby="modal_delete_stock<?= $history->book_stock_id; ?>"
+                                                                    aria-labelledby="modal_delete_stock<?//= $history->book_stock_id; ?>"
                                                                     aria-hidden="true"
                                                                 >
                                                                     <div
@@ -468,7 +470,7 @@ $level              = check_level();
                                                                                     data-dismiss="modal"
                                                                                 >Close</button>
                                                                                 <a
-                                                                                    href="<?= base_url('book/delete_book_stock/' . $history->book_stock_id); ?>"
+                                                                                    href="<?//= base_url('book/delete_book_stock/' . $history->book_stock_id); ?>"
                                                                                     type="button"
                                                                                     class="btn btn-danger"
                                                                                 >
@@ -478,23 +480,23 @@ $level              = check_level();
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <!-- Modal Hapus -->
+                                                                Modal Hapus
                                                             </td>
-                                                        <?php endif; ?>
+                                                        <?php //endif; ?>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                                <?php //endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>
-                                <?php endif; ?>
-                                <!-- Log perubahan Stok -->
-                            <?php else : ?>
+                                <?php //endif; ?>
+                                Log perubahan Stok
+                            <?php //else : ?>
                                 <p>Data hanya dapat dilihat oleh Superadmin, Admin Penerbitan, Admin Percetakan, Admin Gudang, dan Admin Pemasaran</p>
-                            <?php endif; ?>
+                            <?php //endif; ?>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- stock-data -->
-                <?php endif; ?>
+                <?php //endif; ?>
 
                 <!-- author-data -->
                 <div

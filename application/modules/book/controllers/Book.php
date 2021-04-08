@@ -144,17 +144,17 @@ class Book extends Admin_Controller
         // get draft
         // $draft = $this->book->where('draft_id', $input->draft_id)->get('draft');
 
-        $get_stock      = $this->book->fetch_stock_by_id($book_id);
+        // $get_stock      = $this->book->fetch_stock_by_id($book_id);
 
-        $stock_history  = $get_stock['stock_history'];
-        $stock_last     = $get_stock['stock_last'];
+        // $stock_history  = $get_stock['stock_history'];
+        // $stock_last     = $get_stock['stock_last'];
 
         // If something wrong
         // if (!$this->book->validate() || $this->form_validation->error_array()) {
         $pages       = $this->pages;
         $main_view   = 'book/view_book';
         // $form_action = "book/edit/$book_id";
-        $this->load->view('template', compact('authors', 'pages', 'main_view', 'input', 'stock_history', 'stock_last'));
+        $this->load->view('template', compact('authors', 'pages', 'main_view', 'input'));
         return;
         // }
 
