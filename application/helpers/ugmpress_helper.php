@@ -795,3 +795,11 @@ function strip_disallowed_char($string)
     $string = str_replace($bad, "_", $string);
     return $string;
 }
+
+function get_warehouse_stock(){
+    return [
+        '' => 'Semua',
+        '1' => '<= 50',
+        '2' => '> 50'
+    ];
+}
