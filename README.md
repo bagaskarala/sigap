@@ -1,4 +1,4 @@
-# SIGAP
+# SIGAP (WORK IN PROGRESS)
 Sistem Informasi Penerbitan dan Percetakan Buku GAMA PRESS
 
 Developed for UGM PRESS internal system
@@ -20,26 +20,22 @@ Developed for UGM PRESS internal system
 - JS - Jquery
 - Database - Mysql
 
-## How to install
-- Install xammpp with PHP 5.6
+## How to run
+- Xammpp with PHP 7.3
+- Install composer
+- You can run PHP and composer on terminal
+- Create `.env.development` from `.env.example` and fill those credentials
+- Configure database.php
 - Run local webserver and mysql
 - Import sigap.sql database using phpmyadmin
-- Set codeigniter config.php
-- Set codeigniter database.php
-- Ready on localhost/sigap
-
-### Tools
-- Xampp with PHP5.6
-- Visual Studio Code
+- Run `composer install`
 
 ### Formatting Convention
-- Install **'Format HTML in PHP'** & **'phpfmt'** plugin from vs code marketplace
-- Add config below to setting.json in VS code
+- Install **PHP intelephense** extension in vs code
+- Configure this setting in setting.json
 
 ```json
-    // Format HTML in PHP
     "editor.insertSpaces": true,
-    "editor.tabSize": 3,
     "html.format.contentUnformatted": "pre,code,textarea",
     "html.format.endWithNewline": false,
     "html.format.extraLiners": "head, body, /html",
@@ -49,23 +45,12 @@ Developed for UGM PRESS internal system
     "html.format.preserveNewLines": true,
     "html.format.wrapLineLength": 120,
     "html.format.wrapAttributes": "force-expand-multiline",
-    // phpfmt
     "intelephense.format.enable": false,
-    "phpfmt.passes": [
-        "PSR2KeywordsLowerCase",
-        "PSR2LnAfterNamespace",
-        "PSR2CurlyOpenNextLine",
-        "PSR2ModifierVisibilityStaticOrder",
-        "PSR2SingleEmptyLineAndStripClosingTag",
-        "ReindentSwitchBlocks"
-    ],
-    "phpfmt.exclude": [
-        "ReindentComments",
-        "StripNewlineWithinClassBody"
-    ],
-    "phpfmt.enable_auto_align": true,
+     "[php]": {
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+        "editor.formatOnSave": true
+    },
 ```
-## Developer
-- Bagaskara LA (Fullstack)
-- Edward (Backend)
-- Syuhada Sipayung (Business Reporting)
+
+### Migration and Seeding
+- Run `php index.php tools help` to show available CLI commands

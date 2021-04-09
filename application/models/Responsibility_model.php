@@ -1,35 +1,34 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 class Responsibility_model extends MY_Model
 {
-   protected $perPage = 10;
-   
-       public function getValidationRules()
+    protected $per_page = 10;
+
+    public function get_validation_rules()
     {
-        $validationRules = [
+        $validation_rules = [
             [
                 'field' => 'user_id',
                 'label' => 'User ID',
-                'rules' => 'trim|required|callback_unique_responsibility_match'
-            ],  
+                'rules' => 'trim|required|callback_unique_responsibility_match',
+            ],
             [
                 'field' => 'draft_id',
                 'label' => 'Draft ID',
-                'rules' => 'trim|required|callback_unique_responsibility_match'
+                'rules' => 'trim|required|callback_unique_responsibility_match',
             ],
-                                 
-            
+
         ];
 
-        return $validationRules;
+        return $validation_rules;
     }
 
-    public function getDefaultValues()
+    public function get_default_values()
     {
         return [
-            
-            'user_id'              => '',
-            'draft_id'           => ''
+
+            'user_id'  => '',
+            'draft_id' => '',
         ];
     }
 }

@@ -1,32 +1,32 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 class Draft_author_model extends MY_Model
 {
-   protected $perPage = 10;
-   
-       public function getValidationRules()
+    protected $per_page = 10;
+
+    public function get_validation_rules()
     {
-        $validationRules = [
+        $validation_rules = [
             [
                 'field' => 'draft_id',
                 'label' => 'Draft ID',
-                'rules' => 'trim|required|callback_unique_draft_author_match'
+                'rules' => 'trim|required|callback_unique_draft_author',
             ],
             [
                 'field' => 'author_id',
                 'label' => 'Author ID',
-                'rules' => 'trim|required|callback_unique_draft_author_match'
-            ],                           
+                'rules' => 'trim|required|callback_unique_draft_author',
+            ],
         ];
 
-        return $validationRules;
+        return $validation_rules;
     }
 
-    public function getDefaultValues()
+    public function get_default_values()
     {
         return [
-            'draft_id'           => '',
-            'author_id'              => ''
+            'draft_id'  => '',
+            'author_id' => '',
         ];
     }
 }
