@@ -799,7 +799,7 @@ function strip_disallowed_char($string)
 function get_warehouse_stock(){
     return [
         '' => 'Semua',
-        '1' => '<= 50',
-        '2' => '> 50'
+        'up_to_50' => '<= 50',
+        'above_50' => '> 50'
     ];
 }
