@@ -47,7 +47,7 @@ $menu_list = [
             [
                 'name'  => 'Stok Buku',
                 'url'   => 'book_stock',
-                'level' => 'superadmin|admin_gudang'
+                'level' => 'superadmin|admin_gudang|admin_pemasaran'
             ],
             [
                 'name'  => 'Penerimaan Buku',
