@@ -169,7 +169,7 @@
                             <label for="paper-divider">
                                 Faktor Pembagi Kertas
                             </label>
-                            <?= form_input('paper_divider', $input->order_number, 'class="form-control" id="paper-divider" list="paper-divider-list"'); ?>
+                            <?= form_input('paper_divider', $input->paper_divider, 'class="form-control" id="paper-divider" list="paper-divider-list"'); ?>
                             <datalist id="paper-divider-list">
                                 <option value="1">
                                 <option value="2">
@@ -196,6 +196,29 @@
                             ?>
                             <?= form_input($form_total); ?>
                             <?= form_error('total'); ?>
+                        </div>
+
+                        <div
+                            class="form-group"
+                            style="display:none"
+                            id="non_book_pages-wrapper"
+                        >
+                            <label for="non_book_pages">
+                                Jumlah Halaman
+                                <abbr title="Required">*</abbr>
+                            </label>
+                            <?php
+                            $form_non_book_pages = array(
+                                'type'  => 'number',
+                                'name'  => 'non_book_pages',
+                                'id'    => 'non_book_pages',
+                                'value' => $input->non_book_pages,
+                                'class' => 'form-control',
+                                'min'   => '0'
+                            );
+                            ?>
+                            <?= form_input($form_non_book_pages); ?>
+                            <?= form_error('non_book_pages'); ?>
                         </div>
 
                         <div class="form-group">
@@ -632,16 +655,23 @@ $(document).ready(function() {
             $('#name-wrapper').show()
             $('#nonbook_example').show()
             $('#book-id').val('');
+            $('#non_book_pages-wrapper').show()
         } else {
             $('#book-id-wrapper').show()
             $('#name-wrapper').hide()
             $('#nonbook_example').hide()
-            $('#name').val('');
+            $('#name').val('')
+            $('#non_book_pages-wrapper').hide()
+            $('#non_book_pages').val('')
         }
     }
 
-    $("#total,#paper-divider,#book-id").change(function(halaman) {
-        $("#paper-estimation").val(($("#total").val() * $("#info-book-pages").text()) / $("#paper-divider").val());
+    $("#total,#paper-divider,#book-id,#non_book_pages").change(function(halaman) {
+        if ($('#print-mode').val() != 'nonbook') {
+            $("#paper-estimation").val(($("#total").val() * $("#info-book-pages").text()) / $("#paper-divider").val())
+        } else {
+            $("#paper-estimation").val(($("#total").val() * $("#non_book_pages").val()) / $("#paper-divider").val())
+        }
     });
 
     $('.dates').flatpickr({

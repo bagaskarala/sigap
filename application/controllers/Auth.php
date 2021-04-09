@@ -46,33 +46,23 @@ class Auth extends MY_Controller
         redirect();
     }
 
-    public function multilevel($sesi = '')
+    public function multilevel($selected_level = '')
     {
-        if ($this->session->userdata('level_native') == 'author_reviewer') {
-            if (!$sesi) {
-                $this->load->view('multilevel');
-            } else {
+        if ($selected_level) {
+            if ($this->session->userdata('level_native') == 'author_reviewer') {
                 $cekuserid = $this->session->userdata('user_id');
-                $role_id   = $this->auth->get_role_id_from_user_id($cekuserid, $sesi);
-                if ($sesi == 'author') {
-                    $data = [
-                        'level'   => $sesi,
+                $role_id   = $this->auth->get_role_id_from_user_id($cekuserid, $selected_level);
+
+                if ($selected_level == 'reviewer' || $selected_level == 'author') {
+                    $this->session->set_userdata([
+                        'level'   => $selected_level,
                         'role_id' => $role_id,
-                    ];
-                    $this->session->set_userdata($data);
-                    redirect('home');
-                }
-                if ($sesi == 'reviewer') {
-                    $data = [
-                        'level'   => $sesi,
-                        'role_id' => $role_id,
-                    ];
-                    $this->session->set_userdata($data);
-                    redirect('home');
+                    ]);
                 }
             }
-        } else {
             redirect('home');
+        } else {
+            $this->load->view('multilevel');
         }
     }
 

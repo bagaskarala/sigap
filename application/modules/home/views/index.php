@@ -2,7 +2,6 @@
 $username = $this->session->userdata('username');
 $is_login = $this->session->userdata('is_login');
 $level = $this->session->userdata('level');
-$semua = $this->session->userdata();
 ?>
 
 <header class="page-title-bar">

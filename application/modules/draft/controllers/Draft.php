@@ -98,8 +98,8 @@ class Draft extends Operator_Controller
 
     public function add(int $category_id = null)
     {
-        // khusus admin dan author
-        if (!is_admin() && $this->level != 'author') {
+        // khusus admin
+        if (!is_admin()) {
             redirect();
         }
 
@@ -114,20 +114,20 @@ class Draft extends Operator_Controller
                 $this->session->set_flashdata('error', $this->lang->line('form_draft_error_author_not_registered'));
                 redirect();
             }
-        }
 
-        // cek category tersedia dan aktif
-        // untuk pendaftaran draft oleh author
-        if ($category_id) {
-            $category        = $this->draft->get_where(['category_id' => $category_id], 'category');
-            $sisa_waktu_buka = Carbon::parse(Carbon::today())->diffInDays($category->date_open, false);
+            // cek category tersedia dan aktif
+            // untuk pendaftaran draft oleh author
+            if ($category_id) {
+                $category        = $this->draft->get_where(['category_id' => $category_id], 'category');
+                $sisa_waktu_buka = Carbon::parse(Carbon::today())->diffInDays($category->date_open, false);
 
-            if (!$category || $category->category_status == 'n') {
-                $this->session->set_flashdata('error', $this->lang->line('form_draft_error_category_not_found'));
-                redirect();
-            } elseif ($sisa_waktu_buka >= 1) {
-                $this->session->set_flashdata('error', $this->lang->line('form_draft_error_category_not_opened'));
-                redirect();
+                if (!$category || $category->category_status == 'n') {
+                    $this->session->set_flashdata('error', $this->lang->line('form_draft_error_category_not_found'));
+                    redirect();
+                } elseif ($sisa_waktu_buka >= 1) {
+                    $this->session->set_flashdata('error', $this->lang->line('form_draft_error_category_not_opened'));
+                    redirect();
+                }
             }
         }
 
@@ -606,6 +606,10 @@ class Draft extends Operator_Controller
 
         if (!$_POST) {
             $input = (object) $draft;
+            $authors = $this->author->get_draft_authors($draft_id);
+            $input->author_id = array_map(function ($a) {
+                return $a->author_id;
+            }, $authors);
         } else {
             $input = (object) $this->input->post(null, false);
         }
@@ -645,6 +649,18 @@ class Draft extends Operator_Controller
 
         // update draft
         $this->draft->where('draft_id', $draft_id)->update($input);
+
+        // update draft author
+        $this->draft_author->where('draft_id', $draft_id)->delete();
+        foreach ($input->author_id as $key => $value) {
+            // hanya author pertama yang boleh edit draft
+            // author lain hanya bisa view only
+            $this->draft_author->insert([
+                'author_id'           => $value,
+                'draft_id'            => $draft_id,
+                'draft_author_status' => $key == 0 ? 1 : 0, // author pertama, flag 1, artinya boleh edit draft
+            ]);
+        }
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();

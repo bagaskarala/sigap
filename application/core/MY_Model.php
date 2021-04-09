@@ -476,7 +476,7 @@ class MY_Model extends CI_Model
 
             $this->session->set_userdata([
                 'username'     => $user->username,
-                'level'        => $user->level,
+                'level'        => $this->session->userdata('level') ?? $user->level,
                 'level_native' => $user->level,
                 'is_login'     => true,
                 'user_id'      => $user->user_id,

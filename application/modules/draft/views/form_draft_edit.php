@@ -70,6 +70,16 @@ $draft_status_options = array_map(function ($draft_status) {
                             <?= form_error('theme_id'); ?>
                         </div>
                         <div class="form-group">
+                            <label for="author_id"><?= $this->lang->line('form_author_name'); ?></label>
+                            <?= form_dropdown('author_id[]', get_dropdown_list('author', ['author_id', 'author_name']), $input->author_id, 'id="author" class="form-control custom-select d-block" multiple="multiple"'); ?>
+                            <?= form_error('author_id[]'); ?>
+                            <div class="form-text text-muted small">Jika Penulis belum ada di list, tambahkan penulis di menu <a
+                                    target="_blank"
+                                    href="<?= base_url('author/add'); ?>"
+                                >PENULIS</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="draft_file">File Draft</label>
                             <?php if ($input->draft_file) : ?>
                                 <div class="alert alert-info">
@@ -466,5 +476,22 @@ $(document).ready(function() {
             $('#upload-file-form').show()
         }
     })
+
+    $("#author").select2({
+        multiple: true
+    });
+
+    // urut sesuai pilihan input
+    $("#author").on("select2:select", function(evt) {
+        var element = evt.params.data.element;
+        var $element = $(element);
+
+        $element.detach();
+        $(this).append($element);
+        $(this).trigger("change");
+    });
+
+    // hilangkan placeholder pilih
+    $('#author option[value=""]').detach();
 });
 </script>

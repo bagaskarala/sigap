@@ -190,6 +190,29 @@
                             <?= form_error('total'); ?>
                         </div>
 
+                        <div
+                            class="form-group"
+                            style="display:none"
+                            id="non_book_pages-wrapper"
+                        >
+                            <label for="non_book_pages">
+                                Jumlah Halaman
+                                <abbr title="Required">*</abbr>
+                            </label>
+                            <?php
+                            $form_non_book_pages = array(
+                                'type'  => 'number',
+                                'name'  => 'non_book_pages',
+                                'id'    => 'non_book_pages',
+                                'value' => $input->non_book_pages,
+                                'class' => 'form-control',
+                                'min'   => '0'
+                            );
+                            ?>
+                            <?= form_input($form_non_book_pages); ?>
+                            <?= form_error('non_book_pages'); ?>
+                        </div>
+
                         <input
                             type="hidden"
                             id="paper-estimation"
@@ -349,11 +372,15 @@ $(document).ready(function() {
             $('#name-wrapper').show()
             $('#nonbook_example').show()
             $('#book-id').val('');
+            $('#non_book_pages-wrapper').show()
         } else {
             $('#book-id-wrapper').show()
             $('#name-wrapper').hide()
             $('#nonbook_example').hide()
-            $('#name').val('');
+            $('#name').val('')
+            $('#non_book_pages-wrapper').hide()
+            $('#non_book_pages').val('')
+            $('#paper-estimation').val('')
         }
     }
 
@@ -398,9 +425,14 @@ $(document).ready(function() {
         });
     })
 
-    $("#total,#paper-divider,#book-id").change(function(halaman) {
-        $("#paper-estimation").val(($("#total").val() * $("#info-book-pages").text()) / $("#paper-divider").val());
-        $("#paper-estimation-info").html($("#paper-estimation").val());
+    $("#total,#paper-divider,#book-id,#non_book_pages").change(function(halaman) {
+        if ($('#print-mode').val() != 'nonbook') {
+            $("#paper-estimation").val(($("#total").val() * $("#info-book-pages").text()) / $("#paper-divider").val())
+            $("#paper-estimation-info").html($("#paper-estimation").val())
+        } else {
+            $("#paper-estimation").val(($("#total").val() * $("#non_book_pages").val()) / $("#paper-divider").val())
+            $("#paper-estimation-info").html($("#paper-estimation").val())
+        }
     });
 
 
