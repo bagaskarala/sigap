@@ -573,10 +573,9 @@ function get_published_date()
 
 function expand($authors)
 {
-    $authors_list = '<ul class="p-0 m-0" style="list-style-type: none;">';
+    $authors_list = '<ul class="p-0 m-0 pl-3">';
     foreach ($authors as $a) {
         $authors_list .= '<li>';
-        $authors_list .= '<i class="fa fa-user fa-fw"></i> ';
         $authors_list .= $a->author_name;
         $authors_list .= '</li>';
     }
@@ -787,11 +786,11 @@ function get_print_order_finishing()
 }
 
 function strip_disallowed_char($string)
-{
-    $bad = array_merge(
-        array_map('chr', range(0, 31)),
-        array("<", ">", ":", '"', "/", "\\", "|", "?", "*", "(", ")", "@", "&", "!", ";", ",")
-    );
-    $string = str_replace($bad, "_", $string);
-    return $string;
+{ 
+    $extension = substr($string, strripos($string, ".") + 1);  
+    $filename  = substr($string, 0 ,strripos($string, "."));
+
+    $bad = array("<", ">", ":", '"', "/", "\\", "|", "?", "*", "(", ")", "@", "&", "!", ";", ",",".");
+    $filename = str_replace($bad, "_", $filename);
+    return $filename.".".$extension;
 }

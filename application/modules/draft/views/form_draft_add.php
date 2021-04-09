@@ -1,3 +1,4 @@
+<?php $user_level = $this->session->userdata('level') ?>
 <header class="page-title-bar">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -51,7 +52,7 @@
                             <?= form_input('draft_title', $input->draft_title, 'class="form-control customer" id="draft_title"'); ?>
                             <?= form_error('draft_title'); ?>
                         </div>
-                        <!-- <?php if (check_level() == 'author') : ?>
+                        <?php if ($user_level == 'author') : ?>
                             <div class="form-group d-none">
                                 <label for="draft_title">
                                     <?= $this->lang->line('form_author_name'); ?>
@@ -59,36 +60,37 @@
                                 <?= form_dropdown('author_id[]', get_dropdown_list('author', ['author_id', 'author_name']), check_role(), 'id="author" class="form-control custom-select" multiple="multiple"'); ?>
                                 <?= form_error('author_id[]'); ?>
                             </div>
-                        <?php else : ?> -->
-                        <!-- <div class="form-group">
-                            <label for="author_id"><?= $this->lang->line('form_author_name'); ?></label>
-                            <?= form_dropdown('author_id[]', get_dropdown_list('author', ['author_id', 'author_name']), $input->author_id, 'id="author" class="form-control custom-select d-block" multiple="multiple"'); ?>
-                            <?= form_error('author_id[]'); ?>
-                        </div> -->
-                        <!-- <div class="p-0 m-0">
-                                <small class="form-text text-muted">Jika Penulis belum ada di list, tambahkan penulis di menu <a
+                        <?php endif ?>
+                        <?php if ($user_level == 'superadmin' || $user_level == 'admin_penerbitan') : ?>
+                            <div class="form-group">
+                                <label for="author_id"><?= $this->lang->line('form_author_name'); ?></label>
+                                <?= form_dropdown('author_id[]', get_dropdown_list('author', ['author_id', 'author_name']), $input->author_id, 'id="author" class="form-control custom-select d-block" multiple="multiple"'); ?>
+                                <?= form_error('author_id[]'); ?>
+                                <div class="form-text text-muted small">Jika Penulis belum ada di list, tambahkan penulis di menu <a
                                         target="_blank"
                                         href="<?= base_url('author/add'); ?>"
                                     >PENULIS</a>
-                                </small>
+                                </div>
+                            </div>
+                            <!-- <div class="p-0 m-0">
+                                <button
+                                    id="callback"
+                                    type="button"
+                                    class="btn btn-secondary btn-xs mt-2"
+                                >
+                                    <i
+                                        class="fa fa-sync"
+                                        id="ajax-reload-author"
+                                    ></i> Reload Penulis
+                                </button>
                             </div> -->
-                        <!-- <div class="p-0 m-0">
-                        <button
-                           id="callback"
-                           type="button"
-                           class="btn btn-secondary btn-xs mt-2"
-                        ><i
-                              class="fa fa-sync"
-                              id="ajax-reload-author"
-                           ></i> Reload Penulis</button>
-                     </div> -->
+                        <?php endif; ?>
 
-                        <!-- <?php endif; ?> -->
-                        <!-- <div class="form-group">
-                     <label for="draft_pages">Jumlah Halaman</label>
-                     <?= form_input('draft_pages', $input->draft_pages, 'class="form-control" id="draft_pages"'); ?>
-                     <?= form_error('draft_pages'); ?>
-                  </div> -->
+                        <div class="form-group">
+                            <label for="draft_pages">Jumlah Halaman</label>
+                            <?= form_input('draft_pages', $input->draft_pages, 'class="form-control" id="draft_pages"'); ?>
+                            <?= form_error('draft_pages'); ?>
+                        </div>
 
                         <div class="form-group">
                             <label for="draft_file">File Draft</label>
@@ -136,9 +138,6 @@ $(document).ready(function() {
                 draft_title: {
                     crequired: true,
                     cminlength: 5,
-                },
-                "author_id[]": {
-                    crequired: true,
                 },
                 draft_file: {
                     extension: "<?= get_allowed_file_types('draft_file')['types']; ?>",
@@ -188,7 +187,10 @@ $(document).ready(function() {
 
     $("#category").select2();
     $("#theme").select2();
+
+    // hilangkan placeholder pilih
     $('#author option[value=""]').detach();
+
     $("#author").select2({
         multiple: true
     });
