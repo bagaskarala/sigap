@@ -127,13 +127,8 @@ class Book extends Admin_Controller
             redirect($this->pages);
         }
 
-        // if (!$_POST) {
         $input = (object) $book;
-        // } else {
-        //     $input            = (object) $this->input->post(null, true);
-        //     $input->book_file = $book->book_file; // Set book file for preview.
 
-        // }
         // tabel author
         if ($book->draft_id) {
             $authors = $this->author->get_draft_authors($book->draft_id);
@@ -141,29 +136,11 @@ class Book extends Admin_Controller
             $authors = [];
         }
 
-        // get draft
-        // $draft = $this->book->where('draft_id', $input->draft_id)->get('draft');
-
-        // $get_stock      = $this->book->fetch_stock_by_id($book_id);
-
-        // $stock_history  = $get_stock['stock_history'];
-        // $stock_last     = $get_stock['stock_last'];
-
-        // If something wrong
-        // if (!$this->book->validate() || $this->form_validation->error_array()) {
         $pages       = $this->pages;
         $main_view   = 'book/view_book';
-        // $form_action = "book/edit/$book_id";
         $this->load->view('template', compact('authors', 'pages', 'main_view', 'input'));
         return;
-        // }
 
-        // if ($this->book->where('book_id', $book_id)->update($input)) {
-        //     $this->session->set_flashdata('success', 'Data updated');
-        // } else {
-        //     $this->session->set_flashdata('error', 'Data failed to update');
-        // }
-        // redirect($this->pages);
     }
 
     public function edit($book_id)
