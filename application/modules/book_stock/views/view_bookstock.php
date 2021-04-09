@@ -144,10 +144,10 @@ $level              = check_level();
                                         </td>
                                         <td>
                                             <?php 
-                                                if ($revision->operator == "+") {
-                                                    echo '<div class="text-success"> ' . $revision->operator . ' ' . $revision->warehouse_revision . '</div>';
-                                                } elseif ($revision->operator == "-") {
-                                                    echo '<div class="text-danger"> ' . $revision->operator . ' ' . $revision->warehouse_revision . '</div>';
+                                                if ($revision->revision_type == "add") {
+                                                    echo '<div class="text-success"> ' . '+' . ' ' . $revision->warehouse_revision . '</div>';
+                                                } elseif ($revision->revision_type == "sub") {
+                                                    echo '<div class="text-danger"> ' . '+' . ' ' . $revision->warehouse_revision . '</div>';
                                                 } 
                                             ?>
                                         </td>

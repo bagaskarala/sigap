@@ -81,7 +81,7 @@ class Book_stock extends MY_Controller
 
     public function edit_book_stock(){
         if($this->_is_warehouse_admin() == TRUE && $this->input->method()=='post'){
-            $operator = $this->input->post('warehouse_operator');
+            $revision_type = $this->input->post('revision_type');
             $book_id = $this->input->post('book_id');
             $quantity = $this->input->post('warehouse_modifier');
             $notes = $this->input->post('notes');
@@ -91,7 +91,7 @@ class Book_stock extends MY_Controller
                 'warehouse_past'     => $book_stock->warehouse_present,
                 'warehouse_present'  => 0,
                 'warehouse_revision' => $quantity,
-                'operator'           => $operator,
+                'revision_type'      => $revision_type,
                 'notes'              => $notes,
                 'revision_date'      => now()
             ];
@@ -99,7 +99,7 @@ class Book_stock extends MY_Controller
                 $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
             }
             else {
-                if ($operator=="+") $book_stock->warehouse_present += $quantity;
+                if ($revision_type=="add") $book_stock->warehouse_present += $quantity;
                 else $book_stock->warehouse_present -= $quantity;
                 $book_stock_revision->warehouse_present = $book_stock->warehouse_present;
                 if ($this->book_stock->where('book_id', $book_id)->update($book_stock) && $this->db->insert('book_stock_revision',$book_stock_revision)) {

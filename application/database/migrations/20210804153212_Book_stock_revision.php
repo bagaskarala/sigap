@@ -25,9 +25,9 @@ class Migration_Book_stock_revision extends CI_Migration{
                 'type' => 'INT',
                 'constraint' => 10,
             ],
-            'operator' => [
+            'revision_type' => [
                 'type' => 'VARCHAR',
-                'constraint' => 1,
+                'constraint' => 3,
             ],
             'notes' => [
                 'type' => 'VARCHAR',
