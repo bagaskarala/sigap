@@ -794,3 +794,11 @@ function strip_disallowed_char($string)
     $filename = str_replace($bad, "_", $filename);
     return $filename.".".$extension;
 }
+
+function get_warehouse_stock(){
+    return [
+        '' => 'Semua',
+        'up_to_50' => '<= 50',
+        'above_50' => '> 50'
+    ];
+}
