@@ -24,17 +24,18 @@ class Customer extends MY_Controller
             'general'       => 'Umum'
         );
 
-        // Customer per page
+        // custom per page
         $this->customer->per_page = $this->input->get('per_page', true) ?? 10;
 
         $get_data = $this->customer->filter_data($filters, $page);
+        $discount = $this->customer->get_discount();
 
         $customers  = $get_data['customers'];
         $total      = $get_data['total'];
         $pages      = $this->pages;
         $main_view  = 'customer/index_customer';
         $pagination = $this->customer->make_pagination(site_url('customer'), 2, $total);
-        $this->load->view('template', compact('pagination', 'pages', 'main_view', 'customers', 'total', 'customer_type'));
+        $this->load->view('template', compact('pagination', 'pages', 'main_view', 'customers', 'total', 'customer_type', 'discount'));
     }
 
     public function api_customer_info($id)
@@ -84,4 +85,36 @@ class Customer extends MY_Controller
         $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
         redirect('customer');
     }
+
+    public function edit_discount()
+    {
+        $this->customer->validate_edit_discount();
+        $data = array(
+            array(
+                'membership' => 'distributor',
+                'discount'   => $this->input->post('discount-distributor')
+            ),
+            array(
+                'membership' => 'reseller',
+                'discount'   => $this->input->post('discount-reseller')
+            ),
+            array(
+                'membership' => 'author',
+                'discount'   => $this->input->post('discount-author')
+            ),
+            array(
+                'membership' => 'member',
+                'discount'   => $this->input->post('discount-member')
+            ),
+            array(
+                'membership' => 'general',
+                'discount'   => $this->input->post('discount-general')
+            )
+        );
+        $this->db->update_batch('discount', $data, 'membership');
+        echo json_encode(['status' => TRUE]);
+
+        $this->session->set_flashdata('success', 'Diskon berhasil diupdate.');
+    }
+
 }
