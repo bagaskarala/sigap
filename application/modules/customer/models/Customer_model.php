@@ -67,6 +67,54 @@ class Customer_model extends MY_Model
         }
     }
 
+    public function validate_edit_discount()
+    {
+        $data = array();
+        $data['input_error'] = array();
+        $data['status'] = TRUE;
+
+        if($this->input->post('discount-distributor') == '' || $this->input->post('discount-distributor') < 0 || $this->input->post('discount-distributor') > 100)
+        {
+            $data['input_error'][] = 'error-discount-distributor';
+            $data['status'] = FALSE;
+        }
+ 
+        if($this->input->post('discount-reseller') == '' || $this->input->post('discount-reseller') < 0 || $this->input->post('discount-reseller') > 100)
+        {
+            $data['input_error'][] = 'error-discount-reseller';
+            $data['status'] = FALSE;
+        }
+ 
+        if($this->input->post('discount-author') == '' || $this->input->post('discount-author') < 0 || $this->input->post('discount-author') > 100)
+        {
+            $data['input_error'][] = 'error-discount-author';
+            $data['status'] = FALSE;
+        }
+ 
+        if($this->input->post('discount-member') == '' || $this->input->post('discount-member') < 0 || $this->input->post('discount-member') > 100)
+        {
+            $data['input_error'][] = 'error-discount-member';
+            $data['status'] = FALSE;
+        }
+ 
+        if($this->input->post('discount-general') == '' || $this->input->post('discount-general') < 0 || $this->input->post('discount-general') > 100)
+        {
+            $data['input_error'][] = 'error-discount-general';
+            $data['status'] = FALSE;
+        }
+
+        if($data['status'] === FALSE)
+        {
+            echo json_encode($data);
+            exit();
+        }
+    }
+
+    public function get_discount()
+    {
+        return $this->db->select('*')->from('discount')->get()->result();
+    }
+
     public function filter_data($filters, $page = null)
     {
         $customers = $this->select(['customer_id', 'name', 'address', 'phone_number', 'type'])

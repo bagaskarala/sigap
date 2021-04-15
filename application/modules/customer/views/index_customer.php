@@ -26,14 +26,27 @@ $type_options =  array_merge(['' => '- Filter Jenis Customer -'], $customer_type
             <h1 class="page-title"> Customer </h1>
             <span class="badge badge-info">Total : <?= $total; ?></span>
         </div>
-        <button
-            type="button"
-            class="btn btn-sm btn-primary"
-            data-toggle="modal"
-            data-target="#modal-add"
-        >
-            <i class="fa fa-plus fa-fw"></i>Tambah
-        </button>
+        <div>
+            <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                data-toggle="modal"
+                data-target="#modal-discount"
+            >
+                <i
+                    class="fa fa-pencil-alt fa-fw"
+                    style="margin-right: 5px;"
+                ></i>Diskon
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                data-toggle="modal"
+                data-target="#modal-add"
+            >
+                <i class="fa fa-plus fa-fw"></i>Tambah
+            </button>
+        </div>
     </div>
 </header>
 <div class="page-section">
@@ -366,6 +379,136 @@ $type_options =  array_merge(['' => '- Filter Jenis Customer -'], $customer_type
                         </div>
                     </div>
                 </div>
+
+                <div
+                    class="modal modal-alert fade"
+                    id="modal-discount"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="modal-discount"
+                    aria-hidden="true"
+                >
+                    <div
+                        class="modal-dialog"
+                        role="document"
+                    >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Diskon</h5>
+                            </div>
+                            <form
+                                id="update-discount-form"
+                                method="post"
+                                action="<?= base_url('customer/edit_discount/'); ?>"
+                            >
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label
+                                            for="discount-distributor"
+                                            class="font-weight-bold"
+                                        >
+                                            Distributor
+                                            <abbr title="Required">*</abbr>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="discount-distributor"
+                                            id="discount-distributor"
+                                            min=0
+                                            max=100
+                                            class="form-control"
+                                            value="<?= $discount[0]->discount ?>"
+                                        />
+                                        <small id="error-discount-distributor" class="d-none error-message text-danger">Masukkan diskon antara 0-100 untuk distributor!</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label
+                                            for="discount-reseller"
+                                            class="font-weight-bold"
+                                        >Reseller
+                                            <abbr title="Required">*</abbr>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="discount-reseller"
+                                            id="discount-reseller"
+                                            min=0
+                                            max=100
+                                            class="form-control"
+                                            value="<?= $discount[1]->discount ?>"
+                                        />
+                                        <small id="error-discount-reseller" class="d-none error-message text-danger">Masukkan diskon antara 0-100 untuk reseller!</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label
+                                            for="discount-author"
+                                            class="font-weight-bold"
+                                        >Penulis
+                                            <abbr title="Required">*</abbr>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="discount-author"
+                                            id="discount-author"
+                                            min=0
+                                            max=100
+                                            class="form-control"
+                                            value="<?= $discount[2]->discount ?>"
+                                        />
+                                        <small id="error-discount-author" class="d-none error-message text-danger">Masukkan diskon antara 0-100 untuk penulis!</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label
+                                            for="discount-member"
+                                            class="font-weight-bold"
+                                        >Member
+                                            <abbr title="Required">*</abbr>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="discount-member"
+                                            id="discount-member"
+                                            min=0
+                                            max=100
+                                            class="form-control"
+                                            value="<?= $discount[3]->discount ?>"
+                                        />
+                                        <small id="error-discount-member" class="d-none error-message text-danger">Masukkan diskon antara 0-100 untuk member!</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label
+                                            for="discount-general"
+                                            class="font-weight-bold"
+                                        >Umum
+                                            <abbr title="Required">*</abbr>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="discount-general"
+                                            id="discount-general"
+                                            min=0
+                                            max=100
+                                            class="form-control"
+                                            value="<?= $discount[4]->discount ?>"
+                                        />
+                                        <small id="error-discount-general" class="d-none error-message text-danger">Masukkan diskon antara 0-100 untuk umum!</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >Save</button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-light"
+                                        data-dismiss="modal"
+                                    >Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
@@ -458,4 +601,39 @@ $("#edit-customer-form").submit(function(e) {
         },
     });
 })
+
+$("#update-discount-form").submit(function(e) {
+    e.preventDefault();
+    var form = $(this);
+
+    $.ajax({
+        type: "POST",
+        url: "<?= base_url('customer/edit_discount/'); ?>",
+        data: form.serialize(),
+        success: function(res) {
+            // Parse server response to JSON
+            var response = $.parseJSON(res)
+
+            // No validation error
+            if(response.status){
+                location.href = "<?= base_url('customer'); ?>";
+            }
+            else{
+                // Hide all error message
+                $(".error-message").addClass('d-none');
+                for (var i = 0; i < response.input_error.length; i++) 
+                {
+                    // Show error message
+                    $('#' + response.input_error[i]).removeClass('d-none');
+                }
+                console.log(response)
+            }
+        },
+        error: function(err) {
+            console.log(err)
+            alert(err)
+        },
+    });
+})
+
 </script>
