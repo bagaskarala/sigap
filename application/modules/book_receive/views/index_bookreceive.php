@@ -11,7 +11,6 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
 $book_receive_status_options = [
     '' => '--Pilih--',
     'waiting' => 'Belum Diproses',
-    'reject' => 'Ditolak',
     'handover' => 'Serah Terima',
     'wrapping' => 'Wrapping',
     'finish' => 'Selesai',
