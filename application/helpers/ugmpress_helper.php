@@ -802,3 +802,18 @@ function get_warehouse_stock(){
         'above_50' => '> 50'
     ];
 }
+
+function get_book_receive_status(){
+    return [
+        '' => '--Pilih--',
+        'waiting' => 'Belum Diproses',
+        'reject' => 'Ditolak',
+        'handover' => 'Serah Terima',
+        'handover_approval' => 'Serah Terima Menunggu Approval',
+        'handover_finish' => 'Selesai Serah Terima',
+        'wrapping' => 'Wrapping',
+        'wrapping_approval' => 'Wrapping Menunggu Approval',
+        'wrapping_finish' => 'Selesai Wrapping',
+        'finish' => 'Selesai',
+    ];
+}

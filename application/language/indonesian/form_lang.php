@@ -143,3 +143,9 @@ $lang['form_print_order_status']        = 'Status Order Cetak';
 $lang['form_print_order_notes']        = 'Catatan Order Cetak';
 $lang['form_print_order_name']        = 'Nama Pesanan';
 $lang['form_print_order_preprint_file']          = 'File Approval';
+
+// Book Receive
+$lang['form_book_receive_entry_date'] = 'Tanggal Mulai Penerimaan Buku';
+$lang['form_book_receive_finish_date'] = 'Tanggal Selesai Penerimaan Buku';
+$lang['form_book_receive_deadline'] = 'Deadline Penerimaan Buku';
+$lang['form_book_receive_status'] = 'Status';
