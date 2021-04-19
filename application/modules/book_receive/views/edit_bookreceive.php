@@ -21,6 +21,13 @@
                     <form method="post" action='<?=base_url('book_receive/update/' . $book_receive->book_receive_id)?>' id="form-book-receive">
                     <fieldset>
                         <legend>Form Edit Penerimaan Buku</legend>
+                        <div class="alert alert-danger">
+                            <strong>Perhatian</strong>
+                            <p class="mb-0">1. Halaman ini digunakan untuk mengedit tanggal secara manual, namun pastikan sudah
+                                melakukan proses step-by-step dari halaman <a href="<?= base_url("book_receive/view/$book_receive->book_receive_id"); ?>">view penerimaan buku</a>.</p>
+                            <p class="mb-0">2. Halaman ini juga digunakan untuk mereset progress penerimaan buku, dengan cara
+                                menyesuaikan status penerimaan buku, dan hapus tanggal masing-masing.</p>
+                        </div>
                         <?= isset($book_receive->book_receive_id) ? form_hidden('book_receive_id', $book_receive->book_receive_id) : ''; ?>
                         <div class="form-group">
                             <label for="entry_date">
@@ -41,6 +48,13 @@
                                 <?= $this->lang->line('form_book_receive_finish_date')?>
                             </label>
                             <?= form_input('finish_date', $book_receive->finish_date, 'class="form-control dates"')?>
+                            <?= form_error('finish_date'); ?>
+                        </div>
+                        <div class="form-group">
+                            <label for="book_receive_status">
+                                Status Penerimaan Buku
+                            </label>
+                            <?= form_dropdown('book_receive_status', get_book_receive_status(), $book_receive->book_receive_status, 'id="book_receive_status" class="form-control custom-select d-block" title="Status"'); ?>
                             <?= form_error('finish_date'); ?>
                         </div>
                         <hr>

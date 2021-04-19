@@ -63,44 +63,6 @@ class Book_receive extends Warehouse_Controller
         $input->wrapping_deadline = empty_to_null($input->wrapping_deadline);
 
         if ($this->form_validation->run() == true) {
-            if ($input->is_handover == 0 || $input->is_wrapping == 0) {
-                $input->finish_date = null;
-            }
-            if ($input->is_handover == 0){
-                $input->wrapping_start_date = null;
-                $input->wrapping_end_date = null;
-                $input->is_wrapping = 0;
-                if ($input->handover_start_date == null){
-                    $input->handover_end_date = null; 
-                    $input->book_receive_status = 'waiting';
-                }
-                else if ($input->handover_end_date == null){
-                    $input->book_receive_status = 'handover';
-                }
-                else if ($input->handover_end_date != null){
-                    $input->book_receive_status = 'handover_approval';
-                }
-            }
-            else if ($input->is_wrapping == 0){
-                if ($input->wrapping_start_date == null){
-                    $input->wrapping_end_date = null; 
-                    $input->book_receive_status = 'handover_finish';
-                }
-                else if ($input->wrapping_end_date == null){
-                    $input->book_receive_status = 'wrapping';
-                }
-                else if ($input->wrapping_end_date != null){
-                    $input->book_receive_status = 'wrapping_approval';
-                }
-            }
-            else {
-                if ($input->finish_date == null){
-                    $input->book_receive_status = 'wrapping_finish';
-                }
-                else {
-                    $input->book_receive_status = 'finish';
-                }
-            }
             $this->db->set($input)->where('book_receive_id', $book_receive_id)->update('book_receive');
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         } else {
