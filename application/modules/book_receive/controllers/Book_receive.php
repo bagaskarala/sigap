@@ -69,30 +69,27 @@ class Book_receive extends Warehouse_Controller
             if ($input->is_handover == 0){
                 $input->wrapping_start_date = null;
                 $input->wrapping_end_date = null;
-                $input->wrapping_deadline = null;
                 $input->is_wrapping = 0;
                 if ($input->handover_start_date == null){
-                    $input->handover_end_date == null; 
+                    $input->handover_end_date = null; 
                     $book_receive_status = 'waiting';
                 }
-                else {
-                    $input->handover_end_date == null; 
+                else if ($input->handover_end_date == null){
                     $book_receive_status = 'handover';
                 }
-                if ($input->handover_end_date != null){
+                else if ($input->handover_end_date != null){
                     $book_receive_status = 'handover_approval';
                 }
             }
             else if ($input->is_wrapping == 0){
                 if ($input->wrapping_start_date == null){
-                    $input->wrapping_end_date == null; 
+                    $input->wrapping_end_date = null; 
                     $book_receive_status = 'handover_finish';
                 }
-                else {
-                    $input->wrapping_end_date == null; 
+                else if ($input->wrapping_end_date == null){
                     $book_receive_status = 'wrapping';
                 }
-                if ($input->wrapping_end_date != null){
+                else if ($input->wrapping_end_date != null){
                     $book_receive_status = 'wrapping_approval';
                 }
             }
