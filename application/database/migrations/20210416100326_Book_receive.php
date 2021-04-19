@@ -31,7 +31,7 @@ class Migration_Book_receive extends CI_Migration
             ],
             'book_receive_status' => [
                 'type' => 'VARCHAR',
-                'constraint' => 100
+                'constraint' => 20
             ],
 
             // handover
