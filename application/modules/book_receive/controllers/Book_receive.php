@@ -72,52 +72,36 @@ class Book_receive extends Warehouse_Controller
                 $input->is_wrapping = 0;
                 if ($input->handover_start_date == null){
                     $input->handover_end_date = null; 
-                    $book_receive_status = 'waiting';
+                    $input->book_receive_status = 'waiting';
                 }
                 else if ($input->handover_end_date == null){
-                    $book_receive_status = 'handover';
+                    $input->book_receive_status = 'handover';
                 }
                 else if ($input->handover_end_date != null){
-                    $book_receive_status = 'handover_approval';
+                    $input->book_receive_status = 'handover_approval';
                 }
             }
             else if ($input->is_wrapping == 0){
                 if ($input->wrapping_start_date == null){
                     $input->wrapping_end_date = null; 
-                    $book_receive_status = 'handover_finish';
+                    $input->book_receive_status = 'handover_finish';
                 }
                 else if ($input->wrapping_end_date == null){
-                    $book_receive_status = 'wrapping';
+                    $input->book_receive_status = 'wrapping';
                 }
                 else if ($input->wrapping_end_date != null){
-                    $book_receive_status = 'wrapping_approval';
+                    $input->book_receive_status = 'wrapping_approval';
                 }
             }
             else {
                 if ($input->finish_date == null){
-                    $book_receive_status = 'wrapping_finish';
+                    $input->book_receive_status = 'wrapping_finish';
                 }
                 else {
-                    $book_receive_status = 'finish';
+                    $input->book_receive_status = 'finish';
                 }
             }
-            $data = [
-                'entry_date' => $input->entry_date,
-                'deadline' => $input->deadline,
-                'finish_date' => $input->finish_date,
-                'is_handover' => $input->is_handover,
-                'handover_start_date' => $input->handover_start_date,
-                'handover_end_date' => $input->handover_end_date,
-                'handover_staff' => $input->handover_staff,
-                'handover_deadline' => $input->handover_deadline,
-                'is_wrapping' => $input->is_wrapping,
-                'wrapping_start_date' => $input->wrapping_start_date,
-                'wrapping_end_date' => $input->wrapping_end_date,
-                'wrapping_staff' => $input->wrapping_staff,
-                'wrapping_deadline' => $input->wrapping_deadline,
-                'book_receive_status' => $book_receive_status
-            ];
-            $this->db->set($data)->where('book_receive_id', $book_receive_id)->update('book_receive');
+            $this->db->set($input)->where('book_receive_id', $book_receive_id)->update('book_receive');
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         } else {
             $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
