@@ -80,15 +80,6 @@ class Book_receive_model extends MY_Model
         return $this;
     }
 
-    //get book_id
-    public function get_book($book_id)
-    {
-        return $this->select('book.*')
-            ->where('book_id', $book_id)
-            ->join_table('book', 'book_receive', 'book')
-            ->get('book');
-    }
-    
     //get print_order_id
     public function get_print_order($print_order_id)
     {
