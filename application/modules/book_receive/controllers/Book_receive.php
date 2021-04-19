@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-class Book_receive extends MY_Controller
+class Book_receive extends Warehouse_Controller
 {
     public $per_page = 10;
 
