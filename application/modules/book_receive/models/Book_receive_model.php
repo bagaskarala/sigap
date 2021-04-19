@@ -75,8 +75,6 @@ class Book_receive_model extends MY_Model
             }
             if ($params == 'book_receive_status'){
                 $this->where('book_receive_status', $data);
-                $this->or_where('book_receive_status', "{$data}_approval");
-                $this->or_where('book_receive_status', "{$data}_finish");
             }
         }
         return $this;
