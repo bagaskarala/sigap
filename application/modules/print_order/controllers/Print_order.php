@@ -320,37 +320,16 @@ class Print_order extends Printing_Controller
         $category   = $data->category;
 
         if ($category !== 'nonbook' && $category !== 'from_outside') {
-            // Mekanisme input stok
+            // Mekanisme masuk ke penerimaan buku gudang
             $book_id             =   $data->book_id;
-            $warehouse_past      =   intval($data->stock_warehouse);
-
-            if ($data->total_postprint) {
-                $warehouse_modifier  =   abs($data->total_postprint);
-            } else {
-                $warehouse_modifier  =   abs($data->total_print);
-            }
-
-            $warehouse_operator  =   "+";
-            $warehouse_present   =   $warehouse_past + $warehouse_modifier;
-
-            $edit   =   [
-                'stock_warehouse'    => $warehouse_present,
-            ];
-
-            $add    =   [
-                'book_id'               => $book_id,
-                'user_id'               => $_SESSION['user_id'],
-                'type'                  => 'print_order',
-                'date'                  => date('Y-m-d H:i:s'),
-                'notes'                 => '<a href="' . base_url('print_order/view/' . $data->print_order_id) . '" target="_blank"> <i class="fa fa-external-link-alt"></i> Link Order Cetak</a>',
-                'warehouse_past'        => $warehouse_past,
-                'warehouse_modifier'    => $warehouse_modifier,
-                'warehouse_present'     => $warehouse_present,
-                'warehouse_operator'    => $warehouse_operator
-            ];
-
-            $this->db->set($edit)->where('book_id', $book_id)->update('book');
-            $this->db->insert('book_stock', $add);
+            $print_order_id      =   $data->print_order_id;
+            $insert_data_print = array(
+                'book_id' => $book_id,
+                'print_order_id' => $print_order_id,
+                'book_receive_status' => 'waiting',
+                'entry_date' => now() 
+            );
+            $this->db->insert('book_receive', $insert_data_print);
         }
 
         // memastikan konsistensi data
