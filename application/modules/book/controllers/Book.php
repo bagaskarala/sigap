@@ -7,6 +7,7 @@ class Book extends Admin_Controller
         parent::__construct();
         $this->pages = 'book';
 
+        $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('author/author_model', 'author');
         $this->load->model('draft/draft_model', 'draft');
 
@@ -289,8 +290,14 @@ class Book extends Admin_Controller
             $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
             redirect($this->pages);
         }
+        $book_stock = $this->book_stock->where('book_id', $book_id)->get();
+
 
         if ($this->book->where('book_id', $book_id)->delete()) {
+            // Delete book stock
+            if ($book_stock) {
+                $this->book_stock->where('book_id', $book_id)->delete();
+            }
             // Delete book file
             $this->book->delete_book_file($book->book_file);
             // Delete hak cipta file

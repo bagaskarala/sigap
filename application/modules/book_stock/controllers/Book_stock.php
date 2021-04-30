@@ -115,33 +115,6 @@ class Book_stock extends Warehouse_sales_controller
         redirect('book_stock/view/'.$book_stock->book_stock_id);
     }
     
-    public function delete($book_stock_id = null)
-    {
-        if (!$this->_is_warehouse_admin()) {
-            redirect($this->pages);
-        }
-
-        $book_stock = $this->book_stock->where('book_stock_id', $book_stock_id)->get();
-        if (!$book_stock) {
-            $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
-            redirect($this->pages);
-        }
-
-        // memastikan konsistensi data
-        $this->db->trans_begin();
-
-        $this->book_stock->where('book_stock_id', $book_stock_id)->delete();
-
-        if ($this->db->trans_status() === false) {
-            $this->db->trans_rollback();
-            $this->session->set_flashdata('error', $this->lang->line('toast_delete_fail'));
-        } else {
-            $this->db->trans_commit();
-            $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
-        }
-
-        redirect($this->pages);
-    }
 
     // generate excel stok buku di index_bookstock
     public function generate_excel($filters)

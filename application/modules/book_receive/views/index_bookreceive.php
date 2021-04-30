@@ -55,7 +55,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                 <label for="category">Status</label>
                                 <?= form_dropdown('book_receive_status', get_book_receive_status(), $book_receive_status, 'id="book_receive_status" class="form-control custom-select d-block" title="Status"'); ?>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-8">
                                 <label for="status">Pencarian</label>
                                 <?= form_input('keyword', $keyword, 'placeholder="Cari berdasarkan Nama atau Kode Buku" class="form-control"'); ?>
                             </div>
