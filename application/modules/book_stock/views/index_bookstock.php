@@ -54,7 +54,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                 <label for="category">Jumlah Stok (Gudang)</label>
                                 <?= form_dropdown('warehouse_present', get_warehouse_stock(), $warehouse_present, 'id="warehouse_present" class="form-control custom-select d-block" title="Total Stok Buku (Gudang)"'); ?>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-8">
                                 <label for="status">Pencarian</label>
                                 <?= form_input('keyword', $keyword, 'placeholder="Cari berdasarkan Nama" class="form-control"'); ?>
                             </div>
@@ -135,36 +135,6 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         <i class="fa fa-pencil-alt"></i>
                                         <span class="sr-only">Edit Stok Buku</span>
                                     </a>
-                                    <button title="Delete" type="button" class="btn btn-sm btn-danger"
-                                        data-toggle="modal" data-target="#modal-hapus-<?= $book_stock->book_id; ?>"><i
-                                            class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
-                                    <div class="text-left">
-                                        <div class="modal modal-alert fade"
-                                            id="modal-hapus-<?= $book_stock->book_id; ?>" tabindex="-1" role="dialog"
-                                            aria-labelledby="modal-hapus" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title"><i
-                                                                class="fa fa-exclamation-triangle text-red mr-1"></i>
-                                                            Konfirmasi Hapus</h5>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Apakah anda yakin akan menghapus data stok buku <span
-                                                                class="font-weight-bold"><?= $book_stock->book_title; ?></span>?
-                                                        </p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-light"
-                                                            data-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-danger"
-                                                            onclick="location.href='<?= base_url('book_stock/delete/' . $book_stock->book_stock_id . ''); ?>'"
-                                                            data-dismiss="modal">Hapus</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                                 <?php endif?>
                             </tr>

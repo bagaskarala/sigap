@@ -4,6 +4,7 @@ class Book_receive_model extends MY_Model
 {
 
     public $per_page = 10;
+    private $storage_directory = 'storage/bookreceive';
 
     public function get_validation_rules()
     {
@@ -102,5 +103,122 @@ class Book_receive_model extends MY_Model
             ->join_table('book', 'book_receive', 'book')
             ->where('book_receive_id', $book_receive_id)
             ->get();
+    }
+
+    // ambil data user dengan level staff_gudang
+    public function get_staff_gudang()
+    {
+        return $this->select(['user_id', 'username', 'level', 'email'])
+            ->where('level', 'staff_gudang')
+            ->where('is_blocked', 'n')
+            ->order_by('username', 'ASC')
+            ->get_all('user');
+    }
+
+    // ambil data staff gudang sesuai progress (handover/wrapping)
+    public function get_staff_gudang_by_progress($progress, $book_receive_id)
+    {
+        return $this->db->select(['book_receive_user_id', 'book_receive_user.user_id', 'book_receive_id', 'progress', 'username', 'email'])
+            ->from('user')
+            ->join('book_receive_user', 'user.user_id = book_receive_user.user_id')
+            ->where('book_receive_id', $book_receive_id)
+            ->where('progress', $progress)
+            ->get()->result();
+    }
+
+    public function check_row_staff_gudang($book_receive_id, $user_id, $progress)
+    {
+        return $this->db
+            ->where(['book_receive_id' => $book_receive_id, 'user_id' => $user_id, 'progress' => $progress])
+            ->get('book_receive_user')
+            ->num_rows();
+    }
+
+    // mulai progress (handover/wrapping), update status dan tanggal mulai progress
+    public function start_progress($book_receive_id, $progress)
+    {
+        // transaction data agar konsisten
+        $this->db->trans_begin();
+
+        $input = [
+            'book_receive_status' => $progress,
+            "{$progress}_start_date" => date('Y-m-d H:i:s')
+        ];
+
+        $this->book_receive->where('book_receive_id', $book_receive_id)->update($input);
+
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            $this->db->trans_commit();
+            return true;
+        }
+    }
+
+    // selesai progress (handover/wrapping) update status dan tanggal selesai progress
+    public function finish_progress($book_receive_id, $progress)
+    {
+        $input = [
+            'book_receive_status' => "{$progress}_approval",
+            "{$progress}_end_date" => date('Y-m-d H:i:s')
+        ];
+
+        $update_state = $this->book_receive->where('book_receive_id', $book_receive_id)->update($input);
+
+        if ($update_state) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // upload berita acara serah terima
+    public function upload_handover($input_field_name, $file_name)
+    {
+        if (!is_dir($this->storage_directory)) {
+            mkdir($this->storage_directory, 0777, TRUE);
+        }
+
+        $config = [
+            'upload_path'      => $this->storage_directory,
+            'file_name'        => $file_name,
+            'allowed_types'    => 'jpg|png|jpeg|pdf',
+            'max_size'         => 15360, // 15MB
+            'overwrite'        => true,
+            'file_ext_tolower' => true,
+        ];
+
+        $this->load->library('upload', $config);
+        $delete_existing_file=$this->find_file_ext($file_name);
+        if ($delete_existing_file){
+            unlink($this->storage_directory."/".$delete_existing_file);
+        }
+        if ($this->upload->do_upload($input_field_name)) {
+            // Upload OK, return uploaded file info.
+            return $this->upload->data();
+        } else {
+            // Add error to $_error_array
+            $this->form_validation->add_to_error_array($input_field_name, $this->upload->display_errors('', ''));
+            return false;
+        }
+    }
+
+    // ambil file berita acara yang telah diupload
+    public function find_file_ext($filename){
+        $full_filename = $this->storage_directory."/".$filename;
+        if (file_exists($full_filename.".jpg")){
+            return $filename.".jpg";
+        }
+        else if (file_exists($full_filename.".png")){
+            return $filename.".png";
+        }
+        else if (file_exists($full_filename.".jpeg")){
+            return $filename.".jpeg";
+        }
+        else if (file_exists($full_filename.".pdf")){
+            return $filename.".pdf";
+        }
+        else return NULL;
     }
 }
