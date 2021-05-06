@@ -25,23 +25,6 @@
                         <legend>Form Edit Faktur</legend>
                         <div class="form-group">
                             <label
-                                for="number"
-                                class="font-weight-bold"
-                            >
-                                Nomor Faktur
-                                <abbr title="Required">*</abbr>
-                            </label>
-                            <input
-                                type="text"
-                                name="number"
-                                id="number"
-                                class="form-control"
-                                value="<?= $invoice->number ?>"
-                                readonly
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label
                                 for="type"
                                 class="font-weight-bold"
                             >Jenis Faktur<abbr title="Required">*</abbr></label>
@@ -111,120 +94,145 @@
                             >Jatuh Tempo wajib diisi!</small>
                         </div>
                         <hr class="my-4">
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <label
-                                    for="customer-id"
-                                    class="font-weight-bold"
-                                >Customer</label>
-                                <div class="row">
-                                    <div class="form-group col-md-8">
+                        <div class="form-group">
+                            <label for="customer-id" class="font-weight-bold mb-0">
+                                Customer
+                            </label>
+                            <div class="form-group mb-4">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a
+                                            id="tab-customer-existing"
+                                            class="nav-link active show"
+                                            data-toggle="tab"
+                                            href="#customer-existing"
+                                        ><i class="fa fa-database"></i> Pilih Customer Dari Database</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a
+                                            id="tab-customer-new"
+                                            class="nav-link"
+                                            data-toggle="tab"
+                                            href="#customer-new"
+                                        ><i class="fa fa-user-plus"></i> Tambah Customer Baru</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-content mt-4">
+                                <!-- Customer Dari Database -->
+                                <div
+                                    class="tab-pane fade active show"
+                                    id="customer-existing"
+                                >
+                                    <div class="form-group col-md-8 p-0">
                                         <?= form_dropdown('customer-id', get_customer_list(), $invoice->customer_id, 'id="customer-id" class="form-control custom-select d-block"'); ?>
                                     </div>
-                                    <div class="form-group col-md-4"><input
-                                            class="btn btn-primary"
-                                            value="Customer Baru"
-                                            id="tambahCustomer"
-                                            readonly
-                                        /></div>
+
+                                    <div id="customer-info">
+                                        <table class="table table-striped table-bordered mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="175px"> Nama Pembeli </td>
+                                                    <td id="info-customer-name"><?= $customer->name ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="175px"> Alamat </td>
+                                                    <td id="info-address"><?= $customer->address ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="175px"> Nomor Telepon </td>
+                                                    <td id="info-phone-number"><?= $customer->phone_number ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="175px"> Tipe Membership </td>
+                                                    <td id="info-type"><?= $customer->type ?></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
-                            </div>
-                        </div>
-                        <div
-                            id="new-customer-info"
-                            class="col-md-6"
-                            style="display: none"
-                        >
-                            <div class="form-group">
-                                <label
-                                    for="new-customer-name"
-                                    class="font-weight-bold"
+                                <!-- Tambah Customer Baru -->
+                                <div
+                                    class="tab-pane fade"
+                                    id="customer-new"
                                 >
-                                    Nama
-                                    <abbr title="Required">*</abbr>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="new-customer-name"
-                                    id="new-customer-name"
-                                    class="form-control"
-                                />
-                                <small
-                                    id="error-new-customer-name"
-                                    class="d-none error-message text-danger"
-                                >Nama wajib diisi!</small>
+                                    <div
+                                        id="new-customer-info"
+                                        class="col-md-6"
+                                    >
+                                        <div class="form-group">
+                                            <label
+                                                for="new-customer-name"
+                                                class="font-weight-bold"
+                                            >
+                                                Nama
+                                                <abbr title="Required">*</abbr>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="new-customer-name"
+                                                id="new-customer-name"
+                                                class="form-control"
+                                            />
+                                            <small
+                                                id="error-new-customer-name"
+                                                class="d-none error-message text-danger"
+                                            >Nama wajib diisi!</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label
+                                                for="new-customer-address"
+                                                class="font-weight-bold"
+                                            >Alamat
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="new-customer-address"
+                                                id="new-customer-address"
+                                                class="form-control"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label
+                                                for="new-customer-phone-number"
+                                                class="font-weight-bold"
+                                            >Nomor Telepon
+                                                <abbr title="Required">*</abbr>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="new-customer-phone-number"
+                                                id="new-customer-phone-number"
+                                                class="form-control"
+                                            />
+                                            <small
+                                                id="error-new-customer-phone-number"
+                                                class="d-none error-message text-danger"
+                                            >Nomor telepon wajib diisi!</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label
+                                                for="new-customer-type"
+                                                class="font-weight-bold"
+                                            >Jenis Customer<abbr title="Required">*</abbr></label>
+                                            <?= form_dropdown('new-customer-type', $customer_type, null, 'id="new-customer-type" class="form-control custom-select d-block w-100"'); ?>
+                                            <small
+                                                id="error-new-customer-type"
+                                                class="d-none error-message text-danger"
+                                            >Jenis customer wajib diisi!</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label
-                                    for="new-customer-address"
-                                    class="font-weight-bold"
-                                >Alamat
-                                </label>
-                                <input
-                                    type="text"
-                                    name="new-customer-address"
-                                    id="new-customer-address"
-                                    class="form-control"
-                                />
-                            </div>
-                            <div class="form-group">
-                                <label
-                                    for="new-customer-phone-number"
-                                    class="font-weight-bold"
-                                >Nomor Telepon
-                                    <abbr title="Required">*</abbr>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="new-customer-phone-number"
-                                    id="new-customer-phone-number"
-                                    class="form-control"
-                                />
-                                <small
-                                    id="error-new-customer-phone-number"
-                                    class="d-none error-message text-danger"
-                                >Nomor telepon wajib diisi!</small>
-                            </div>
-                            <div class="form-group">
-                                <label
-                                    for="new-customer-type"
-                                    class="font-weight-bold"
-                                >Jenis Customer<abbr title="Required">*</abbr></label>
 
-                                <?= form_dropdown('new-customer-type', $customer_type, null, 'id="new-customer-type" class="form-control custom-select d-block w-100"'); ?>
-                                <small
-                                    id="error-new-customer-type"
-                                    class="d-none error-message text-danger"
-                                >Jenis customer wajib diisi!</small>
-                            </div>
                         </div>
+                        
                         <small
                             id="error-customer-info"
                             class="d-none error-message text-danger"
                         >Data customer wajib diisi!</small>
-                        <div id="customer-info">
-                            <table class="table table-striped table-bordered mb-0">
-                                <tbody>
-                                    <tr>
-                                        <td width="175px"> Nama Pembeli </td>
-                                        <td id="info-customer-name"><?= $customer->name ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td width="175px"> Alamat </td>
-                                        <td id="info-address"><?= $customer->address ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td width="175px"> Nomor Telepon </td>
-                                        <td id="info-phone-number"><?= $customer->phone_number ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td width="175px"> Tipe Membership </td>
-                                        <td id="info-type"><?= $customer->type ?></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        
                         <hr class="my-4">
                         <div class="row">
                             <div class="form-group col-md-8">
@@ -238,9 +246,7 @@
                                     class="d-none error-message text-danger"
                                 >Buku wajib diisi!</small>
                             </div>
-
                         </div>
-
                         <div
                             id="book-info"
                             style="display:none"
@@ -309,13 +315,13 @@
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label
-                                        for="add_item"
+                                        for="add-item"
                                         class="font-weight-bold"
                                     >Tambah Barang</label>
                                     <button
                                         type="button"
-                                        id="add_item"
-                                        name="add_item"
+                                        id="add-item"
+                                        name="add-item"
                                         class="form-control btn btn-primary text-white"
                                     >Tambah Barang</button>
                                 </div>
@@ -434,10 +440,22 @@ $(document).ready(function() {
 
     if ($('#type').val() == "cash") {
         $('#source-dropdown').show()
+        if ($('#source').val() == "library") {
+            $('#source-library-dropdown').show()
+        }
     }
-    if ($('#source').val() == "library") {
-        $('#source-library-dropdown').show()
-    }
+
+    $('#tab-customer-new').click(function() {
+        $('#customer-info').hide()
+        $('#customer-id').val('').trigger('change')
+    })
+
+    $('#tab-customer-existing').click(function() {
+        $('#new-customer-name').val('')
+        $('#new-customer-address').val('')
+        $('#new-customer-phone-number').val('')
+        $('#new-customer-type').val('')
+    })
 
     //hilangin buku yg sudah ada
     <?php foreach ($invoice_book as $books) : ?>
@@ -462,25 +480,6 @@ $(document).ready(function() {
 
         
     <?php endforeach; ?>
-
-    $('#tambahCustomer').click(function() {
-        var value = $('#tambahCustomer').val()
-        if (value == "Customer Baru") {
-            $('#tambahCustomer').val("Hapus Customer")
-            $('#tambahCustomer').removeClass('btn-primary')
-            $('#tambahCustomer').addClass('btn-danger')
-            $('#new-customer-info').show()
-            $('#customer-info').hide()
-            $('#customer-id').val('')
-        } else {
-            $('#tambahCustomer').val("Customer Baru")
-            $('#tambahCustomer').removeClass('btn-danger')
-            $('#tambahCustomer').addClass('btn-primary')
-            $('#new-customer-info').hide()
-            $('#new-customer-name').val('')
-            $('#new-customer-type').val('')
-        }
-    })
 
     const $flatpickr = $('.dates').flatpickr({
         altInput: true,
@@ -549,7 +548,7 @@ $(document).ready(function() {
         $('#book-info').hide();
     }
 
-    $('#add_item').click(function() {
+    $('#add-item').click(function() {
         // Judul buku harus dipilih
         if (document.getElementById('book-id').value === '') {
             alert("Silakan Pilih Judul Buku!");
@@ -581,23 +580,42 @@ $(document).ready(function() {
     });
 
     $('#book-id').change(function(e) {
-        const bookId = e.target.value
+        if(e.target.value != '') {
+            const bookId = e.target.value
+            $.ajax({
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_book/'); ?>" + bookId,
+                datatype: "JSON",
+                success: function(res) {
+                    var published_date = new Date(res.data.published_date);
 
+                    $('#book-info').show()
+                    $('#qty').attr({
+                        "max": res.data.stock
+                    });
+                    $('#info-book-title').html(res.data.book_title)
+                    $('#info-book-author').html(res.data.author_name)
+                    $('#info-isbn').html(res.data.isbn)
+                    $('#info-price').html(res.data.harga)
+                    $('#info-year').html(published_date.getFullYear())
+                    $('#info-stock').html(res.data.stock)
+                },
+                error: function(err) {
+                    console.log(err);
+                },
+            });
+        }
+    })
+
+    $('#new-customer-type').change(function(e) {
+        var disc = 0
+        var customerType = $(this).val()
         $.ajax({
             type: "GET",
-            url: "<?= base_url('invoice/api_get_book/'); ?>" + bookId,
+            url: "<?= base_url('invoice/api_get_discount/'); ?>" + customerType,
             datatype: "JSON",
             success: function(res) {
-                var published_date = new Date(res.data.published_date);
-
-                $('#book-info').show()
-                $('#info-book-title').html(res.data.book_title)
-                $('#info-book-author').html(res.data.author_name)
-                $('#info-isbn').html(res.data.isbn)
-                $('#info-price').html(res.data.harga)
-                $('#info-year').html(published_date.getFullYear())
-                $('#info-stock').html(res.data.stock)
-
+                $('#discount').val(res.data.discount)
             },
             error: function(err) {
                 console.log(err);
@@ -643,25 +661,12 @@ $(document).ready(function() {
             $('#source-library-dropdown').hide()
             $('#source-library-id').val('').trigger('change')
         }
-        $.ajax({
-            type: "GET",
-            url: "<?= base_url('invoice/api_get_last_invoice_number/'); ?>" + type,
-            datatype: "JSON",
-            success: function(res) {
-                $('#invoice-type').show()
-                $('#number').val(res.data)
-            },
-            error: function(err) {
-                $('#invoice-type').hide()
-            },
-        });
     })
 
-    $('#source').change(function(){
-        if ($("#source").val()=="library"){
+    $('#source').change(function() {
+        if ($("#source").val() == "library") {
             $("#source-library-dropdown").show()
-        }
-        else {
+        } else {
             $("#source-library-dropdown").hide()
             $('#source-library-id').val('').trigger('change')
         }

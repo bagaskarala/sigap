@@ -21,6 +21,7 @@
                     'source' => [
                         'type' => 'VARCHAR',
                         'constraint' => 100,
+                        'null' => TRUE,
                     ],
                     'source_library_id' => [
                         'type' => 'VARCHAR',
