@@ -1,5 +1,5 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
-class Library extends MY_Controller
+class Library extends Warehouse_Sales_Controller
 {
     public function __construct()
     {
