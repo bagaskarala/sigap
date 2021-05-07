@@ -147,8 +147,8 @@ $staff_gudang               = $this->book_request->get_staff_gudang_by_invoice($
                 ?>
                 <div class="card-header-control">
                     <button id="btn-start-preparing" title="Mulai proses preparing" type="button" class="d-inline btn 
-                        <?= !$is_preparing_started ? 'btn-warning' : 'btn-secondary'; ?> <?= ($is_preparing_started || !$is_preparing_deadline_set) ? 'btn-disabled' : ''; ?>
-                        " <?= ($is_preparing_started || !$is_preparing_deadline_set) ? 'disabled' : ''; ?>><i
+                        <?= !$is_preparing_started ? 'btn-warning' : 'btn-secondary'; ?> <?= ($is_preparing_started || !$staff_gudang) ? 'btn-disabled' : ''; ?>
+                        " <?= ($is_preparing_started || !$staff_gudang) ? 'disabled' : ''; ?>><i
                             class="fas fa-play"></i><span class="d-none d-lg-inline"> Mulai</span></button>
                     <button id="btn-finish-preparing" title="Selesai proses preparing" type="button"
                         class="d-inline btn btn-secondary <?= !$is_preparing_started ? 'btn-disabled' : '' ?>"
@@ -187,12 +187,7 @@ $staff_gudang               = $this->book_request->get_staff_gudang_by_invoice($
                     <?= format_datetime($book_request->preparing_start_date); ?></strong>
             </div>
             <div class="list-group-item justify-content-between">
-                <?php if (($_SESSION['level'] == 'superadmin' || ($_SESSION['level'] == 'admin_gudang' && empty($book_request->preparing_deadline))) && $staff_gudang && !$is_preparing_finished) : ?>
-                <a href="#" id="btn-modal-deadline-preparing" title="Ubah deadline" data-toggle="modal"
-                    data-target="#modal-deadline-preparing">Deadline <i class="fas fa-edit fa-fw"></i></a>
-                <?php else : ?>
                 <span class="text-muted">Deadline</span>
-                <?php endif ?>
                 <strong><?= format_datetime($book_request->preparing_deadline); ?></strong>
             </div>
             <?php if($staff_gudang) : ?>
@@ -211,13 +206,6 @@ $staff_gudang               = $this->book_request->get_staff_gudang_by_invoice($
                     <?= format_datetime($book_request->preparing_end_date); ?></strong>
             </div>
         </div>
-
-        <?php    
-            // modal deadline
-            $this->load->view('book_request/view/common/deadline_modal', [
-                'progress' => 'preparing'
-            ]);
-            ?>
     </div>
 </section>
 
