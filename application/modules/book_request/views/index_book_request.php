@@ -24,8 +24,6 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
             <h1 class="page-title"> Pesanan Buku </h1>
             <span class="badge badge-info">Total : <?= $total; ?></span>
         </div>
-        <!-- <a href="<?//= base_url("$pages/add"); ?>" class="btn btn-primary btn-sm"><i class="fa fa-plus fa-fw"></i>
-            Tambah</a> -->
     </div>
 </header>
 <div class="page-section">

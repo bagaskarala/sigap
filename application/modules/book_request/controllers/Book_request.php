@@ -9,7 +9,6 @@ class Book_request extends Warehouse_Controller
         $this->load->model('book_request_model', 'book_request');
         $this->load->model('invoice/invoice_model', 'invoice');
         $this->load->model('book_stock/book_stock_model', 'book_stock');
-        // $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
     }
 
     public function index($page = NULL){
@@ -173,26 +172,6 @@ class Book_request extends Warehouse_Controller
         //update status
         $is_finish_preparing = $this->invoice->finish_progress($invoice_id);
         
-        //update book stock
-        // $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
-        // foreach($invoice_books as $invoice_book){
-        //     $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
-        //     $book_stock->warehouse_present -= $invoice_book->qty;
-        //     $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-        // }
-
-        //insert to book transaction
-        // foreach($invoice_books as $invoice_book){
-        //     $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
-        //     $this->book_transaction->insert([
-        //         'book_id' => $invoice_book->book_id,
-        //         'book_stock_id' => $book_stock->book_stock_id,
-        //         'invoice_id' => $invoice_book->invoice_id,
-        //         'stock_out' => $invoice_book->qty,
-        //         'date' => now()
-        //     ]);
-        // }
-
         if ($is_finish_preparing) {
             return $this->send_json_output(true, $this->lang->line('toast_edit_success'));
         } else {
