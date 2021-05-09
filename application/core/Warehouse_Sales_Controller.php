@@ -1,5 +1,5 @@
 <?php
-class Warehouse_sales_controller extends MY_Controller
+class Warehouse_Sales_Controller extends MY_Controller
 {
     public function __construct()
     {

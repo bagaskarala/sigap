@@ -28,7 +28,7 @@ function get_invoice_status()
         '' => null,
         'waiting'           => 'Belum Konfirmasi',
         'confirm'           => 'Sudah Konfirmasi',
-        'preparing_start'   => 'Diproses',
+        'preparing'         => 'Diproses',
         'preparing_finish'  => 'Siap Diambil',
         'finish'            => 'Selesai',
         'cancel'            => 'Dibatalkan'

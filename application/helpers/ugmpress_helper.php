@@ -807,7 +807,6 @@ function get_book_receive_status(){
     return [
         '' => '--Pilih--',
         'waiting' => 'Belum Diproses',
-        'reject' => 'Ditolak',
         'handover' => 'Serah Terima',
         'handover_approval' => 'Serah Terima Menunggu Approval',
         'handover_finish' => 'Selesai Serah Terima',
@@ -815,5 +814,33 @@ function get_book_receive_status(){
         'wrapping_approval' => 'Wrapping Menunggu Approval',
         'wrapping_finish' => 'Selesai Wrapping',
         'finish' => 'Selesai',
+    ];
+}
+
+function get_book_request_status(){
+    return [
+        '' => '--Pilih--',
+        'confirm' => 'Belum dimulai',
+        'preparing' => 'Sedang disiapkan',
+        'preparing_finish' => 'Selesai disiapkan',
+        'finish' => 'Selesai'
+    ];
+}
+
+function get_book_request_category(){
+    return [
+        '' => '--Pilih--',
+        'credit'      => 'Kredit',
+        'online'      => 'Online',
+        'cash'        => 'Tunai',
+    ];
+}
+
+function get_book_request_source(){
+    return [
+        '' => '-',
+        'warehouse' => 'Gudang',
+        'showroom'  => 'Showroom',
+        'library'   => 'Perpustakaan'
     ];
 }

@@ -82,9 +82,11 @@ class Invoice extends MY_Controller
                 // 'user_created'      => $user_created
             ];
             $this->db->insert('invoice', $add);
-
             // ID faktur terbaru untuk diisi buku
             $invoice_id = $this->db->insert_id();
+            if($type == 'credit' || $type == 'online'){
+                $this->db->set('source','warehouse')->where('invoice_id',$invoice_id)->update('invoice');
+            }
 
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('invoice_book_id'));

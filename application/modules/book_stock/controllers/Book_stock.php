@@ -2,7 +2,7 @@
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Book_stock extends Warehouse_sales_controller
+class Book_stock extends Warehouse_Sales_Controller
 {
     public $per_page = 10;
 

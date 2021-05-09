@@ -250,6 +250,7 @@ class Invoice_model extends MY_Model
             ->or_where('status', 'preparing_finish')
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
+            ->when_request('status', $filters['status'])
             ->order_by('invoice_id', 'DESC')
             ->paginate($page)
             ->get_all();
@@ -260,6 +261,7 @@ class Invoice_model extends MY_Model
             ->or_where('status', 'preparing_finish')
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
+            ->when_request('status', $filters['status'])
             ->order_by('invoice_id')
             ->count();
         return [
