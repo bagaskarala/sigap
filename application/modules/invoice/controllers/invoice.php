@@ -90,7 +90,8 @@ class Invoice extends MY_Controller
 
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('invoice_book_id'));
-
+            // Total berat buku
+            $total_weight = 0;
             // Masukkan buku di form faktur ke database
             for ($i = 0; $i < $countsize; $i++) {
                 $book = [
@@ -101,7 +102,11 @@ class Invoice extends MY_Controller
                     'discount'      => $this->input->post('invoice_book_discount')[$i]
                 ];
                 $this->db->insert('invoice_book', $book);
+                $book_weight = $this->invoice->get_book($book['book_id'])->weight;
+                $total_weight +=  $book_weight * $book['qty'];
             }
+            $this->db->set('total_weight', $total_weight)->where('invoice_id',$invoice_id)->update('invoice');
+
             echo json_encode(['status' => TRUE]);
             $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
         }
@@ -174,17 +179,23 @@ class Invoice extends MY_Controller
             //hapus invoice_book yang sudah ada 
             $this->db->where('invoice_id', $invoice_id)->delete('invoice_book');
 
-            // Masukkan buku di form faktur ke database
-            for ($i = 0; $i < $countsize; $i++) {
-                $book = [
-                    'invoice_id'    => $invoice_id,
-                    'book_id'       => $this->input->post('invoice_book_id')[$i],
-                    'qty'           => $this->input->post('invoice_book_qty')[$i],
-                    'price'         => $this->input->post('invoice_book_price')[$i],
-                    'discount'      => $this->input->post('invoice_book_discount')[$i]
-                ];
-                $this->db->insert('invoice_book', $book);
-            }
+             // Total berat buku
+             $total_weight = 0;
+             // Masukkan buku di form faktur ke database
+             for ($i = 0; $i < $countsize; $i++) {
+                 $book = [
+                     'invoice_id'    => $invoice_id,
+                     'book_id'       => $this->input->post('invoice_book_id')[$i],
+                     'qty'           => $this->input->post('invoice_book_qty')[$i],
+                     'price'         => $this->input->post('invoice_book_price')[$i],
+                     'discount'      => $this->input->post('invoice_book_discount')[$i]
+                 ];
+                 $this->db->insert('invoice_book', $book);
+                 $book_weight = $this->invoice->get_book($book['book_id'])->weight;
+                 $total_weight +=  $book_weight * $book['qty'];
+             }
+             $this->db->set('total_weight', $total_weight)->where('invoice_id',$invoice_id)->update('invoice');
+ 
             echo json_encode(['status' => TRUE]);
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         }
@@ -268,6 +279,34 @@ class Invoice extends MY_Controller
         redirect($this->pages);
     }
 
+    public function generate_pdf($invoice_id, $ongkir = false)
+    {
+        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+        if ($invoice->status != 'waiting' && $invoice->status != 'cancel') {
+            $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+            $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
+            $customer       = $this->invoice->get_customer($invoice->customer_id);
+            if ($ongkir != false) {
+                $invoice->delivery_fee = $ongkir;
+                $this->db->set('delivery_fee', $ongkir)->where('invoice_id', $invoice_id)->update('invoice');
+            }
+            // PDF
+            $this->load->library('pdf');
+            $data_format['invoice'] = $invoice ?? '';
+            $data_format['invoice_books'] = $invoice_books ?? '';
+            $data_format['customer'] = $customer ?? '';
+    
+            if ($invoice->type == 'cash') {
+                $html = $this->load->view('invoice/view_cash_invoice_pdf', $data_format, true);
+            } else {
+                $html = $this->load->view('invoice/view_invoice_pdf', $data_format, true);
+            }
+            $file_name = $invoice->number . '_Invoice';
+    
+            $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+        }
+    }
+
 
     public function api_get_book($book_id)
     {
@@ -286,5 +325,12 @@ class Invoice extends MY_Controller
     {
         $discount = $this->invoice->get_discount($customerType);
         return $this->send_json_output(true, $discount);
+    }
+
+    // Auto fill diskon berdasar jenis customer
+    public function weight($book_id)
+    {
+        $weight = $this->invoice->get_book($book_id);
+        return $weight->weight;
     }
 }

@@ -26,12 +26,9 @@ $level              = check_level();
     >
         <div class="card-body">
             <?php //=isset($input->draft_id) ? form_hidden('draft_id', $input->draft_id) : ''; ?>
-            <div class="tab-content">
+            <div>
                 <!-- book-data -->
-                <div
-                    class="tab-pane fade active show"
-                    id="logistic-data"
-                >
+                <div>
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered mb-0">
                             <tbody>
@@ -45,15 +42,23 @@ $level              = check_level();
                                 </tr>
                                 <tr>
                                     <td width="200px"> Nama Customer </td>
-                                    <td><?= $invoice->customer->name ?></td>
+                                    <td><?= $invoice->customer->name ?? 'Umum' ?></td>
                                 </tr>
                                 <tr>
                                     <td width="200px"> Nomor Customer </td>
-                                    <td><?= $invoice->customer->phone_number ?></td>
+                                    <td><?= $invoice->customer->phone_number ?? '-' ?></td>
                                 </tr>
                                 <tr>
                                     <td width="200px"> Tanggal Jatuh Tempo </td>
                                     <td><?= $invoice->due_date ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Total Berat </td>
+                                    <td><?= $invoice->total_weight ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Total Ongkir </td>
+                                    <td><?= $invoice->delivery_fee ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -151,7 +156,7 @@ $level              = check_level();
                                 <?= $invoice_book->book_title ?>
                             </td>
                             <td class="align-middle">
-                                Penulis
+                                <?= $invoice_book->author_name ?>
                             </td>
                             <td class="align-middle">
                                 Rp <?= $invoice_book->price ?>
@@ -169,7 +174,95 @@ $level              = check_level();
                     <?php endforeach; ?>
                     </tbody>
                 </table>
+				<br>
+                <?php if ($invoice->status != 'waiting' && $invoice->status != 'cancel'): ?>
+                    <div id="card-button" class="d-flex justify-content-end">
+                        <button onclick="check_delivery()" class="btn btn-outline-danger">
+                            Generate PDF<i class="fas fa-file-pdf fa-fw"></i>
+                        </button>
+                    </div>
+                <?php endif ?>
             </div>
         </div>
     </section>
 </div>
+<div
+    class="modal modal-alert fade"
+    id="modal-delivery"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="modal-delivery"
+    aria-hidden="true"
+>
+    <div
+        class="modal-dialog"
+        role="document"
+    >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ongkos Kirim</h5>
+            </div>
+                <div class="modal-body">
+                    <div class="my-2">
+                        Total Berat: <b><?= $invoice->total_weight / 1000 ?></b> kg
+                    </div>
+                    <div class="my-2">
+                        Alamat Customer:
+                    </div>
+                    <div class="mb-2">
+                        <?= $invoice->customer->address ?? '-' ?>
+                    </div>
+                    <div class="form-group">
+                        <label
+                            for="delivery_fee"
+                            class="font-weight-bold"
+                        >
+                            Masukkan Ongkos Kirim
+                            <abbr title="Required">*</abbr>
+                        </label>
+                        <input
+                            type="number"
+                            name="delivery_fee"
+                            id="delivery"
+                            min=0
+                            required
+                            class="form-control"
+                        />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        onclick="save_delivery_fee()"
+                    >Save</button>
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-dismiss="modal"
+                    >Close</button>
+                </div>
+        </div>
+    </div>
+</div>
+<script>
+    function check_delivery(){
+        var ongkir = "<?= $invoice->delivery_fee ?>"
+        if (ongkir == ''){
+            $("#modal-delivery").modal()
+        }else
+        {
+            location.href="<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
+        }
+    }
+
+    function save_delivery_fee(){
+        if ($("#delivery").val() == '') {
+            alert("Ongkir wajib diisi!");
+        }
+        else {
+            var ongkir = $("#delivery").val()
+            location.href="<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>" + '/' + ongkir
+        }
+    }
+</script>
