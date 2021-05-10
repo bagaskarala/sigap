@@ -326,11 +326,4 @@ class Invoice extends MY_Controller
         $discount = $this->invoice->get_discount($customerType);
         return $this->send_json_output(true, $discount);
     }
-
-    // Auto fill diskon berdasar jenis customer
-    public function weight($book_id)
-    {
-        $weight = $this->invoice->get_book($book_id);
-        return $weight->weight;
-    }
 }
