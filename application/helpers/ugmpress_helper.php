@@ -844,3 +844,13 @@ function get_book_request_source(){
         'library'   => 'Perpustakaan'
     ];
 }
+
+function get_book_transaction_type(){
+    return [
+        '' => '--Pilih--',
+        'print' => 'Percetakan',
+        'invoice' => 'Pesanan',
+        'transfer' => 'Pemindahan',
+        'non_sales' => 'Non Penjualan'
+    ];
+}
