@@ -148,6 +148,22 @@ $level              = check_level();
                         <table class="table table-striped table-bordered mb-0">
                             <tbody>
                                 <tr>
+                                    <td width="200px"> Harga Buku</td>
+                                    <td><?= $input->harga; ?> </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Berat Buku</td>
+                                    <td><?= $input->weight; ?> gram</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr class="my-4">
+                    <hr class="my-4">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered mb-0">
+                            <tbody>
+                                <tr>
                                     <td width="200px"> Nomor Hak Cipta</td>
                                     <td><?= $input->nomor_hak_cipta; ?> </td>
                                 </tr>
