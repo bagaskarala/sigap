@@ -273,30 +273,32 @@
                 style="text-align: right;"
             ><b><?= ucfirst(view_price_to_text($total)) ?> rupiah</b></td>
         </tr>
-        <tr>
-            <td scope="col"></td>
-            <td scope="col">Bayar</td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            ></td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            ><?= $total ?></td>
-        </tr>
-        <tr>
-            <td scope="col"></td>
-            <td scope="col">Kurang</td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            ></td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            >0</td>
-        </tr>
+        <?php if ($invoice->type == 'cash') : ?>
+            <tr>
+                <td scope="col"></td>
+                <td scope="col">Bayar</td>
+                <td
+                    scope="col"
+                    style="text-align: right;"
+                ></td>
+                <td
+                    scope="col"
+                    style="text-align: right;"
+                ><?= $total ?></td>
+            </tr>
+            <tr>
+                <td scope="col"></td>
+                <td scope="col">Kurang</td>
+                <td
+                    scope="col"
+                    style="text-align: right;"
+                ></td>
+                <td
+                    scope="col"
+                    style="text-align: right;"
+                >0</td>
+            </tr>
+        <?php endif; ?>
     </table>
 
     <table style="width: 100%;">
@@ -306,7 +308,7 @@
         </tr>
         <tr class="information">
             <td>
-                <?php if($invoice->type != 'cash'):?>
+                <?php if ($invoice->type != 'cash') : ?>
                     <b>Keterangan :</b><br>
                     Bukti pembayaran mohon dikirimkan melalui email: ugmpress@ugm.ac.id<br>
                     atau whatsapp: 081228478888<br>
@@ -314,7 +316,7 @@
                     1. Mandiri Cab. UGM Yogyakarta 137-00-0455085-7<br>
                     <a style="padding-left: 14px;">a/n Gadjah Mada University Press</a><br>
                     2. BNI Cab. UGM Yogyakarta : 0039226571<br>
-                    <a style="padding-left: 14px;">a/n GAMA PRESS</a>    
+                    <a style="padding-left: 14px;">a/n GAMA PRESS</a>
                 <?php endif ?>
             </td>
             <td style="text-align: center;">
