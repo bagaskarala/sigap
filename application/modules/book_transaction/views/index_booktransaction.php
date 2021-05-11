@@ -82,7 +82,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     <th scope="col" class="pl-4 align-middle text-center">No</th>
                                     <th scope="col" style="min-width:350px;" class="align-middle text-center">
                                         Judul</th>
-                                    <th scope="col" style="min-width:100px;" class="align-middle text-center">
+                                    <th scope="col" style="min-width:150px;" class="align-middle text-center">
                                         Nomor Order
                                     </th>
                                     <th scope="col" style="min-width:100px;" class="align-middle text-center">
@@ -91,7 +91,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         Perubahan</th>
                                     <th scope="col" style="min-width:100px;" class="align-middle text-center">
                                         Stok Akhir</th>
-                                    <th scope="col" style="min-width:150px;" class="align-middle text-center">
+                                    <th scope="col" style="min-width:100px;" class="align-middle text-center">
                                         Tanggal</th>
                                     <th scope="col" style="min-width:150px;" class="align-middle text-center">
                                         Jenis Transaksi</th>
