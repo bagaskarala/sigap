@@ -477,7 +477,7 @@ class Book_receive extends Warehouse_Controller
             'stock_initial'      => $book_stock->warehouse_present,
             'stock_in'           => $book_stock_print->total_postprint,
             'stock_last'         => $book_stock->warehouse_present+$book_stock_print->total_postprint,
-            'date'               => date("Y-m-d")
+            'date'               => now()
         ]);
 
         // update book stock
