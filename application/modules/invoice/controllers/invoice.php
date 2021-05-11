@@ -296,11 +296,8 @@ class Invoice extends MY_Controller
             $data_format['invoice_books'] = $invoice_books ?? '';
             $data_format['customer'] = $customer ?? '';
     
-            if ($invoice->type == 'cash') {
-                $html = $this->load->view('invoice/view_cash_invoice_pdf', $data_format, true);
-            } else {
-                $html = $this->load->view('invoice/view_invoice_pdf', $data_format, true);
-            }
+            $html = $this->load->view('invoice/view_invoice_pdf', $data_format, true);
+
             $file_name = $invoice->number . '_Invoice';
     
             $this->pdf->generate_pdf_a4_portrait($html, $file_name);

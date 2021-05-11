@@ -204,7 +204,7 @@
             <?php foreach ($invoice_books as $invoice_book) : ?>
                 <tr class="invoice-table">
                     <td class="invoice-table"><?= $i++ ?></td>
-                    <td class="invoice-table">A152</td>
+                    <td class="invoice-table"></td>
                     <td class="invoice-table"><?= $invoice_book->book_title ?></td>
                     <td
                         class="invoice-table"
@@ -228,7 +228,7 @@
             <?php
             $total_temp = 0;
             foreach ($invoice_books as $invoice_book) {
-                $total_temp += $invoice_book->price;
+                $total_temp += $invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100);
             }
             $total = $total_temp + $invoice->delivery_fee;
             ?>
@@ -271,7 +271,7 @@
                 scope="col"
                 colspan="4"
                 style="text-align: right;"
-            ><b><?= ucfirst(view_total_array($total)) ?> rupiah</b></td>
+            ><b><?= ucfirst(view_price_to_text($total)) ?> rupiah</b></td>
         </tr>
         <tr>
             <td scope="col"></td>
@@ -306,16 +306,17 @@
         </tr>
         <tr class="information">
             <td>
-                <b>Keterangan :</b><br>
-                Bukti pembayaran mohon dikirimkan melalui email: ugmpress@ugm.ac.id<br>
-                atau whatsapp: 081228478888<br>
-                Pembayaran dapat dilakukan melalui :<br>
-                1. Mandiri Cab. UGM Yogyakarta 137-00-0455085-7<br>
-                <a style="padding-left: 14px;">a/n Gadjah Mada University Press</a><br>
-                2. BNI Cab. UGM Yogyakarta : 0039226571<br>
-                <a style="padding-left: 14px;">a/n GAMA PRESS</a>
+                <?php if($invoice->type != 'cash'):?>
+                    <b>Keterangan :</b><br>
+                    Bukti pembayaran mohon dikirimkan melalui email: ugmpress@ugm.ac.id<br>
+                    atau whatsapp: 081228478888<br>
+                    Pembayaran dapat dilakukan melalui :<br>
+                    1. Mandiri Cab. UGM Yogyakarta 137-00-0455085-7<br>
+                    <a style="padding-left: 14px;">a/n Gadjah Mada University Press</a><br>
+                    2. BNI Cab. UGM Yogyakarta : 0039226571<br>
+                    <a style="padding-left: 14px;">a/n GAMA PRESS</a>    
+                <?php endif ?>
             </td>
-
             <td style="text-align: center;">
                 a.n. Ka. Pemasaran<br><br><br><br><br><br><br>
                 <i>Adm. Pemasaran</i>
@@ -325,42 +326,3 @@
 </body>
 
 </html>
-
-<?php
-function total_array($total) {
-        $total = abs($total);
-        $words = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
-        $temp = "";
-        if ($total < 12) {
-            $temp = " ". $words[$total];
-        } else if ($total <20) {
-            $temp = total_array($total - 10). " belas";
-        } else if ($total < 100) {
-            $temp = total_array($total/10)." puluh". total_array($total % 10);
-        } else if ($total < 200) {
-            $temp = " seratus" . total_array($total - 100);
-        } else if ($total < 1000) {
-            $temp = total_array($total/100) . " ratus" . total_array($total % 100);
-        } else if ($total < 2000) {
-            $temp = " seribu" . total_array($total - 1000);
-        } else if ($total < 1000000) {
-            $temp = total_array($total/1000) . " ribu" . total_array($total % 1000);
-        } else if ($total < 1000000000) {
-            $temp = total_array($total/1000000) . " juta" . total_array($total % 1000000);
-        } else if ($total < 1000000000000) {
-            $temp = total_array($total/1000000000) . " milyar" . total_array(fmod($total,1000000000));
-        } else if ($total < 1000000000000000) {
-            $temp = total_array($total/1000000000000) . " trilyun" . total_array(fmod($total,1000000000000));
-        }     
-        return $temp;
-    }
-    
-function view_total_array($total) {
-        if($total<0) {
-            $result = "minus ". trim(total_array($total));
-        } else {
-            $result = trim(total_array($total));
-        }     		
-        return $result;
-    }
-?>
