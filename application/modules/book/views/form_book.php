@@ -109,6 +109,18 @@
                             <?= form_error('harga'); ?>
                         </div>
                         <div class="form-group">
+                            <label for="weight">Berat (gram)</label>
+                            <?= form_input([
+                                'name'  => "weight",
+                                'class' => 'form-control',
+                                'id'    => "weight",
+                                'value' => $input->weight,
+                                'type' => 'number'
+                            ]);
+                            ?>
+                            <?= form_error('weight'); ?>
+                        </div>
+                        <div class="form-group">
                             <label for="book_file">
                                 File Buku
                             </label>

@@ -60,6 +60,11 @@ class Book_model extends MY_Model
                 'rules' => 'trim',
             ],
             [
+                'field' => 'weight',
+                'label' => 'Berat',
+                'rules' => 'trim',
+            ],
+            [
                 'field' => 'book_notes',
                 'label' => 'Book Note',
                 'rules' => 'trim',
@@ -100,6 +105,7 @@ class Book_model extends MY_Model
             'book_file'           => '',
             'published_date'      => '',
             'harga'               => '',
+            'weight'              => 0,
             'book_notes'          => '',
             'is_reprint'          => 'n',
             'nomor_hak_cipta'     => '',

@@ -76,22 +76,15 @@ class Invoice_model extends MY_Model
     public function fetch_invoice_book($invoice_id)
     {
         return $this->db
-            ->select('invoice_book.*, book.book_title, book.harga')
+            ->select('invoice_book.*, book.book_title, author.author_name ')
             ->from('invoice_book')
             ->join('book', 'book.book_id = invoice_book.book_id')
+            ->join('draft_author', 'draft_author.draft_id = book.draft_id')
+            ->join('author', 'draft_author.author_id = author.author_id')
+            ->group_by('draft_author.draft_id')
             ->where('invoice_id', $invoice_id)
             ->get()
             ->result();
-    }
-
-    public function fetch_book_info($book_id)
-    {
-        return $this->db
-            ->select('book_title')
-            ->from('book')
-            ->where('book_id', $book_id)
-            ->get()
-            ->row();
     }
 
     public function fetch_warehouse_stock($book_id)

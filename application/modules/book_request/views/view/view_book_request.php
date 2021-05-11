@@ -81,7 +81,7 @@ $level              = check_level();
                                     <td width="200px"> File Faktur </td>
                                     <td>
                                         <button class="btn btn-info" 
-                                        onclick="location.href = '<?= base_url('invoice/generate_pdf/' . $book_request->invoice_id . '/' . $book_request->delivery_fee); ?>'">
+                                        onclick="location.href = '<?= base_url('invoice/generate_pdf/' . $book_request->invoice_id ); ?>'">
                                             <i class="fa fa-download mr-3"></i>Download file faktur
                                         </button>
                                     </td>

@@ -84,13 +84,14 @@ class Invoice extends MY_Controller
             $this->db->insert('invoice', $add);
             // ID faktur terbaru untuk diisi buku
             $invoice_id = $this->db->insert_id();
-            if($type == 'credit' || $type == 'online'){
-                $this->db->set('source','warehouse')->where('invoice_id',$invoice_id)->update('invoice');
+            if ($type == 'credit' || $type == 'online') {
+                $this->db->set('source', 'warehouse')->where('invoice_id', $invoice_id)->update('invoice');
             }
 
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('invoice_book_id'));
-
+            // Total berat buku
+            $total_weight = 0;
             // Masukkan buku di form faktur ke database
             for ($i = 0; $i < $countsize; $i++) {
                 $book = [
@@ -101,7 +102,11 @@ class Invoice extends MY_Controller
                     'discount'      => $this->input->post('invoice_book_discount')[$i]
                 ];
                 $this->db->insert('invoice_book', $book);
+                $book_weight = $this->invoice->get_book($book['book_id'])->weight;
+                $total_weight +=  $book_weight * $book['qty'];
             }
+            $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
+
             echo json_encode(['status' => TRUE]);
             $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
         }
@@ -174,6 +179,8 @@ class Invoice extends MY_Controller
             //hapus invoice_book yang sudah ada 
             $this->db->where('invoice_id', $invoice_id)->delete('invoice_book');
 
+            // Total berat buku
+            $total_weight = 0;
             // Masukkan buku di form faktur ke database
             for ($i = 0; $i < $countsize; $i++) {
                 $book = [
@@ -184,7 +191,11 @@ class Invoice extends MY_Controller
                     'discount'      => $this->input->post('invoice_book_discount')[$i]
                 ];
                 $this->db->insert('invoice_book', $book);
+                $book_weight = $this->invoice->get_book($book['book_id'])->weight;
+                $total_weight +=  $book_weight * $book['qty'];
             }
+            $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
+
             echo json_encode(['status' => TRUE]);
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         }
@@ -236,12 +247,11 @@ class Invoice extends MY_Controller
         if ($invoice_status == 'confirm') {
             // M T W T F S S
             // 1 2 3 4 5 6 7
-            if (date('N')<5){
+            if (date('N') < 5) {
                 $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ 1 day"));
-            }
-            else {
-                $add_day = 8-date('N');
-                $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ ".$add_day. "day"));
+            } else {
+                $add_day = 8 - date('N');
+                $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ " . $add_day . "day"));
             }
             $this->invoice->where('invoice_id', $id)->update([
                 'status' => $invoice_status,
@@ -249,14 +259,14 @@ class Invoice extends MY_Controller
                 'preparing_deadline' => $preparing_deadline
             ]);
         } else
-        // Cancel Faktur
-        if ($invoice_status == 'cancel') {
-            $this->invoice->where('invoice_id', $id)->update([
-                'status' => $invoice_status,
-                'cancel_date' => now(),
-            ]);
-        }
-        
+            // Cancel Faktur
+            if ($invoice_status == 'cancel') {
+                $this->invoice->where('invoice_id', $id)->update([
+                    'status' => $invoice_status,
+                    'cancel_date' => now(),
+                ]);
+            }
+
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
@@ -268,6 +278,35 @@ class Invoice extends MY_Controller
         redirect($this->pages);
     }
 
+    public function update_delivery_fee($invoice_id)
+    {
+        $delivery_fee = $this->input->post('delivery_fee');
+        $this->db->set('delivery_fee', $delivery_fee)->where('invoice_id', $invoice_id)->update('invoice');
+        echo json_encode(['status' => TRUE]);
+    }
+
+    public function generate_pdf($invoice_id)
+    {
+        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+        if ($invoice->status != 'waiting' && $invoice->status != 'cancel') {
+            $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+            $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
+            $customer       = $this->invoice->get_customer($invoice->customer_id);
+
+            // PDF
+            $this->load->library('pdf');
+            $data_format['invoice'] = $invoice ?? '';
+            $data_format['invoice_books'] = $invoice_books ?? '';
+            $data_format['customer'] = $customer ?? '';
+
+            $html = $this->load->view('invoice/view_invoice_pdf', $data_format, true);
+
+            $file_name = $invoice->number . '_Invoice';
+
+            $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+        }
+    }
+
 
     public function api_get_book($book_id)
     {
@@ -275,16 +314,18 @@ class Invoice extends MY_Controller
         return $this->send_json_output(true, $book);
     }
 
+    
     public function api_get_customer($customer_id)
     {
         $customer =  $this->invoice->get_customer($customer_id);
         return $this->send_json_output(true, $customer);
     }
-
+    
     // Auto fill diskon berdasar jenis customer
     public function api_get_discount($customerType)
     {
         $discount = $this->invoice->get_discount($customerType);
         return $this->send_json_output(true, $discount);
     }
+    
 }

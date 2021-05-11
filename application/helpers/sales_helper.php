@@ -56,3 +56,40 @@ function get_dropdown_list_library()
 
     return get_dropdown_list('library', ['library_id', 'library_name'], $condition);
 }
+
+function price_to_text($total) {
+    $total = abs($total);
+    $words = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
+    $temp = "";
+    if ($total < 12) {
+        $temp = " ". $words[$total];
+    } else if ($total <20) {
+        $temp = price_to_text($total - 10). " belas";
+    } else if ($total < 100) {
+        $temp = price_to_text($total/10)." puluh". price_to_text($total % 10);
+    } else if ($total < 200) {
+        $temp = " seratus" . price_to_text($total - 100);
+    } else if ($total < 1000) {
+        $temp = price_to_text($total/100) . " ratus" . price_to_text($total % 100);
+    } else if ($total < 2000) {
+        $temp = " seribu" . price_to_text($total - 1000);
+    } else if ($total < 1000000) {
+        $temp = price_to_text($total/1000) . " ribu" . price_to_text($total % 1000);
+    } else if ($total < 1000000000) {
+        $temp = price_to_text($total/1000000) . " juta" . price_to_text($total % 1000000);
+    } else if ($total < 1000000000000) {
+        $temp = price_to_text($total/1000000000) . " milyar" . price_to_text(fmod($total,1000000000));
+    } else if ($total < 1000000000000000) {
+        $temp = price_to_text($total/1000000000000) . " trilyun" . price_to_text(fmod($total,1000000000000));
+    }     
+    return $temp;
+}
+
+function view_price_to_text($total) {
+    if($total<0) {
+        $result = "minus ". trim(price_to_text($total));
+    } else {
+        $result = trim(price_to_text($total));
+    }     		
+    return $result;
+}
