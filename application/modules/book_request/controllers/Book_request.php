@@ -7,7 +7,7 @@ class Book_request extends Warehouse_Controller
         parent::__construct();
         $this->pages = 'book_request';
         $this->load->model('book_request_model', 'book_request');
-        $this->load->model('invoice/invoice_model', 'invoice');
+        $this->load->model('invoice/Invoice_model', 'invoice');
         $this->load->model('book_stock/book_stock_model', 'book_stock');
     }
 

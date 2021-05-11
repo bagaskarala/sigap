@@ -6,7 +6,7 @@ class Invoice extends MY_Controller
     {
         parent::__construct();
         $this->pages = 'invoice';
-        $this->load->model('invoice_model', 'invoice');
+        $this->load->model('Invoice_model', 'invoice');
         $this->load->model('book/Book_model', 'book');
         $this->load->helper('sales_helper');
     }
