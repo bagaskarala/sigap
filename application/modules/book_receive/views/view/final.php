@@ -11,8 +11,6 @@ if (!$is_final) :
 
         <button class="btn btn-primary <?= ($is_ready) ? null : 'btn-disabled'; ?>" data-toggle="modal"
             data-target="#modal-accept-book-receive" <?= ($is_ready) ? null : 'disabled'; ?>>Finalisasi</button>
-        <!-- <button class="btn btn-danger <?//= ($is_ready) ? null : 'btn-disabled'; ?>" data-toggle="modal"
-            data-target="#modal-reject-book-receive" <?//= ($is_ready) ? null : 'disabled'; ?>>Tolak</button> -->
     </div>
 </div>
 
@@ -40,38 +38,14 @@ if (!$is_final) :
     </div>
 </div>
 
-<!-- <div class="modal modal-alert fade" id="modal-reject-book-receive" tabindex="-1" role="dialog"
-    aria-labelledby="modal-reject-book-receive" aria-hidden="true">
-    <div class="modal-dialog  modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fa fa-exclamation-triangle text-red mr-1"></i> Tolak Penerimaan Buku</h5>
-            </div>
-            <div class="modal-body">
-                <p>Apakah anda yakin akan menolak penerimaan buku ini?</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" id="btn-reject-book-receive">Tolak</button>
-                <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div> -->
 <script>
 $(document).ready(function() {
     const bookReceiveId = '<?= $book_receive->book_receive_id ?>';
     const url = '<?= base_url('book_receive/final/'); ?>' + bookReceiveId
 
-    // order cetak disetujui
     $('#btn-accept-book-receive').on('click', function() {
         $(this).attr("disabled", "disabled").html("<i class='fa fa-spinner fa-spin '></i>");
-        window.location = url + '/finish'
-    });
-
-    // order cetak ditolak
-    $('#btn-reject-book-receive').on('click', function() {
-        $(this).attr("disabled", "disabled").html("<i class='fa fa-spinner fa-spin '></i>");
-        window.location = url + '/reject'
+        window.location = url
     });
 })
 </script>

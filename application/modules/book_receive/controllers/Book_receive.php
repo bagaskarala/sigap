@@ -439,9 +439,9 @@ class Book_receive extends Warehouse_Controller
     }
 
     // finalisasi book receive, update stok buku
-    public function final($book_receive_id = null, $action = null)
+    public function final($book_receive_id = null)
     {
-        if (!$book_receive_id || !$action) {
+        if (!$book_receive_id) {
             $this->session->set_flashdata('error', $this->lang->line('toast_data_not_available'));
             redirect($this->pages);
         }
@@ -461,15 +461,14 @@ class Book_receive extends Warehouse_Controller
 
         // update data book_receive
         $this->book_receive->where('book_receive_id', $book_receive_id)->update([
-            'book_receive_status' => $action,
-            'finish_date' => $action == 'finish' ? now() : null
+            'book_receive_status' => 'finish',
+            'finish_date' => now()
         ]);
 
         $book_stock = $this->book_stock->where('book_id', $book_receive->book_id)->get();
         $book_stock_print = $this->book_receive->get_print_order($book_receive->print_order_id);
 
         //insert to book transaction
-        $book_stock = $this->book_stock->where('book_id', $book_receive->book_id)->get();
         $this->book_transaction->insert([
             'book_id'            => $book_receive->book_id,
             'book_receive_id'    => $book_receive->book_receive_id,
