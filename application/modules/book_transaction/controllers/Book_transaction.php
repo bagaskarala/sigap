@@ -2,7 +2,7 @@
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Book_transaction extends MY_Controller
+class Book_transaction extends Warehouse_Controller
 {
     public function __construct()
     {
@@ -38,26 +38,6 @@ class Book_transaction extends MY_Controller
                 $this->generate_excel($filters);
             }
         endif;
-    }
-
-
-    public function view($book_transaction_id){
-        // $book_transaction = $this->book_transaction->join('book')->where('book.book_id', $book_id)->get();
-        $book_transaction = $this->book_transaction->get_book_transaction($book_transaction_id);
-        if (!$book_transaction) {
-            $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
-            redirect($this->pages);
-        }
-
-        $input = (object) $book_transaction;
-        // $get_transaction      = $this->book_transaction->fetch_transaction_by_id($book_transaction_id);
-        // $transaction_history  = $get_transaction['transaction_history'];
-        // $transaction_last     = $get_transaction['transaction_last'];
-
-        $pages       = $this->pages;
-        $main_view   = 'book_transaction/view_booktransaction';
-        $this->load->view('template', compact('pages', 'main_view', 'input'));
-        return;
     }
 
     public function generate_excel($filters)
@@ -101,10 +81,6 @@ class Book_transaction extends MY_Controller
         $no = 1;
         $i = 4;
         // Column Content
-        // Menampilkan data (Nomor, judul buku, 
-        // stok awal, perubahan (total), jenis transaksi ($book_receive_id==null: keluar. Sebaliknya gt), 
-        // tanggal transaksi (finish_date faktur/book_receive))
-
         foreach ($get_data as $data) {
             foreach (range('A', 'E') as $v) {
                 switch ($v) {
