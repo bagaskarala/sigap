@@ -468,17 +468,6 @@ class Book_receive extends Warehouse_Controller
         $book_stock = $this->book_stock->where('book_id', $book_receive->book_id)->get();
         $book_stock_print = $this->book_receive->get_print_order($book_receive->print_order_id);
 
-        //insert to book transaction
-        $this->book_transaction->insert([
-            'book_id'            => $book_receive->book_id,
-            'book_receive_id'    => $book_receive->book_receive_id,
-            'book_stock_id'      => $book_stock->book_stock_id,
-            'stock_initial'      => $book_stock->warehouse_present,
-            'stock_in'           => $book_stock_print->total_postprint,
-            'stock_last'         => $book_stock->warehouse_present+$book_stock_print->total_postprint,
-            'date'               => now()
-        ]);
-
         // update book stock
         if ($book_stock) {
             $book_stock->warehouse_present += $book_stock_print->total_postprint;
@@ -489,6 +478,19 @@ class Book_receive extends Warehouse_Controller
                 'warehouse_present'  => $book_stock_print->total_postprint
             ]);
         }
+        
+        //insert to book transaction
+        $book_stock = $this->book_stock->where('book_id', $book_receive->book_id)->get();
+        $this->book_transaction->insert([
+            'book_id'            => $book_receive->book_id,
+            'book_receive_id'    => $book_receive->book_receive_id,
+            'book_stock_id'      => $book_stock->book_stock_id,
+            'stock_initial'      => $book_stock->warehouse_present-$book_stock_print->total_postprint,
+            'stock_in'           => $book_stock_print->total_postprint,
+            'stock_last'         => $book_stock->warehouse_present,
+            'date'               => now()
+        ]);
+        
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
