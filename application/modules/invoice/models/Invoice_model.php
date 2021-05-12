@@ -238,9 +238,11 @@ class Invoice_model extends MY_Model
     public function filter_book_request($filters, $page)
     {
         $book_request = $this->select(['invoice_id', 'number', 'issued_date', 'due_date', 'status', 'type', 'source'])
+            ->where('source', 'warehouse')
             ->where('status', 'confirm')
             ->or_where('status', 'preparing')
             ->or_where('status', 'preparing_finish')
+            ->or_where('status', 'finish')
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
             ->when_request('status', $filters['status'])
@@ -249,9 +251,11 @@ class Invoice_model extends MY_Model
             ->get_all();
 
         $total = $this->select('invoice_id')
+            ->where('source', 'warehouse')
             ->where('status', 'confirm')
             ->or_where('status', 'preparing')
             ->or_where('status', 'preparing_finish')
+            ->or_where('status', 'finish')
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
             ->when_request('status', $filters['status'])
