@@ -250,6 +250,23 @@ class MY_Model extends CI_Model
     }
 
     /**
+     * Menggabungkan tabel secara fleksibel dan bisa isi nama id
+     *
+     * contoh:
+     * input: join_table_id('invoice_book', 'book_transaction', 'id', 'invoice_book_id')
+     * output: join('invoice_book','invoice_book.id == book_transaction.invoice_book_id')
+     *
+     * @param string $table_dest
+     * @param string $table_middle
+     * @return this
+     **/
+    public function join_table_id($table_to, $table_from, $id_to, $id_from, $type = 'left')
+    {
+        $this->db->join($table_to, "$table_to.{$id_to} = $table_from.{$id_from}", $type);
+        return $this;
+    }
+
+    /**
      * Menggabungkan tabel middle
      *
      * contoh:

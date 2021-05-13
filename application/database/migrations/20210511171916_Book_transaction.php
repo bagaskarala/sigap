@@ -17,7 +17,7 @@ class Migration_Book_transaction extends CI_Migration
                 'type' => 'INT',
                 'constraint' => 10,
             ],
-            'invoice_id' => [
+            'invoice_book_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
@@ -27,30 +27,17 @@ class Migration_Book_transaction extends CI_Migration
                 'constraint' => 10,
                 'null' => TRUE
             ],
-            'book_transfer_id' => [
+            'book_transfer_list_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
             ],
-            'book_non_sales_id' => [
+            'book_non_sales_list_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
             ],
-            'stock_initial' => [
-                'type' => 'INT',
-                'constraint' => 10,
-            ],
-            'stock_last' => [
-                'type' => 'INT',
-                'constraint' => 10,
-            ],
-            'stock_in' => [
-                'type' => 'INT',
-                'constraint' => 10,
-                'null' => TRUE
-            ],
-            'stock_out' => [
+            'book_stock_revision_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
@@ -58,8 +45,7 @@ class Migration_Book_transaction extends CI_Migration
             'date' => [
                 'type' => 'TIMESTAMP',
                 'null' => TRUE
-                ],
-
+            ],
         ]);
         $this->dbforge->add_key('book_transaction_id', TRUE);
         $this->dbforge->create_table('book_transaction');

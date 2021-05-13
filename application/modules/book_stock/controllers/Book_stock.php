@@ -12,6 +12,7 @@ class Book_stock extends Warehouse_Sales_Controller
         $this->pages = "book_stock";
         $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('book/book_model', 'book');
+        $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
     }
 
     public function index($page = NULL){
@@ -103,6 +104,14 @@ class Book_stock extends Warehouse_Sales_Controller
                 else $book_stock->warehouse_present -= $quantity;
                 $book_stock_revision->warehouse_present = $book_stock->warehouse_present;
                 if ($this->book_stock->where('book_id', $book_id)->update($book_stock) && $this->db->insert('book_stock_revision',$book_stock_revision)) {
+                    $book_stock_revision_id = $this->db->insert_id();
+                    //insert to book transaction
+                    $this->book_transaction->insert([
+                        'book_id'            => $book_id,
+                        'book_stock_revision_id' => $book_stock_revision_id,
+                        'book_stock_id'      => $book_stock->book_stock_id,
+                        'date'               => now()
+                    ]);    
                     $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
                 } else {
                     $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));

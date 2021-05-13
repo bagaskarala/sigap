@@ -86,11 +86,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         Nomor Order
                                     </th>
                                     <th scope="col" style="min-width:100px;" class="align-middle text-center">
-                                        Stok Awal</th>
-                                    <th scope="col" style="min-width:100px;" class="align-middle text-center">
                                         Perubahan</th>
-                                    <th scope="col" style="min-width:100px;" class="align-middle text-center">
-                                        Stok Akhir</th>
                                     <th scope="col" style="min-width:100px;" class="align-middle text-center">
                                         Tanggal</th>
                                     <th scope="col" style="min-width:150px;" class="align-middle text-center">
@@ -99,32 +95,49 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                             </thead>
                             <tbody>
                                 <?php foreach ($book_transactions as $book_transaction) : ?>
-                                <?php if ($book_transaction->stock_in) {
-                                        $stock_display = '+ '.$book_transaction->stock_in;
-                                        $type_display = "Percetakan";
-                                        $change_text_color = "green";
-                                        $order_number = $book_transaction->order_number;
-                                        $link = base_url('book_receive/view/' . $book_transaction->book_receive_id);
+                                <?php 
+                                if($book_transaction->book_receive_id){
+                                    $stock_display = '+ '.$book_transaction->book_receive_qty;
+                                    $change_text_color = "green";                                    
+                                    $type_display = "Percetakan";
+                                    $order_number = $book_transaction->order_number;
+                                    $link = base_url('book_receive/view/' . $book_transaction->book_receive_id);
+                                }
+                                else if($book_transaction->invoice_book_id){
+                                    $stock_display = '- '.$book_transaction->invoice_qty;
+                                    $change_text_color = "red";
+                                    $type_display = "Pesanan";
+                                    $order_number = $book_transaction->invoice_number;
+                                    $link = base_url('book_request/view/' . $book_transaction->invoice_id);
+                                }
+                                else if($book_transaction->book_stock_revision_id){
+                                    $type_display = "Revisi";
+                                    $order_number = "-";
+                                    $link = base_url('book_stock/view/' . $book_transaction->book_stock_id);
+                                    if($book_transaction->revision_type=='add'){
+                                        $change_text_color = "green";    
+                                        $stock_display = '+ '.$book_transaction->revision_qty;
                                     }
-                                    else {
-                                        $stock_display = '- '.$book_transaction->stock_out;
-                                        $change_text_color = "red";
-                                        if ($book_transaction->invoice_number){
-                                            $type_display = "Pesanan";
-                                            $order_number = $book_transaction->invoice_number;
-                                            $link = base_url('book_request/view/' . $book_transaction->invoice_id);
-                                        }
-                                        else if ($book_transaction->book_non_sales_number){
-                                            $type_display = "Non Penjualan";
-                                            $order_number = $book_transaction->book_non_sales_number;
-                                            $link = base_url('book_non_sales/view/' . $book_transaction->book_non_sales_id);
-                                        }
-                                        else if ($book_transaction->transfer_number){
-                                            $type_display = "Pemindahan";
-                                            $order_number = $book_transaction->transfer_number;
-                                            $link = base_url('book_transfer/view/' . $book_transaction->book_transfer_id);
-                                        }
-                                    } ?>
+                                    else{
+                                        $change_text_color = "red";   
+                                        $stock_display = '- '.$book_transaction->revision_qty; 
+                                    }
+                                }
+                                // else if ($book_transaction->book_non_sales_id){
+                                //     $stock_display = '- '.$book_transaction->book_non_sales_qty; 
+                                //     $change_text_color = "red";
+                                //     $type_display = "Non Penjualan";
+                                //     $order_number = $book_transaction->book_non_sales_number;
+                                //     $link = base_url('book_non_sales/view/' . $book_transaction->book_non_sales_id);
+                                // }
+                                // else if ($book_transaction->transfer_number){
+                                //     $stock_display = '- '.$book_transaction->book_transfer_qty; 
+                                //     $change_text_color = "red";
+                                //     $type_display = "Pemindahan";
+                                //     $order_number = $book_transaction->transfer_number;
+                                //     $link = base_url('book_transfer/view/' . $book_transaction->book_transfer_id);
+                                // }
+                                    ?>
                                 <tr>
                                     <td class="align-middle text-center"><?= ++$i; ?></td>
                                     <td class="align-middle">
@@ -135,14 +148,8 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     <td class="align-middle text-center">
                                         <?= $order_number ?>
                                     </td>
-                                    <td class="align-middle text-center">
-                                        <?= $book_transaction->stock_initial; ?>
-                                    </td>
                                     <td class="align-middle text-center" style=<?= "color:". $change_text_color?>>
                                         <?= $stock_display ?>
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        <?= $book_transaction->stock_last; ?>
                                     </td>
                                     <td class="align-middle text-center">
                                         <?= format_datetime($book_transaction->date); ?>
