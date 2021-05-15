@@ -116,7 +116,7 @@ class Book_transaction extends Warehouse_Controller
                             if($data->book_receive_id){
                                 $value = 'Masuk';
                             }
-                            if($data->book_stock_revision_id){
+                            else if($data->book_stock_revision_id){
                                 if($data->revision_type=='add'){
                                     $value = 'Masuk';
                                 }
@@ -124,7 +124,7 @@ class Book_transaction extends Warehouse_Controller
                                     $value = 'Keluar';
                                 }
                             }
-                            else{
+                            else if($data->invoice_book_id){
                                 $value = 'Keluar';
                             }
                             break;
