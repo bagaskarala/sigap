@@ -23,17 +23,25 @@
                         method="post"
                     >
                         <legend>Form Edit Faktur</legend>
-                        <div class="form-group">
-                            <label
-                                for="type"
-                                class="font-weight-bold"
-                            >Jenis Faktur<abbr title="Required">*</abbr></label>
-
-                            <?= form_dropdown('type', $invoice_type, $invoice->type, 'id="type" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-type"
-                                class="d-none error-message text-danger"
-                            >Jenis Faktur wajib diisi!</small>
+                        <input
+                            name="type"
+                            id="type"
+                            class="form-control d-none"
+                            value="<?= $invoice->type ?>"
+                        />
+                        <div class="table-responsive mb-4">
+                            <table class="table table-striped table-bordered mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td width="200px"> Nomor Faktur </td>
+                                        <td><strong><?= $invoice->number ?></strong> </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="200px"> Jenis Faktur </td>
+                                        <td><?= get_invoice_type()[$invoice->type]; ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div
                             class="form-group"
@@ -445,7 +453,7 @@
 $(document).ready(function() {
     $('#discount').val('<?= $discount ?>')
 
-    if ($('#type').val() == "cash") {
+    if ('<?= $invoice->type ?>' == "cash") {
         $('#source-dropdown').show()
         if ($('#source').val() == "library") {
             $('#source-library-dropdown').show()
@@ -465,17 +473,17 @@ $(document).ready(function() {
     })
 
     //hilangin buku yg sudah ada
-    <?php foreach ($invoice_book as $books) : ?>
-        $('#book-id option[value="' + <?= $books->book_id ?> + '"]').remove()
+    <?php foreach ($invoice_book as $book) : ?>
+        $('#book-id option[value="' + <?= $book->book_id ?> + '"]').remove()
 
         //fetch stock sekarang
         $.ajax({
             type: "GET",
-            url: "<?= base_url('invoice/api_get_book/'); ?>" + <?= $books->book_id ?>,
+            url: "<?= base_url('invoice/api_get_book/'); ?>" + <?= $book->book_id ?>,
             datatype: "JSON",
             success: function(res) {
-                $('#invoice-book-qty-' + <?= $books->book_id ?>).attr({
-                    "max" : res.data.stock,
+                $('#invoice-book-qty-' + <?= $book->book_id ?>).attr({
+                    "max" : res.data.stock +  +  <?= $book->qty ?>,
                     "min" : 1
                 });
             },
