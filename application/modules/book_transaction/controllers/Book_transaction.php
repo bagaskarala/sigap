@@ -58,14 +58,15 @@ class Book_transaction extends Warehouse_Controller
         $sheet->setCellValue('C3', 'Perubahan');
         $sheet->setCellValue('D3', 'Jenis Transaksi');
         $sheet->setCellValue('E3', 'Tanggal Transaksi');
+        $sheet->setCellValue('F3', 'Keterangan');
         $spreadsheet->getActiveSheet()
-                    ->getStyle('A3:E3')
+                    ->getStyle('A3:F3')
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()
                     ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-                    ->getStyle('A3:E3')
+                    ->getStyle('A3:F3')
                     ->getFont()
                     ->setBold(true);
 
@@ -75,6 +76,7 @@ class Book_transaction extends Warehouse_Controller
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
 
         // $get_data = $this->book_transaction->filter_excel($filters);
         $get_data = $this->book_transaction->filter_excel($filters);
@@ -82,7 +84,7 @@ class Book_transaction extends Warehouse_Controller
         $i = 4;
         // Column Content
         foreach ($get_data as $data) {
-            foreach (range('A', 'E') as $v) {
+            foreach (range('A', 'F') as $v) {
                 switch ($v) {
                     case 'A': {
                             $value = $no++;
@@ -94,16 +96,33 @@ class Book_transaction extends Warehouse_Controller
                         }
                     case 'C': {
                             if($data->book_receive_id){
-                                $value = $data->stock_in;
+                                $value = $data->book_receive_qty;
                             }
-                            else{
-                                $value = $data->stock_out;
+                            else if($data->invoice_book_id){
+                                $value = $data->invoice_qty;
+                            }
+                            // else if($data->book_transfer_id){
+                            //     $value = $data->book_transfer_qty;
+                            // }
+                            // else if($data->book_non_sales_id){
+                            //     $value = $data->book_non_sales_qty;
+                            // }
+                            else if($data->book_stock_revision_id){
+                                $value = $data->revision_qty;
                             }
                             break;
                     }
                     case 'D': {
                             if($data->book_receive_id){
                                 $value = 'Masuk';
+                            }
+                            if($data->book_stock_revision_id){
+                                if($data->revision_type=='add'){
+                                    $value = 'Masuk';
+                                }
+                                else{
+                                    $value = 'Keluar';
+                                }
                             }
                             else{
                                 $value = 'Keluar';
@@ -112,6 +131,24 @@ class Book_transaction extends Warehouse_Controller
                     }
                     case 'E': {
                             $value = $data->date;
+                        break;
+                    }
+                    case 'F':{
+                        if($data->book_receive_id){
+                            $value = "Penerimaan Buku";
+                        }
+                        else if($data->invoice_book_id){
+                            $value = "Pesanan";
+                        }
+                        // else if($data->book_transfer_id){
+                        //     $value = $data->book_transfer_qty;
+                        // }
+                        // else if($data->book_non_sales_id){
+                        //     $value = $data->book_non_sales_qty;
+                        // }
+                        else if($data->book_stock_revision_id){
+                            $value = "Revisi";
+                        }
                         break;
                     }
                 }

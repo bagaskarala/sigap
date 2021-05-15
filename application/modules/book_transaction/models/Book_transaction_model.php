@@ -92,14 +92,30 @@ class Book_transaction_model extends MY_Model{
     }
     public function filter_excel($filters)
     {
-        return $this->select(['book.book_title', 'book_stock.book_stock_id', 
-        'book_transaction.*'])
+        return $this->select([ 
+        'print_order.print_order_id','print_order.order_number', 
+        'print_order.total_postprint as book_receive_qty',
+        'book_receive.book_receive_id', 
+        'invoice_book.invoice_book_id', 'invoice_book.qty as invoice_qty', 'invoice_book.invoice_id',
+        'invoice.number as invoice_number', 
+        'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type', 
+        'book_stock_revision.warehouse_revision as revision_qty',
+        // 'book_non_sales.book_non_sales_id', 'book_non_sales.number as book_non_sales_number',
+        // 'book_transfer.book_transfer_id', 'book_transfer.transfer_number',         
+        'book.book_title', 'book_transaction.*'])
+        ->where_not('date', NULL)
+        ->join_table('book', 'book_transaction', 'book')
+        ->join_table('book_receive', 'book_transaction', 'book_receive')
+        ->join_table('print_order', 'book_receive', 'print_order')
+        ->join_table('invoice_book', 'book_transaction', 'invoice_book')
+        ->join_table('invoice', 'invoice_book', 'invoice')
+        ->join_table('book_stock_revision', 'book_transaction', 'book_stock_revision')
+        // ->join_table('book_transfer', 'book_transaction', 'book_transfer')
+        // ->join_table('book_non_sales', 'book_transaction', 'book_non_sales')
         ->when('keyword', $filters['keyword'])
         ->when('start_date', $filters['start_date'])
         ->when('end_date', $filters['end_date'])
         ->when('transaction_type', $filters['transaction_type'])
-        ->join_table('book', 'book_transaction', 'book')
-        ->join_table('book_stock', 'book_transaction', 'book_stock')
         ->order_by('book_transaction_id', 'DESC')
         ->get_all();
     }
