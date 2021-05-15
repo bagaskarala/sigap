@@ -8,6 +8,8 @@ class Invoice extends MY_Controller
         $this->pages = 'invoice';
         $this->load->model('invoice_model', 'invoice');
         $this->load->model('book/Book_model', 'book');
+        $this->load->model('book_stock/Book_stock_model', 'book_stock');
+        $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
         $this->load->helper('sales_helper');
     }
 
@@ -104,6 +106,23 @@ class Invoice extends MY_Controller
                 $this->db->insert('invoice_book', $book);
                 $book_weight = $this->invoice->get_book($book['book_id'])->weight;
                 $total_weight +=  $book_weight * $book['qty'];
+
+                // Kurangi Stock Buku
+                $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
+                $book_stock->warehouse_present -= $book['qty'];
+                $this->book_stock->where('book_id', $book['book_id'])->update($book_stock);
+
+                // Masukkan transaksi buku
+                $this->book_transaction->insert([
+                    'book_id'            => $book['book_id'],
+                    'invoice_id'         => $invoice_id,
+                    'book_stock_id'      => $book_stock->book_stock_id,
+                    'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
+                    'stock_mutation'     => $book['qty'],
+                    'stock_last'         => $book_stock->warehouse_present,
+                    'date'               => $date_created
+                ]);        
+                
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
 
@@ -175,7 +194,7 @@ class Invoice extends MY_Controller
 
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('invoice_book_id'));
-
+            
             //hapus invoice_book yang sudah ada 
             $this->db->where('invoice_id', $invoice_id)->delete('invoice_book');
 
@@ -265,6 +284,17 @@ class Invoice extends MY_Controller
                     'status' => $invoice_status,
                     'cancel_date' => now(),
                 ]);
+                // balikin stok gudang
+                $invoice_books = $this->invoice->fetch_invoice_book($id);
+                foreach($invoice_books as $invoice_book){
+                    $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                    $warehouse_present = $book_stock->warehouse_present+$invoice_book->qty;
+                    $this->db->set('warehouse_present',$warehouse_present)
+                            ->where('book_id', $invoice_book->book_id)
+                            ->update('book_stock');
+                }
+                // hapus transaksi
+                $this->db->where('invoice_id',$id)->delete('book_transaction');
             }
 
         if ($this->db->trans_status() === false) {

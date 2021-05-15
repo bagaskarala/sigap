@@ -106,12 +106,28 @@ class Book_stock extends Warehouse_Sales_Controller
                 if ($this->book_stock->where('book_id', $book_id)->update($book_stock) && $this->db->insert('book_stock_revision',$book_stock_revision)) {
                     $book_stock_revision_id = $this->db->insert_id();
                     //insert to book transaction
-                    $this->book_transaction->insert([
-                        'book_id'            => $book_id,
-                        'book_stock_revision_id' => $book_stock_revision_id,
-                        'book_stock_id'      => $book_stock->book_stock_id,
-                        'date'               => now()
-                    ]);    
+                    if($revision_type=="add"){
+                        $this->book_transaction->insert([
+                            'book_id'            => $book_id,
+                            'book_stock_revision_id' => $book_stock_revision_id,
+                            'book_stock_id'      => $book_stock->book_stock_id,
+                            'stock_initial'      => $book_stock->warehouse_present-$quantity,
+                            'stock_mutation'     => $quantity,
+                            'stock_last'         => $book_stock->warehouse_present,
+                            'date'               => now()
+                        ]);    
+                    }
+                    else{
+                        $this->book_transaction->insert([
+                            'book_id'            => $book_id,
+                            'book_stock_revision_id' => $book_stock_revision_id,
+                            'book_stock_id'      => $book_stock->book_stock_id,
+                            'stock_initial'      => $book_stock->warehouse_present+$quantity,
+                            'stock_mutation'     => $quantity,
+                            'stock_last'         => $book_stock->warehouse_present,
+                            'date'               => now()
+                        ]);    
+                    }
                     $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
                 } else {
                     $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));

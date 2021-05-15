@@ -95,21 +95,7 @@ class Book_transaction extends Warehouse_Controller
                             break;
                         }
                     case 'C': {
-                            if($data->book_receive_id){
-                                $value = $data->book_receive_qty;
-                            }
-                            else if($data->invoice_book_id){
-                                $value = $data->invoice_qty;
-                            }
-                            // else if($data->book_transfer_id){
-                            //     $value = $data->book_transfer_qty;
-                            // }
-                            // else if($data->book_non_sales_id){
-                            //     $value = $data->book_non_sales_qty;
-                            // }
-                            else if($data->book_stock_revision_id){
-                                $value = $data->revision_qty;
-                            }
+                            $value = $data->stock_mutation;
                             break;
                     }
                     case 'D': {
@@ -124,7 +110,7 @@ class Book_transaction extends Warehouse_Controller
                                     $value = 'Keluar';
                                 }
                             }
-                            else if($data->invoice_book_id){
+                            else if($data->invoice_id){
                                 $value = 'Keluar';
                             }
                             break;

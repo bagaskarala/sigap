@@ -17,7 +17,7 @@ class Migration_Book_transaction extends CI_Migration
                 'type' => 'INT',
                 'constraint' => 10,
             ],
-            'invoice_book_id' => [
+            'invoice_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
@@ -27,17 +27,32 @@ class Migration_Book_transaction extends CI_Migration
                 'constraint' => 10,
                 'null' => TRUE
             ],
-            'book_transfer_list_id' => [
+            'book_transfer_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
             ],
-            'book_non_sales_list_id' => [
+            'book_non_sales_id' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE
             ],
             'book_stock_revision_id' => [
+                'type' => 'INT',
+                'constraint' => 10,
+                'null' => TRUE
+            ],
+            'stock_initial' => [
+                'type' => 'INT',
+                'constraint' => 10,
+                'null' => TRUE
+            ],
+            'stock_mutation' => [
+                'type' => 'INT',
+                'constraint' => 10,
+                'null' => TRUE
+            ],
+            'stock_last' => [
                 'type' => 'INT',
                 'constraint' => 10,
                 'null' => TRUE

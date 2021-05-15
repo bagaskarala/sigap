@@ -485,6 +485,9 @@ class Book_receive extends Warehouse_Controller
             'book_id'            => $book_receive->book_id,
             'book_receive_id'    => $book_receive->book_receive_id,
             'book_stock_id'      => $book_stock->book_stock_id,
+            'stock_initial'      => $book_stock->warehouse_present-$book_stock_print->total_postprint,
+            'stock_mutation'     => $book_stock_print->total_postprint,
+            'stock_last'         => $book_stock->warehouse_present,
             'date'               => now()
         ]);
         

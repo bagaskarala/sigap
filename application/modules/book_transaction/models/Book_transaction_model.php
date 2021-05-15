@@ -5,12 +5,10 @@ class Book_transaction_model extends MY_Model{
     public function filter_book_transaction($filters, $page)
     {
         $book_transactions = $this->select([ 
-            'print_order.print_order_id','print_order.order_number', 
-            'print_order.total_postprint as book_receive_qty',
-            'book_receive.book_receive_id', 
-            'invoice_book.invoice_book_id', 'invoice_book.qty as invoice_qty', 'invoice_book.invoice_id',
-            'invoice.number as invoice_number', 
-            'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type', 
+            'print_order.print_order_id','print_order.order_number',
+            'book_receive.book_receive_id',
+            'invoice.invoice_id', 'invoice.number as invoice_number', 
+            'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type',
             'book_stock_revision.warehouse_revision as revision_qty',
             // 'book_non_sales.book_non_sales_id', 'book_non_sales.number as book_non_sales_number',
             // 'book_transfer.book_transfer_id', 'book_transfer.transfer_number',         
@@ -19,11 +17,10 @@ class Book_transaction_model extends MY_Model{
             ->join_table('book', 'book_transaction', 'book')
             ->join_table('book_receive', 'book_transaction', 'book_receive')
             ->join_table('print_order', 'book_receive', 'print_order')
-            ->join_table('invoice_book', 'book_transaction', 'invoice_book')
-            ->join_table('invoice', 'invoice_book', 'invoice')
-            ->join_table('book_stock_revision', 'book_transaction', 'book_stock_revision')
+            ->join_table('invoice', 'book_transaction', 'invoice')
             // ->join_table('book_transfer', 'book_transaction', 'book_transfer')
             // ->join_table('book_non_sales', 'book_transaction', 'book_non_sales')
+            ->join_table('book_stock_revision', 'book_transaction', 'book_stock_revision')
             ->when('keyword', $filters['keyword'])
             ->when('start_date', $filters['start_date'])
             ->when('end_date', $filters['end_date'])
@@ -75,13 +72,13 @@ class Book_transaction_model extends MY_Model{
                     $this->where_not('book_transaction.book_receive_id', null);
                 }
                 else if ($data == 'invoice'){
-                    $this->where_not('book_transaction.invoice_book_id', null);
+                    $this->where_not('book_transaction.invoice_id', null);
                 }
                 else if ($data == 'transfer'){
-                    $this->where_not('book_transaction.book_transfer_list_id', null);
+                    $this->where_not('book_transaction.book_transfer_id', null);
                 }
                 else if ($data == 'non_sales'){
-                    $this->where_not('book_transaction.book_non_sales_list_id', null);
+                    $this->where_not('book_transaction.book_non_sales_id', null);
                 }
                 else if ($data == 'revision'){
                     $this->where_not('book_transaction.book_stock_revision_id', null);
@@ -93,30 +90,26 @@ class Book_transaction_model extends MY_Model{
     public function filter_excel($filters)
     {
         return $this->select([ 
-        'print_order.print_order_id','print_order.order_number', 
-        'print_order.total_postprint as book_receive_qty',
-        'book_receive.book_receive_id', 
-        'invoice_book.invoice_book_id', 'invoice_book.qty as invoice_qty', 'invoice_book.invoice_id',
-        'invoice.number as invoice_number', 
-        'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type', 
-        'book_stock_revision.warehouse_revision as revision_qty',
-        // 'book_non_sales.book_non_sales_id', 'book_non_sales.number as book_non_sales_number',
-        // 'book_transfer.book_transfer_id', 'book_transfer.transfer_number',         
-        'book.book_title', 'book_transaction.*'])
-        ->where_not('date', NULL)
-        ->join_table('book', 'book_transaction', 'book')
-        ->join_table('book_receive', 'book_transaction', 'book_receive')
-        ->join_table('print_order', 'book_receive', 'print_order')
-        ->join_table('invoice_book', 'book_transaction', 'invoice_book')
-        ->join_table('invoice', 'invoice_book', 'invoice')
-        ->join_table('book_stock_revision', 'book_transaction', 'book_stock_revision')
-        // ->join_table('book_transfer', 'book_transaction', 'book_transfer')
-        // ->join_table('book_non_sales', 'book_transaction', 'book_non_sales')
-        ->when('keyword', $filters['keyword'])
-        ->when('start_date', $filters['start_date'])
-        ->when('end_date', $filters['end_date'])
-        ->when('transaction_type', $filters['transaction_type'])
-        ->order_by('book_transaction_id', 'DESC')
-        ->get_all();
+            'print_order.print_order_id','print_order.order_number',
+            'book_receive.book_receive_id',
+            'invoice.invoice_id', 'invoice.number as invoice_number', 
+            'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type',
+            // 'book_non_sales.book_non_sales_id', 'book_non_sales.number as book_non_sales_number',
+            // 'book_transfer.book_transfer_id', 'book_transfer.transfer_number',         
+            'book.book_title', 'book_transaction.*'])
+            ->where_not('date', NULL)
+            ->join_table('book', 'book_transaction', 'book')
+            ->join_table('book_receive', 'book_transaction', 'book_receive')
+            ->join_table('print_order', 'book_receive', 'print_order')
+            ->join_table('invoice', 'book_transaction', 'invoice')
+            // ->join_table('book_transfer', 'book_transaction', 'book_transfer')
+            // ->join_table('book_non_sales', 'book_transaction', 'book_non_sales')
+            ->join_table('book_stock_revision', 'book_transaction', 'book_stock_revision')
+            ->when('keyword', $filters['keyword'])
+            ->when('start_date', $filters['start_date'])
+            ->when('end_date', $filters['end_date'])
+            ->when('transaction_type', $filters['transaction_type'])
+            ->order_by('book_transaction_id', 'DESC')
+            ->get_all();
     }
 }
