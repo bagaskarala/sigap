@@ -475,14 +475,14 @@ $(document).ready(function() {
 
                     $('#book-info').show()
                     $('#qty').attr({
-                        "max": res.data.stock
+                        "max": res.data.warehouse_present
                     });
                     $('#info-book-title').html(res.data.book_title)
                     $('#info-book-author').html(res.data.author_name)
                     $('#info-isbn').html(res.data.isbn)
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
-                    $('#info-stock').html(res.data.stock)
+                    $('#info-stock').html(res.data.warehouse_present)
                 },
                 error: function(err) {
                     console.log(err);

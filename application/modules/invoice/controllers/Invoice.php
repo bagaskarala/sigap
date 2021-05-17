@@ -120,19 +120,26 @@ class Invoice extends MY_Controller
 
                 // Kurangi Stock Buku
                 $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
-                $book_stock->warehouse_present -= $book['qty'];
+                if ($type == 'showroom') {
+                    $book_stock->showroom_present -= $book['qty'];
+                } else {
+                    $book_stock->warehouse_present -= $book['qty'];
+                }
                 $this->book_stock->where('book_id', $book['book_id'])->update($book_stock);
 
-                // Masukkan transaksi buku
-                $this->book_transaction->insert([
-                    'book_id'            => $book['book_id'],
-                    'invoice_id'         => $invoice_id,
-                    'book_stock_id'      => $book_stock->book_stock_id,
-                    'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
-                    'stock_mutation'     => $book['qty'],
-                    'stock_last'         => $book_stock->warehouse_present,
-                    'date'               => $date_created
-                ]);        
+                // Faktur Showroom tidak mencatat transaksi (karena sumber buku bukan dari gudang)
+                if ($type != 'showroom') {
+                    // Masukkan transaksi buku
+                    $this->book_transaction->insert([
+                        'book_id'            => $book['book_id'],
+                        'invoice_id'         => $invoice_id,
+                        'book_stock_id'      => $book_stock->book_stock_id,
+                        'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
+                        'stock_mutation'     => $book['qty'],
+                        'stock_last'         => $book_stock->warehouse_present,
+                        'date'               => $date_created
+                    ]);        
+                }
                 
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
@@ -147,7 +154,6 @@ class Invoice extends MY_Controller
                 'credit'      => 'Kredit',
                 'online'      => 'Online',
                 'cash'        => 'Tunai',
-                'showroom'    => 'Showroom',
             );
 
             $source = array(
@@ -170,8 +176,7 @@ class Invoice extends MY_Controller
     {
         $customer_type = get_customer_type();
 
-        // $dropdown_book_options = $this->invoice->get_ready_book_list_showroom();
-        $dropdown_book_options = $this->invoice->get_ready_book_list();
+        $dropdown_book_options = $this->invoice->get_ready_book_list_showroom();
 
         $pages       = 'invoice/add_showroom';
         $main_view   = 'invoice/add_showroom';
