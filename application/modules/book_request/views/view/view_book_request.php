@@ -51,7 +51,7 @@ $level              = check_level();
                                 <tr>
                                     <td width="200px"> Jenis Faktur </td>
                                     <td>
-                                        <?= $book_request->type . ' ' . $book_request->source?>
+                                        <?= get_book_request_category()[$book_request->type]?>
                                     </td>
                                 </tr>
                                 <tr>
