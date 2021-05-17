@@ -37,7 +37,7 @@ $menu_list = [
     ],
     [
         'title' => 'Pasca Produksi',
-        'level' => 'superadmin|admin_gudang|admin_pemasaran'
+        'level' => 'superadmin|admin_gudang|admin_pemasaran|staff_gudang'
     ],
     [
         'name'  => 'Stok Buku',
@@ -74,34 +74,35 @@ $menu_list = [
         'url'   => 'book_transaction',
         'icon'  => 'fas fa-exchange-alt',
         'level' => 'superadmin|admin_gudang'
+
     ],
-    // [
-    //     'name' => 'Permintaan Buku',
-    //     'url'  => 'book_request',
-    //     'icon' => 'fa fa-paperclip',
-    //     'level' => 'superadmin|admin_gudang|admin_pemasaran'
-    // ],
-    // [
-    //     'name' => 'Logistik',
-    //     'url'  => 'logistic',
-    //     'icon' => 'fa fa-warehouse',
-    //     'level' => 'superadmin|admin_gudang|admin_keuangan'
-    // ],
-    // [
-    //     'name' => 'Permintaan Logistik',
-    //     'url'  => 'logistic_request',
-    //     'icon' => 'fa fa-paperclip',
-    //     'level' => 'superadmin|admin_gudang|admin_keuangan'
-    // ],
     [
         'title' => 'Pemasaran',
         'level' => 'superadmin|admin_gudang|admin_pemasaran|admin_keuangan'
+    ],
+    [
+        'name' => 'Proforma',
+        'url'  => 'proforma',
+        'icon' => 'fa fa-file-archive',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran'
     ],
     [
         'name' => 'Faktur',
         'url'  => 'invoice',
         'icon' => 'fa fa-file-invoice',
         'level' => 'superadmin|admin_gudang|admin_pemasaran'
+    ],
+    [
+        'name' => 'Showroom',
+        'url'  => 'invoice/add_showroom',
+        'icon' => 'fa fa-file',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran'
+    ],
+    [
+        'name' => 'Pendapatan',
+        'url'  => 'earning',
+        'icon' => 'fas fa-money-check-alt',
+        'level' => 'superadmin|admin_gudang|admin_keuangan'
     ],
     [
         'name' => 'Royalti',

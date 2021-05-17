@@ -10,11 +10,6 @@ class Invoice_model extends MY_Model
         $data['input_error'] = array();
         $data['status'] = TRUE;
 
-        if ($this->input->post('due-date') == '') {
-            $data['input_error'][] = 'error-due-date';
-            $data['status'] = FALSE;
-        }
-
         if ($this->input->post('type') == '') {
             $data['input_error'][] = 'error-type';
             $data['status'] = FALSE;
@@ -22,7 +17,12 @@ class Invoice_model extends MY_Model
             if ($this->input->post('source') == '') {
                 $data['input_error'][] = 'error-source';
                 $data['status'] = FALSE;
-            } 
+            }
+        } else if ($this->input->post('type') == 'credit' || $this->input->post('type') == 'online') {
+            if ($this->input->post('due-date') == '') {
+                $data['input_error'][] = 'error-due-date';
+                $data['status'] = FALSE;
+            }
         }
 
         if ($this->input->post('source') == 'library') {
@@ -32,7 +32,7 @@ class Invoice_model extends MY_Model
             }
         }
 
-        if ($this->input->post('customer-id') == '') {
+        if ($this->input->post('customer-id') == '' && $this->input->post('type') != 'showroom') {
             if ($this->input->post('new-customer-name') == '' && $this->input->post('new-customer-phone-number') == '') {
                 $data['input_error'][] = 'error-customer-info';
                 $data['status'] = FALSE;
@@ -188,28 +188,31 @@ class Invoice_model extends MY_Model
 
     public function filter_invoice($filters, $page)
     {
-        $invoice = $this->select(['invoice_id', 'number', 'issued_date', 'due_date', 'invoice.customer_id', 'name as customer_name', 'customer.type as customer_type', 'status', 'invoice.type as invoice_type'])
+        $this->db->start_cache();
+        $this->db->select(['invoice_id', 'number', 'issued_date', 'due_date', 'invoice.customer_id', 'name as customer_name', 'customer.type as customer_type', 'status', 'invoice.type as invoice_type'])
+            ->from('invoice')
             ->join('customer', 'invoice.customer_id = customer.customer_id', 'left')
-            ->when('keyword', $filters['keyword'])
-            ->when('invoice_type', $filters['invoice_type'])
-            ->when('customer_type', $filters['customer_type'])
-            ->when('status', $filters['status'])
-            ->order_by('invoice_id', 'DESC')
-            ->paginate($page)
-            ->get_all();
+            ->group_start()
+            ->or_like('number', $filters['keyword'])
+            ->or_like('name', $filters['keyword'])
+            ->group_end()
+            ->like('invoice.type', $filters['invoice_type'])
+            ->like('status', $filters['status']);
+        if ($filters['customer_type'] == 'general') {
+            $this->db->group_start()
+                ->where('customer.type', 'general')
+                ->or_where('customer.type IS NULL')
+                ->group_end();
+        } else if ($filters['customer_type'] != '' && $filters['customer_type'] != 'general') {
+            $this->db->like('customer.type', $filters['customer_type']);
+        }
+        $this->db->order_by('invoice_id', 'DESC')
+            ->limit($this->per_page, $this->calculate_real_offset($page));
 
-        $total = $this->select(['invoice_id', 'number', 'name'])
-            ->join('customer', 'invoice.customer_id = customer.customer_id', 'left')
-            ->when('keyword', $filters['keyword'])
-            ->when('invoice_type', $filters['invoice_type'])
-            ->when('customer_type', $filters['customer_type'])
-            ->when('status', $filters['status'])
-            ->order_by('invoice_id')
-            ->count();
-
+        $this->db->stop_cache();
         return [
-            'invoice'  => $invoice,
-            'total' => $total
+            'invoice' => $this->db->get()->result(),
+            'total'   => $this->db->count_all_results()
         ];
     }
 
