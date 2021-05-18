@@ -90,13 +90,19 @@ $menu_list = [
         'name' => 'Faktur',
         'url'  => 'invoice',
         'icon' => 'fa fa-file-invoice',
-        'level' => 'superadmin|admin_gudang|admin_pemasaran'
-    ],
-    [
-        'name' => 'Showroom',
-        'url'  => 'invoice/add_showroom',
-        'icon' => 'fa fa-file',
-        'level' => 'superadmin|admin_gudang|admin_pemasaran'
+        'level' => 'superadmin|admin_gudang|admin_pemasaran',
+        'child' => [
+            [
+                'name' => 'Dashboard',
+                'url'  => 'invoice',
+                'level' => 'superadmin|admin_gudang|admin_pemasaran',
+            ],
+            [
+                'name' => 'Showroom',
+                'url'  => 'invoice/add_showroom',
+                'level' => 'superadmin|admin_gudang|admin_pemasaran'
+            ],
+        ]
     ],
     [
         'name' => 'Pendapatan',

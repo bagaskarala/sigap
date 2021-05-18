@@ -339,11 +339,6 @@
                             class="btn btn-primary"
                             value="Submit"
                         />
-                        <a
-                            class="btn btn-secondary"
-                            href="<?= base_url($pages); ?>"
-                            role="button"
-                        >Back</a>
                     </form>
                 </div>
             </section>
