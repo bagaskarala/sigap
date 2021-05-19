@@ -49,18 +49,20 @@ $level              = check_level();
                                     <td width="200px"> Nomor Customer </td>
                                     <td><?= $invoice->customer->phone_number ?? '-' ?></td>
                                 </tr>
-                                <tr>
-                                    <td width="200px"> Tanggal Jatuh Tempo </td>
-                                    <td><?= $invoice->due_date ?></td>
-                                </tr>
-                                <tr>
-                                    <td width="200px"> Total Berat </td>
-                                    <td><?= $invoice->total_weight/1000 ?> kg</td>
-                                </tr>
-                                <tr>
-                                    <td width="200px"> Total Ongkir </td>
-                                    <td><?= $invoice->delivery_fee ?></td>
-                                </tr>
+                                <?php if($invoice->type != 'showroom'): ?>
+                                    <tr>
+                                        <td width="200px"> Tanggal Jatuh Tempo </td>
+                                        <td><?= $invoice->due_date ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="200px"> Total Berat </td>
+                                        <td><?= $invoice->total_weight/1000 ?> kg</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="200px"> Total Ongkir </td>
+                                        <td><?= $invoice->delivery_fee ?></td>
+                                    </tr>
+                                <?php endif ?>
                             </tbody>
                         </table>
                     </div>
@@ -76,63 +78,65 @@ $level              = check_level();
                         </table>
                     </div>
                     <hr>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered mb-0">
-                            <tbody>
-                                <tr>
-                                    <td
-                                        class="align-middle"
-                                        width="200px"
-                                    > Status </td>
-                                    <td class="align-middle"><?= get_invoice_status()[$invoice->status]; ?></td>
-                                    <td class="align-middle text-right"><button
-                                            class="btn btn-outline-primary"
-                                            data-toggle="collapse"
-                                            href="#collapse1"
-                                        >Detail</btn>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div
-                            id="collapse1"
-                            class="panel-collapse collapse"
-                        >
-                            <table class="table table-bordered mb-0">
+                    <?php if($invoice->type != 'showroom'): ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered mb-0">
                                 <tbody>
                                     <tr>
                                         <td
                                             class="align-middle"
                                             width="200px"
-                                        > Tanggal Konfirmasi </td>
-                                        <td class="align-middle"><?= $invoice->confirm_date ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="align-middle"
-                                            width="200px"
-                                        > Tanggal Mulai Diproses </td>
-                                        <td class="align-middle"><?= $invoice->preparing_start_date ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="align-middle"
-                                            width="200px"
-                                        > Tanggal Selesai Diproses </td>
-                                        <td class="align-middle"><?= $invoice->preparing_end_date ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="align-middle"
-                                            width="200px"
-                                        > Tanggal Diambil Pemasaran </td>
-                                        <td class="align-middle"><?= $invoice->finish_date ?></td>
+                                        > Status </td>
+                                        <td class="align-middle"><?= get_invoice_status()[$invoice->status]; ?></td>
+                                        <td class="align-middle text-right"><button
+                                                class="btn btn-outline-primary"
+                                                data-toggle="collapse"
+                                                href="#collapse1"
+                                            >Detail</btn>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <div
+                                id="collapse1"
+                                class="panel-collapse collapse"
+                            >
+                                <table class="table table-bordered mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td
+                                                class="align-middle"
+                                                width="200px"
+                                            > Tanggal Konfirmasi </td>
+                                            <td class="align-middle"><?= $invoice->confirm_date ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                class="align-middle"
+                                                width="200px"
+                                            > Tanggal Mulai Diproses </td>
+                                            <td class="align-middle"><?= $invoice->preparing_start_date ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                class="align-middle"
+                                                width="200px"
+                                            > Tanggal Selesai Diproses </td>
+                                            <td class="align-middle"><?= $invoice->preparing_end_date ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                class="align-middle"
+                                                width="200px"
+                                            > Tanggal Diambil Pemasaran </td>
+                                            <td class="align-middle"><?= $invoice->finish_date ?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <hr>
+                        <hr>
+                    <?php endif ?>
                 </div>
 
                 <table class="table table-striped mb-0">

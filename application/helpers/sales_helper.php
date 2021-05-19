@@ -14,7 +14,6 @@ function get_customer_list()
 function get_invoice_type()
 {
     return [
-        ''  => null,
         'credit' => 'Kredit',
         'cash' => 'Tunai',
         'online' => 'Online',
@@ -25,7 +24,6 @@ function get_invoice_type()
 function get_invoice_status()
 {
     return [
-        '' => null,
         'waiting'           => 'Belum Konfirmasi',
         'confirm'           => 'Sudah Konfirmasi',
         'preparing'         => 'Diproses',

@@ -25,9 +25,12 @@ class Invoice extends MY_Controller
         $this->invoice->per_page = $this->input->get('per_page', true) ?? 10;
 
         $get_data = $this->invoice->filter_invoice($filters, $page);
-
         //data invoice
         $invoice    = $get_data['invoice'];
+        foreach ($invoice as $each_invoice) {
+            if ($each_invoice->customer_name == NULL) $each_invoice->customer_name = '';
+            if ($each_invoice->customer_type == NULL) $each_invoice->customer_type = 'general';
+        }
         $total      = $get_data['total'];
         $pagination = $this->invoice->make_pagination(site_url('invoice'), 2, $total);
 
@@ -60,7 +63,7 @@ class Invoice extends MY_Controller
                 $customer_id = $this->input->post('customer-id');
             }
             //Nentuin customer id jika customer dibuat baru
-            else {
+            else if (!empty($this->input->post('new-customer-name'))) {
                 $add = [
                     'name'          => $this->input->post('new-customer-name'),
                     'address'       => $this->input->post('new-customer-address'),
@@ -69,9 +72,17 @@ class Invoice extends MY_Controller
                 ];
                 $this->db->insert('customer', $add);
                 $customer_id = $this->db->insert_id();
+            } 
+            //Customer null (showroom)
+            else {
+                $customer_id = null;
             }
 
             $type = $this->input->post('type');
+            $status = 'waiting';
+            if ($type == 'showroom') {
+                $status = 'finish';
+            }
             $add = [
                 'number'            => $this->invoice->get_last_invoice_number($type),
                 'customer_id'       => $customer_id,
@@ -79,7 +90,7 @@ class Invoice extends MY_Controller
                 'type'              => $type,
                 'source'            => $this->input->post('source'),
                 'source_library_id' => $this->input->post('source-library-id'),
-                'status'            => 'waiting',
+                'status'            => $status,
                 'issued_date'       => $date_created
                 // 'user_created'      => $user_created
             ];
@@ -109,19 +120,26 @@ class Invoice extends MY_Controller
 
                 // Kurangi Stock Buku
                 $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
-                $book_stock->warehouse_present -= $book['qty'];
+                if ($type == 'showroom') {
+                    $book_stock->showroom_present -= $book['qty'];
+                } else {
+                    $book_stock->warehouse_present -= $book['qty'];
+                }
                 $this->book_stock->where('book_id', $book['book_id'])->update($book_stock);
 
-                // Masukkan transaksi buku
-                $this->book_transaction->insert([
-                    'book_id'            => $book['book_id'],
-                    'invoice_id'         => $invoice_id,
-                    'book_stock_id'      => $book_stock->book_stock_id,
-                    'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
-                    'stock_mutation'     => $book['qty'],
-                    'stock_last'         => $book_stock->warehouse_present,
-                    'date'               => $date_created
-                ]);        
+                // Faktur Showroom tidak mencatat transaksi (karena sumber buku bukan dari gudang)
+                if ($type != 'showroom') {
+                    // Masukkan transaksi buku
+                    $this->book_transaction->insert([
+                        'book_id'            => $book['book_id'],
+                        'invoice_id'         => $invoice_id,
+                        'book_stock_id'      => $book_stock->book_stock_id,
+                        'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
+                        'stock_mutation'     => $book['qty'],
+                        'stock_last'         => $book_stock->warehouse_present,
+                        'date'               => $date_created
+                    ]);        
+                }
                 
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
@@ -136,7 +154,6 @@ class Invoice extends MY_Controller
                 'credit'      => 'Kredit',
                 'online'      => 'Online',
                 'cash'        => 'Tunai',
-                'showroom'    => 'Showroom',
             );
 
             $source = array(
@@ -153,6 +170,17 @@ class Invoice extends MY_Controller
             $main_view   = 'invoice/add_invoice';
             $this->load->view('template', compact('pages', 'main_view', 'invoice_type', 'source', 'customer_type', 'dropdown_book_options'));
         }
+    }
+
+    public function add_showroom()
+    {
+        $customer_type = get_customer_type();
+
+        $dropdown_book_options = $this->invoice->get_ready_book_list_showroom();
+
+        $pages       = 'invoice/add_showroom';
+        $main_view   = 'invoice/add_showroom';
+        $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options'));
     }
 
     public function edit($invoice_id)

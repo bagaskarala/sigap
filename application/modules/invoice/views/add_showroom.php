@@ -23,77 +23,24 @@
                         method="post"
                         action="<?= base_url("invoice/add"); ?>"
                     >
-                        <legend>Form Tambah Faktur</legend>
-                        <div class="form-group">
-                            <label
-                                for="type"
-                                class="font-weight-bold"
-                            >Jenis Faktur<abbr title="Required">*</abbr></label>
-
-                            <?= form_dropdown('type', $invoice_type, 0, 'id="type" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-type"
-                                class="d-none error-message text-danger"
-                            >Jenis Faktur wajib diisi!</small>
-                        </div>
+                        <legend>Form Tambah Faktur Showroom</legend>
+                        <!-- jenis faktur -->
                         <div
-                            class="form-group"
+                            id="invoice-type"
                             style="display: none;"
-                            id='source-dropdown'
                         >
-                            <label
-                                for="source"
-                                class="font-weight-bold"
-                            >Asal Stok<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source', $source, 0, 'id="source" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-source"
-                                class="d-none error-message text-danger"
-                            >Asal stok wajib diisi jika jenis faktur adalah tunai!</small>
-                        </div>
-                        <div
-                            class="form-group"
-                            id="source-library-dropdown"
-                            style="display:none"
-                        >
-                            <label
-                                for="source-library-id"
-                                class="font-weight-bold"
-                            >Asal Perpustakaan<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source-library-id', get_dropdown_list_library(), 0, 'id="source-library-id" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-source-library"
-                                class="d-none error-message text-danger"
-                            >Asal perpustakaan wajib diisi jika asal stok faktur adalah perpustakaan!</small>
-                        </div>
-                        <div class="form-group">
-                            <label
-                                for="due-date"
-                                class="font-weight-bold"
-                            >
-                                Jatuh Tempo
-                                <abbr title="Required">*</abbr></label>
-                            <div class="input-group mb-3">
+                            <div class="form-group">
                                 <input
-                                    name="due-date"
-                                    id="due-date"
-                                    class="form-control dates"
+                                    type="text"
+                                    name="type"
+                                    id="type"
+                                    class="form-control"
+                                    value="showroom"
+                                    readonly
                                 />
-                                <div class="input-group-append">
-                                    <button
-                                        class="btn btn-outline-secondary"
-                                        type="button"
-                                        id="due_clear"
-                                    >Clear</button>
-                                </div>
                             </div>
-                            <small
-                                id="error-due-date"
-                                class="d-none error-message text-danger"
-                            >Jatuh Tempo wajib diisi!</small>
                         </div>
-                        <hr class="my-4">
-
+                        
                         <div class="form-group">
                             <label for="customer-id" class="font-weight-bold mb-0">
                                 Customer
@@ -102,8 +49,16 @@
                                 <ul class="nav nav-tabs">
                                     <li class="nav-item">
                                         <a
-                                            id="tab-customer-existing"
+                                            id="tab-customer-general"
                                             class="nav-link active show"
+                                            data-toggle="tab"
+                                            href="#customer-general"
+                                        ><i class="fa fa-user"></i> Customer Umum</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a
+                                            id="tab-customer-existing"
+                                            class="nav-link"
                                             data-toggle="tab"
                                             href="#customer-existing"
                                         ><i class="fa fa-database"></i> Pilih Customer Dari Database</a>
@@ -119,13 +74,20 @@
                                 </ul>
                             </div>
                             <div class="tab-content mt-4">
-                                <!-- Customer Dari Database -->
+                                <!-- Customer Umum -->
                                 <div
                                     class="tab-pane fade active show"
+                                    id="customer-general"
+                                >
+                                </div>
+
+                                <!-- Customer Dari Database -->
+                                <div
+                                    class="tab-pane fade"
                                     id="customer-existing"
                                 >
                                     <div class="form-group col-md-8 p-0">
-                                        <?= form_dropdown('customer-id', get_customer_list(), 0, 'id="customer-id" class="form-control custom-select d-block"'); ?>
+                                        <?= form_dropdown('customer-id', get_customer_list(), 0, 'id="customer-id" class="form-control custom-select"'); ?>
                                     </div>
 
                                     <div
@@ -377,11 +339,6 @@
                             class="btn btn-primary"
                             value="Submit"
                         />
-                        <a
-                            class="btn btn-secondary"
-                            href="<?= base_url($pages); ?>"
-                            role="button"
-                        >Back</a>
                     </form>
                 </div>
             </section>
@@ -391,8 +348,19 @@
 
 <script>
 $(document).ready(function() {
-    $('#type').val('')
-    $('#source').val('')
+    $('#discount').val(15)
+
+    $('#tab-customer-general').click(function() {
+        $('#discount').val(15)
+
+        $('#customer-info').hide()
+        $('#customer-id').val('').trigger('change')
+
+        $('#new-customer-name').val('')
+        $('#new-customer-address').val('')
+        $('#new-customer-phone-number').val('')
+        $('#new-customer-type').val('')
+    })
 
     $('#tab-customer-new').click(function() {
         $('#customer-info').hide()
@@ -406,28 +374,11 @@ $(document).ready(function() {
         $('#new-customer-type').val('')
     })
 
-    
-
-    const $flatpickr = $('.dates').flatpickr({
-        altInput: true,
-        altFormat: 'j F Y',
-        dateFormat: 'Y-m-d',
-        enableTime: false
-    });
-
-    $("#due_clear").click(function() {
-        $flatpickr.clear();
-    })
-
     $("#customer-id").select2({
         placeholder: '-- Pilih --',
         dropdownParent: $('#app-main')
     });
     $("#book-id").select2({
-        placeholder: '-- Pilih --',
-        dropdownParent: $('#app-main')
-    });
-    $("#source-library-id").select2({
         placeholder: '-- Pilih --',
         dropdownParent: $('#app-main')
     });
@@ -475,14 +426,14 @@ $(document).ready(function() {
 
                     $('#book-info').show()
                     $('#qty').attr({
-                        "max": res.data.warehouse_present
+                        "max": res.data.showroom_present
                     });
                     $('#info-book-title').html(res.data.book_title)
                     $('#info-book-author').html(res.data.author_name)
                     $('#info-isbn').html(res.data.isbn)
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
-                    $('#info-stock').html(res.data.warehouse_present)
+                    $('#info-stock').html(res.data.showroom_present)
                 },
                 error: function(err) {
                     console.log(err);
@@ -559,12 +510,16 @@ $(document).ready(function() {
         e.preventDefault(); // avoid to execute the actual submit of the form.
         var form = $(this);
         console.log(form.serialize())
+        if ($('#new-customer-name').val() == '') {
+            console.log("test")
+        }
         $.ajax({
             type: "POST",
             url: "<?= base_url("invoice/add"); ?>",
             data: form.serialize(), // serializes the form's elements.
             success: function(result) {
                 var response = $.parseJSON(result)
+                console.log(response)
                 //Validation Error
                 if (response.status != true) {
                     $(".error-message").addClass('d-none');
@@ -576,8 +531,8 @@ $(document).ready(function() {
                     location.href = "<?= base_url('invoice'); ?>";
                 }
             },
-            error: function(req, err) {
-                console.log(err)
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
             }
         });
     })

@@ -9,32 +9,11 @@ $page               = $this->uri->segment(2);
 $i                  = isset($page) ? $page * $per_page - $per_page : 0;
 
 
-$invoice_type_options = [
-    ''  => '- Filter Kategori Faktur -',
-    'credit' => 'Kredit',
-    'cash' => 'Tunai',
-    'online' => 'Online',
-    'showroom' => 'Showroom'
-];
+$invoice_type_options = array_merge([''  => '- Filter Kategori Faktur -'], get_invoice_type());
 
-$customer_type_options = [
-    ''  => '- Filter Kategori Customer -',
-    'distributor' => 'Distributor',
-    'reseller' => 'Reseller',
-    'author' => 'Penulis',
-    'member' => 'Member',
-    'general' => 'Umum'
-];
+$customer_type_options = array_merge([''  => '- Filter Kategori Customer -'], get_customer_type());
 
-$status_options = [
-    ''                  => '- Filter Status Faktur -',
-    'waiting'           => 'Belum Konfirmasi',
-    'confirm'           => 'Sudah Konfirmasi',
-    'preparing'         => 'Diproses',
-    'preparing_finish'  => 'Siap Diambil',
-    'finish'            => 'Selesai',
-    'cancel'            => 'Dibatalkan'
-];
+$status_options = array_merge([''  => '- Filter Kategori Status Faktur -'], get_invoice_status());
 
 function generate_invoice_action($invoice_id)
 {
@@ -225,7 +204,7 @@ function generate_invoice_action($invoice_id)
                                             <?= date("d/m/y", strtotime($lData->issued_date)); ?>
                                         </td>
                                         <td class="align-middle">
-                                            <?= date("d/m/y", strtotime($lData->due_date)); ?>
+                                            <?= $lData->due_date ? date("d/m/y", strtotime($lData->due_date)) : '-'; ?>
                                         </td>
                                         <td class="align-middle pr-4">
                                             <?= get_invoice_status()[$lData->status]; ?>
