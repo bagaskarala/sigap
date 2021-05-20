@@ -128,7 +128,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Apakah anda yakin akan menghapus data pemindahan buku <span
-                                                                    class="font-weight-bold"><?= $book_transfer->book_title; ?></span>?
+                                                                    class="font-weight-bold"><?= $book_transfer->transfer_number; ?></span>?
                                                             </p>
                                                         </div>
                                                         <div class="modal-footer">

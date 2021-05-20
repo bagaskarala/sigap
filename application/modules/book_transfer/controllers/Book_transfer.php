@@ -296,7 +296,7 @@ class Book_transfer extends MY_Controller
         // update data book_transfer
         $this->book_transfer->where('book_transfer_id', $book_transfer_id)->update([
             'status' => $action,
-            'finish_date' => $action == 'finish' ? now() : null
+            'finish_date' => now()
         ]);
 
         if ($this->db->trans_status() === false) {
@@ -427,6 +427,11 @@ class Book_transfer extends MY_Controller
         $this->db->trans_begin();
 
         $this->book_transfer->where('book_transfer_id', $book_transfer_id)->delete();
+        
+        // hapus book_transfer_list, book_transfer_user, book transaction
+        $this->db->where('book_transfer_id',$book_transfer_id)->delete('book_transfer_list');
+        $this->db->where('book_transfer_id',$book_transfer_id)->delete('book_transfer_user');
+        $this->db->where('book_transfer_id',$book_transfer_id)->delete('book_transaction');
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
