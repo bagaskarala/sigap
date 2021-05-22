@@ -423,15 +423,19 @@ class Book_transfer extends MY_Controller
             redirect($this->pages);
         }
 
+        if($book_transfer->status=="finish"){
+            $this->session->set_flashdata('warning', "Pemindahan buku telah selesai, tidak dapat menghapus data pemindahan.");
+            redirect($this->pages);
+        }
+
         // memastikan konsistensi data
         $this->db->trans_begin();
 
         $this->book_transfer->where('book_transfer_id', $book_transfer_id)->delete();
         
-        // hapus book_transfer_list, book_transfer_user, book transaction
+        // hapus book_transfer_list, book_transfer_user
         $this->db->where('book_transfer_id',$book_transfer_id)->delete('book_transfer_list');
         $this->db->where('book_transfer_id',$book_transfer_id)->delete('book_transfer_user');
-        $this->db->where('book_transfer_id',$book_transfer_id)->delete('book_transaction');
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();

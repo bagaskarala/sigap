@@ -72,7 +72,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     <th scope="col" style="min-width:200px;">Tujuan</th>
                                     <th scope="col" style="min-width:100px;">Tanggal</th>
                                     <th scope="col" style="min-width:200px;">Status</th>
-                                    <th style="min-width:100px;"> Aksi </th>
+                                    <th style="min-width:100px;"> </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -101,48 +101,50 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         <?= get_book_transfer_status()[$book_transfer->transfer_status ?? $book_transfer->status]; ?>
                                     </td>
                                     <td class="align-middle text-right">
-                                        <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) : ?>
-                                        <a href="<?= base_url('book_transfer/edit/'.$book_transfer->book_transfer_id); ?>"
-                                            class="btn btn-sm btn-secondary">
-                                            <i class="fa fa-pencil-alt"></i>
-                                            <span class="sr-only">Edit</span>
-                                        </a>
-                                        <?php endif?>
-                                        <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_pemasaran' ) : ?>
-                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                            data-target="#modal-hapus-<?= $book_transfer->book_transfer_id; ?>"><i
-                                                class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
-                                        <div class="text-left">
-                                            <div class="modal modal-alert fade"
-                                                id="modal-hapus-<?= $book_transfer->book_transfer_id; ?>" tabindex="-1"
-                                                role="dialog"
-                                                aria-labelledby="modal-hapus-"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">
-                                                                <i class="fa fa-exclamation-triangle text-red mr-1"></i>
-                                                                Konfirmasi Hapus
-                                                            </h5>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Apakah anda yakin akan menghapus data pemindahan buku <span
-                                                                    class="font-weight-bold"><?= $book_transfer->transfer_number; ?></span>?
-                                                            </p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type ="button" class="btn btn-light" 
-                                                                data-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-danger"
-                                                                onclick="location.href='<?= base_url('book_transfer/delete_book_transfer/'.$book_transfer->book_transfer_id); ?>'"
-                                                                data-dismiss="modal">Hapus</button>
-                                                            
+                                        <?php if($book_transfer->status!="finish") : ?>
+                                            <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) : ?>
+                                            <a href="<?= base_url('book_transfer/edit/'.$book_transfer->book_transfer_id); ?>"
+                                                class="btn btn-sm btn-secondary">
+                                                <i class="fa fa-pencil-alt"></i>
+                                                <span class="sr-only">Edit</span>
+                                            </a>
+                                            <?php endif?>
+                                            <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_pemasaran' ) : ?>
+                                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                data-target="#modal-hapus-<?= $book_transfer->book_transfer_id; ?>"><i
+                                                    class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
+                                            <div class="text-left">
+                                                <div class="modal modal-alert fade"
+                                                    id="modal-hapus-<?= $book_transfer->book_transfer_id; ?>" tabindex="-1"
+                                                    role="dialog"
+                                                    aria-labelledby="modal-hapus-"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">
+                                                                    <i class="fa fa-exclamation-triangle text-red mr-1"></i>
+                                                                    Konfirmasi Hapus
+                                                                </h5>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>Apakah anda yakin akan menghapus data pemindahan buku <span
+                                                                        class="font-weight-bold"><?= $book_transfer->transfer_number; ?></span>?
+                                                                </p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type ="button" class="btn btn-light" 
+                                                                    data-dismiss="modal">Close</button>
+                                                                <button type="button" class="btn btn-danger"
+                                                                    onclick="location.href='<?= base_url('book_transfer/delete_book_transfer/'.$book_transfer->book_transfer_id); ?>'"
+                                                                    data-dismiss="modal">Hapus</button>
+                                                                
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <?php endif?>
                                         <?php endif?>
                                     </td>
                                 </tr>
