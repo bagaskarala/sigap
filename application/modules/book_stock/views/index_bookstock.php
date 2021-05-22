@@ -120,7 +120,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         colspan="3">
                                         Stok</th>
                                     <?php if ($level == 'superadmin') : ?>
-                                    <th style="min-width:150px;" class="align-middle text-center" rowspan="2"> Aksi
+                                    <th style="min-width:150px;" class="align-middle text-center" rowspan="2">
                                     </th>
                                     <?php endif; ?>
                                 </tr>
