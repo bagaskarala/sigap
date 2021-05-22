@@ -72,34 +72,6 @@ class Book_receive extends Warehouse_Controller
         redirect('book_receive');
     }
 
-    public function delete($book_receive_id = null)
-    {
-        if (!$this->_is_warehouse_admin()) {
-            redirect($this->pages);
-        }
-
-        $book_receive = $this->book_receive->where('book_receive_id', $book_receive_id)->get();
-        if (!$book_receive) {
-            $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
-            redirect($this->pages);
-        }
-
-        // memastikan konsistensi data
-        $this->db->trans_begin();
-
-        $this->book_receive->where('book_receive_id', $book_receive_id)->delete();
-
-        if ($this->db->trans_status() === false) {
-            $this->db->trans_rollback();
-            $this->session->set_flashdata('error', $this->lang->line('toast_delete_fail'));
-        } else {
-            $this->db->trans_commit();
-            $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
-        }
-
-        redirect($this->pages);
-    }
-
     //view details of book receive
     public function view($book_receive_id = null)
     {
