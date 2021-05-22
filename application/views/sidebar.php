@@ -67,7 +67,7 @@ $menu_list = [
         'name'  => 'Buku Non Penjualan',
         'url'   => 'book_non_sales',
         'icon'  => 'fas fa-gifts',
-        'level' => 'superadmin|admin_gudang'
+        'level' => 'superadmin|admin_gudang|admin_pemasaran'
     ],
     [
         'name'  => 'Transaksi Buku',

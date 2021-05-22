@@ -112,20 +112,18 @@ class Book_non_sales extends Warehouse_sales_controller
             redirect($this->pages);
         }
 
+        if($book_non_sales->status=="finish"){
+            $this->session->set_flashdata('warning', "Permintaan buku non penjualan telah selesai, tidak dapat menghapus data pemindahan.");
+            redirect($this->pages);
+        }
+
         // memastikan konsistensi data
         $this->db->trans_begin();
 
         $this->book_non_sales->where('book_non_sales_id', $book_non_sales_id)->delete();
 
-        // hapus book non sales list, book transaction
+        // hapus book non sales list
         $this->db->where('book_non_sales_id',$book_non_sales_id)->delete('book_non_sales_list');
-        $this->db->where('book_non_sales_id',$book_non_sales_id)->delete('book_transaction');
-
-        // hapus list buku
-        $book_non_sales_books  = $this->book_non_sales->fetch_book_non_sales_list($book_non_sales_id);
-        foreach($book_non_sales_books as $book){
-            $this->db->where('book_id', $book->book_id)->delete('book_non_sales_list');
-        }
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();

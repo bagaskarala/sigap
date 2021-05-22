@@ -98,76 +98,78 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         <?= get_book_non_sales_status()[$book_non_sales->status]; ?>
                                     </td>
                                     <td class="align-middle text-right">
-                                        <?php if (($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang') && $book_non_sales->status=='waiting'): ?>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
-                                            data-target="#finish_modal" title="Selesai">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="finish_modal" tabindex="-1" role="dialog"
-                                            aria-labelledby="finish_modaltitle" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="finish_modalLongTitle">Penyelesaian Proses
-                                                        </h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body text-left">
-                                                        <div class="alert alert-info">
-                                                            <strong>Perhatian</strong>
-                                                            <p class="mb-0">1. Stok gudang akan dikurangi ketika klik submit</p>
-                                                            <p class="mb-0">2. Status akan berubah menjadi selesai</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-light"
-                                                            data-dismiss="modal">Close</button>
-                                                        <a class="btn btn-primary" href="<?=base_url('book_non_sales/finish/'.$book_non_sales->book_non_sales_id)?>">Submit</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <?php endif?>
-                                        <?php if(($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_pemasaran')) :?>
-                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                            data-target="#modal-hapus-<?= $book_non_sales->book_non_sales_id; ?>"><i
-                                                class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
-                                        <div class="text-left">
-                                            <div class="modal modal-alert fade"
-                                                id="modal-hapus-<?= $book_non_sales->book_non_sales_id; ?>"
-                                                tabindex="-1" role="dialog"
-                                                aria-labelledby="modal-hapus-<?= $book_non_sales->book_non_sales_id; ?>"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
+                                        <?php if($book_non_sales->status=='waiting') : ?>
+                                            <?php if (($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang')): ?>
+                                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
+                                                data-target="#finish_modal" title="Selesai">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="finish_modal" tabindex="-1" role="dialog"
+                                                aria-labelledby="finish_modaltitle" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title">
-                                                                <i class="fa fa-exclamation-triangle text-red mr-1"></i>
-                                                                Konfirmasi
-                                                                Hapus
+                                                            <h5 class="modal-title" id="finish_modalLongTitle">Penyelesaian Proses
                                                             </h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
                                                         </div>
-                                                        <div class="modal-body">
-                                                            <p>Apakah anda yakin akan menghapus permintaan buku non
-                                                                penjualan <span
-                                                                    class="font-weight-bold"><?= $book_non_sales->number; ?></span>?
-                                                            </p>
+                                                        <div class="modal-body text-left">
+                                                            <div class="alert alert-info">
+                                                                <strong>Perhatian</strong>
+                                                                <p class="mb-0">1. Stok gudang akan dikurangi ketika klik submit</p>
+                                                                <p class="mb-0">2. Status akan berubah menjadi selesai</p>
+                                                            </div>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-light"
                                                                 data-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-danger"
-                                                                onclick="location.href='<?= base_url('book_non_sales/delete/'.$book_non_sales->book_non_sales_id); ?>'"
-                                                                data-dismiss="modal">Hapus</button>
+                                                            <a class="btn btn-primary" href="<?=base_url('book_non_sales/finish/'.$book_non_sales->book_non_sales_id)?>">Submit</a>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <?php endif?>
+                                            <?php if(($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_pemasaran')) :?>
+                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                                data-target="#modal-hapus-<?= $book_non_sales->book_non_sales_id; ?>"><i
+                                                    class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
+                                            <div class="text-left">
+                                                <div class="modal modal-alert fade"
+                                                    id="modal-hapus-<?= $book_non_sales->book_non_sales_id; ?>"
+                                                    tabindex="-1" role="dialog"
+                                                    aria-labelledby="modal-hapus-<?= $book_non_sales->book_non_sales_id; ?>"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">
+                                                                    <i class="fa fa-exclamation-triangle text-red mr-1"></i>
+                                                                    Konfirmasi
+                                                                    Hapus
+                                                                </h5>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>Apakah anda yakin akan menghapus permintaan buku non
+                                                                    penjualan <span
+                                                                        class="font-weight-bold"><?= $book_non_sales->number; ?></span>?
+                                                                </p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-light"
+                                                                    data-dismiss="modal">Close</button>
+                                                                <button type="button" class="btn btn-danger"
+                                                                    onclick="location.href='<?= base_url('book_non_sales/delete/'.$book_non_sales->book_non_sales_id); ?>'"
+                                                                    data-dismiss="modal">Hapus</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php endif?>
                                         <?php endif?>
                                     </td>
                                 </tr>
