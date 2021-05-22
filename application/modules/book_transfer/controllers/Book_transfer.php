@@ -249,7 +249,6 @@ class Book_transfer extends MY_Controller
                 $this->book_stock->where('book_id', $book_transfer_list->book_id)->update($book_stock);
                 // stok detail perpustakaan
                 $library_stock_detail = $this->book_stock->get_one_library_stock($book_stock->book_stock_id,$book_transfer->library_id);
-                // ini bermasalah
                 if($library_stock_detail){
                     $library_stock_detail->library_stock += $book_transfer_list->qty;
                     $this->db->set('library_stock', $library_stock_detail->library_stock);
@@ -329,7 +328,6 @@ class Book_transfer extends MY_Controller
             }
         } else {
             $input = (object) $this->input->post(null, true);
-            // catat orang yang menginput order cetak
         }
 
         $input->library_id = empty_to_null($input->library_id);
