@@ -76,6 +76,7 @@ $route['logistic/(:num)']         = 'logistic/index/$1';
 $route['logistic_request/(:num)'] = 'logistic_request/index/$1';
 $route['customer/(:num)']         = 'customer/index/$1';
 $route['invoice/(:num)']          = 'invoice/index/$1';
+$route['proforma/(:num)']         = 'proforma/index/$1';
 
 $route['draftauthor/add']           = 'draft_author/add';
 $route['draftauthor/edit/(:num)']   = 'draft_author/edit/$1';

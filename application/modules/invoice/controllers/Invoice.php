@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-class Invoice extends MY_Controller
+class Invoice extends Sales_Controller
 {
     public function __construct()
     {
