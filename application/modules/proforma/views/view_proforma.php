@@ -133,7 +133,7 @@ $level              = check_level();
                 </table>
                 <br>
 
-                <div
+                <!-- <div
                     id="card-button"
                     class="d-flex justify-content-end"
                 >
@@ -141,7 +141,7 @@ $level              = check_level();
                         class="btn btn-outline-danger"
                         href="<?php echo base_url('proforma/pdf') ?>"
                     >Generate PDF<i class="fas fa-file-pdf fa-fw"></i></a>
-                </div>
+                </div> -->
 
 
             </div>
