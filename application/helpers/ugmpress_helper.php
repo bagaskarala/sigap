@@ -795,14 +795,6 @@ function strip_disallowed_char($string)
     return $filename.".".$extension;
 }
 
-function get_warehouse_stock(){
-    return [
-        '' => 'Semua',
-        'up_to_50' => '<= 50',
-        'above_50' => '> 50'
-    ];
-}
-
 function get_book_receive_status(){
     return [
         '' => '--Pilih--',
@@ -853,5 +845,51 @@ function get_book_transaction_type(){
         'transfer' => 'Pemindahan',
         'non_sales' => 'Non Penjualan',
         'revision' => 'Revisi'
+    ];
+}
+
+function get_book_transfer_status(){
+    return [
+        '' => '--Pilih--',
+        'waiting' => 'Belum dimulai',
+        'preparing' => 'Sedang disiapkan',
+        'preparing_finish' => 'Selesai disiapkan',
+        'finish' => 'Selesai'
+    ];
+}
+
+function get_book_transfer_status_edit(){
+    return [
+        // '' => '--Pilih--',
+        'waiting' => 'Belum dimulai',
+        'preparing' => 'Sedang disiapkan',
+        'preparing_finish' => 'Selesai disiapkan',
+        'finish' => 'Selesai'
+    ];
+}
+
+function get_book_transfer_destination(){
+    return [
+        '' => '--Pilih--',
+        'showroom' => 'Showroom',
+        'library' => 'Perpustakaan',
+    ];
+}
+
+function get_book_non_sales_type(){
+    return [
+        '' => '--Pilih--',
+        'presentgift' => 'Present Gift',
+        'doorprize' => 'Doorprize',
+        'bedahbuku' => 'Bedah Buku',
+        'dll' => 'Lain-lain'
+    ];
+}
+
+function get_book_non_sales_status(){
+    return [
+        '' => '--Pilih--',
+        'waiting' => 'Menunggu',
+        'finish' => 'Selesai'
     ];
 }
