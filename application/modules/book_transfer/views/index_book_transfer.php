@@ -100,17 +100,17 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     <td class="align-middle">
                                         <?= get_book_transfer_status()[$book_transfer->transfer_status ?? $book_transfer->status]; ?>
                                     </td>
-                                    <td class="align-middle text-right">
+                                    <td class="align-middle text-left">
+                                        <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) : ?>
+                                        <a href="<?= base_url('book_transfer/edit/'.$book_transfer->book_transfer_id); ?>"
+                                            class="btn btn-sm btn-secondary">
+                                            <i class="fa fa-pencil-alt"></i>
+                                            <span class="sr-only">Edit</span>
+                                        </a>
+                                        <?php endif?>
                                         <?php if($book_transfer->status!="finish") : ?>
-                                            <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) : ?>
-                                            <a href="<?= base_url('book_transfer/edit/'.$book_transfer->book_transfer_id); ?>"
-                                                class="btn btn-sm btn-secondary">
-                                                <i class="fa fa-pencil-alt"></i>
-                                                <span class="sr-only">Edit</span>
-                                            </a>
-                                            <?php endif?>
                                             <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_pemasaran' ) : ?>
-                                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                                 data-target="#modal-hapus-<?= $book_transfer->book_transfer_id; ?>"><i
                                                     class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
                                             <div class="text-left">
