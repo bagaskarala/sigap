@@ -123,7 +123,6 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
                     <?= (!$is_handover_deadline_set) ? 'disabled' : ''; ?>" id="btn-generate-pdf-handover"
                     title="Generate PDF berita acara serah terima">Generate PDF <i class="fas fa-file-pdf fa-fw"></i>
                 </a>
-                <?php endif?>
                 <form action="<?=base_url('book_receive/upload_handover/')?>" method="POST"
                     enctype="multipart/form-data" style="display:inline;" id="handover_upload_form">
                     <label class="btn btn-outline-primary mb-0" id="btn-upload-pdf-handover"
@@ -135,6 +134,7 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
                     <input type="hidden" name="receive_id" id="receive_id"
                         value=<?= $book_receive->book_receive_id ?> />
                 </form>
+                <?php endif?>
                 <?php if ($uploaded_file): ?>
                 <a href="<?=base_url('book_receive/download_file/bookreceive/'.$uploaded_file)?>"
                     class="btn btn-outline-success" id="btn-download-pdf-handover"
