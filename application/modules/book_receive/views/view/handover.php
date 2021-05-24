@@ -14,13 +14,6 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
                             'progress' => 'handover',
                             'staff_gudang' => $staff_gudang
                         ]);        
-
-                        // if (!$is_final) :
-                        // //modal select
-                        // $this->load->view('book_receive/view/common/select_modal', [
-                        //     'progress' => 'wrapping',
-                        //     'staff_gudang' => $staff_gudang
-                        // ]);
                 ?>
                 <div class="card-header-control">
                     <button id="btn-start-handover" title="Mulai proses serah terima" type="button" class="d-inline btn 
@@ -40,8 +33,7 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
         <!-- ALERT -->
         <?php 
             $this->load->view('book_receive/view/common/progress_alert', [
-                'progress'          => 'handover',
-                // 'staff_gudang'  => $staff_gudang
+                'progress'          => 'handover'
             ]);
             ?>
 
@@ -96,16 +88,6 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
                     <span class="badge badge-info p-1"><?= $staff->username; ?></span>
                     <?php endforeach; ?>
                 </strong>
-
-                <!-- <?php //if (($_SESSION['level'] == 'superadmin' || ($_SESSION['level'] == 'admin_gudang' && empty($book_receive->handover_deadline))) && !$is_final) : ?>
-                <a href="#" id="btn-modal-staff-handover" title="Staff Bertugas" data-toggle="modal"
-                    data-target="#modal-staff-handover">Staff Bertugas <i class="fas fa-edit fa-fw"></i></a>
-                <?php //else : ?>
-                    <span class="text-muted">Staff Bertugas</span>
-                <?php //endif ?>
-                <strong>
-                    <span><?//= $book_receive->handover_staff ?></span>
-                </strong> -->
             </div>
             <?php endif?>
 
@@ -152,24 +134,18 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
                     <input type="hidden" name="receive_id" id="receive_id"
                         value=<?= $book_receive->book_receive_id ?> />
                 </form>
-                <?php if ($uploaded_file){ ?>
+                <?php endif?>
+                <?php if ($uploaded_file): ?>
                 <a href="<?=base_url('book_receive/download_file/bookreceive/'.$uploaded_file)?>"
                     class="btn btn-outline-success" id="btn-download-pdf-handover"
                     title="Download PDF berita acara serah terima disetujui"><i class="fas fa-download fa-fw"></i>
                     Download File Berita Acara
                 </a>
-
-                <?php }?>
-                <?php endif; ?>
+                <?php endif  ?>
             </div>
         </div>
 
         <?php
-            // modal staff
-            // $this->load->view('book_receive/view/common/input_staff_modal', [
-            //     'progress' => 'handover'
-            // ]);        
-
             // modal deadline
             $this->load->view('book_receive/view/common/deadline_modal', [
                 'progress' => 'handover',

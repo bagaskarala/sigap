@@ -3,9 +3,9 @@ $level = check_level();
 if ($level == 'superadmin' || $level == 'admin_gudang') {
     $progress_text = '';
     if ($progress == 'handover') {
-        $progress_text = 'Serah Terima';
+        $progress_text = 'serah terima';
     } elseif ($progress == 'wrapping') {
-        $progress_text = 'Wrapping';
+        $progress_text = 'wrapping';
     }
 }
 ?>
