@@ -6,8 +6,14 @@ $customer_type      = $this->input->get('customer_type');
 $page               = $this->uri->segment(2);
 $i                  = isset($page) ? $page * $per_page - $per_page : 0;
 
-$customer_type_options = $customer_type_options = array_merge([''  => '- Filter Kategori Customer -'], get_customer_type());
-
+$customer_type_options = [
+    ''  => '- Filter Kategori Customer -',
+    'distributor' => 'Distributor',
+    'reseller' => 'Reseller',
+    'author' => 'Penulis',
+    'member' => 'Member',
+    'general' => 'Umum'
+];
 function generate_proforma_action($proforma_id)
 {
     return html_escape('
@@ -47,7 +53,7 @@ function generate_proforma_action($proforma_id)
     </nav>
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="page-title"> Proforma </h1>
+            <h1 class="page-title"> Faktur </h1>
             <span class="badge badge-info">Total : <?= $total; ?></span>
         </div>
         <a
@@ -81,7 +87,7 @@ function generate_proforma_action($proforma_id)
                         </div>
                         <?= form_open($pages, ['method' => 'GET']); ?>
                         <div class="row">
-                            <div class="col-12 col-md-2 mt-2">
+                            <div class="col-12 col-md-3 mt-2">
                                 <label for="per_page">Data per halaman</label>
                                 <?= form_dropdown('per_page', get_per_page_options(), $per_page, 'id="per_page" class="form-control custom-select d-block" title="List per page"'); ?>
                             </div>
@@ -89,7 +95,7 @@ function generate_proforma_action($proforma_id)
                                 <label for="customer_type">Jenis Customer</label>
                                 <?= form_dropdown('customer_type', $customer_type_options, $customer_type, 'id="customer_type" class="form-control custom-select d-block" title="Customer Type"'); ?>
                             </div>
-                            <div class="col-12 col-md-4 mt-2">
+                            <div class="col-12 col-md-3 mt-2">
                                 <label for="status">Pencarian</label>
                                 <?= form_input('keyword', $keyword, 'placeholder="Cari berdasarkan Nomor, Nama Customer" class="form-control"'); ?>
                             </div>

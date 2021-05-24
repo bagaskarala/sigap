@@ -1,3 +1,7 @@
+<?php
+$empty_books        = $this->session->flashdata('empty_books');
+?>
+
 <header class="page-title-bar">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -23,8 +27,8 @@
                         method="post"
                         action="<?= $form_action ?>"
                     >
-                        <legend>Form Tambah Proforma</legend>
-                        <?php if($form_type == 'edit'): ?>
+                        <legend>Form Proforma</legend>
+                        <?php if ($form_type == 'edit') : ?>
                             <div
                                 id="proforma-number"
                                 style="display: none;"
@@ -71,7 +75,10 @@
                         <hr class="my-4">
 
                         <div class="form-group">
-                            <label for="customer-id" class="font-weight-bold mb-0">
+                            <label
+                                for="customer-id"
+                                class="font-weight-bold mb-0"
+                            >
                                 Customer
                             </label>
                             <div class="form-group mb-4">
@@ -308,7 +315,29 @@
                         </div>
 
                         <hr>
-
+                        <div class="card border-danger">
+                            <div class="card-body text-danger">
+                                <?php if (isset($empty_books)) : ?>
+                                    <h5 class="card-title">Stock buku yang tidak mencukupi: </h5>
+                                    <table class="table table-stripped text-danger">
+                                        <thead>
+                                            <tr>
+                                                <th>Judul Buku</th>
+                                                <th>Stock Tersedia</th>    
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($empty_books as $book) : ?>
+                                                <tr>
+                                                    <td><?= $book->book_title ?></td>
+                                                    <td> <?= $book->stock->warehouse_present ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                <?php endif ?>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -341,63 +370,63 @@
                                 </thead>
                                 <tbody id="proforma_items">
                                     <!-- Items -->
-                                    <?php if($form_type == 'edit'): ?>
+                                    <?php if ($form_type == 'edit') : ?>
                                         <?php foreach ($proforma_book as $books) : ?>
                                             <tr class="text-center">
-                                            <td class="align-middle text-left font-weight-bold"><?= $books->book_title ?>
-                                                <input
-                                                    type="text"
-                                                    hidden
-                                                    name="proforma_book_id[]"
-                                                    class="form-control"
-                                                    value="<?= $books->book_id ?>"
-                                                />
-                                            </td>
-                                            <td class="align-middle">Rp <?= $books->price ?>
-                                                <input
-                                                    id="proforma-book-price-<?= $books->book_id ?>"
-                                                    type="number"
-                                                    hidden
-                                                    name="proforma_book_price[]"
-                                                    class="form-control"
-                                                    value="<?= $books->price ?>"
-                                                />
-                                            </td>
-                                            <td class="align-middle">
-                                                <input
-                                                    id="proforma-book-qty-<?= $books->book_id ?>"
-                                                    type="number"
-                                                    required
-                                                    name="proforma_book_qty[]"
-                                                    class="form-control"
-                                                    value="<?= $books->qty ?>"
-                                                    onchange="updateQty(<?= $books->book_id ?>)"
-                                                />
-                                            </td>
-                                            <td class="align-middle"><?= $books->discount ?>%
-                                                <input
-                                                    id="proforma-book-discount-<?= $books->book_id ?>"
-                                                    type="number"
-                                                    hidden
-                                                    name="proforma_book_discount[]"
-                                                    class="form-control"
-                                                    value="<?= $books->discount ?>"
-                                                />
-                                            </td>
-                                            <td class="align-middle">
-                                                <span id="proforma-book-total-<?= $books->book_id ?>">
-                                                    Rp 
-                                                    <?php
-                                                    $total = $books->qty * $books->price * (1 - $books->discount/100);
-                                                    echo $total;
-                                                    ?>
-                                                </span>
-                                            </td>
-                                            <td class="align-middle"><button
-                                                    type="button"
-                                                    class="btn btn-danger remove"
-                                                >Hapus</button></td>
-                                        </tr>
+                                                <td class="align-middle text-left font-weight-bold"><?= $books->book_title ?>
+                                                    <input
+                                                        type="text"
+                                                        hidden
+                                                        name="proforma_book_id[]"
+                                                        class="form-control"
+                                                        value="<?= $books->book_id ?>"
+                                                    />
+                                                </td>
+                                                <td class="align-middle">Rp <?= $books->price ?>
+                                                    <input
+                                                        id="proforma-book-price-<?= $books->book_id ?>"
+                                                        type="number"
+                                                        hidden
+                                                        name="proforma_book_price[]"
+                                                        class="form-control"
+                                                        value="<?= $books->price ?>"
+                                                    />
+                                                </td>
+                                                <td class="align-middle">
+                                                    <input
+                                                        id="proforma-book-qty-<?= $books->book_id ?>"
+                                                        type="number"
+                                                        required
+                                                        name="proforma_book_qty[]"
+                                                        class="form-control"
+                                                        value="<?= $books->qty ?>"
+                                                        onchange="updateQty(<?= $books->book_id ?>)"
+                                                    />
+                                                </td>
+                                                <td class="align-middle"><?= $books->discount ?>%
+                                                    <input
+                                                        id="proforma-book-discount-<?= $books->book_id ?>"
+                                                        type="number"
+                                                        hidden
+                                                        name="proforma_book_discount[]"
+                                                        class="form-control"
+                                                        value="<?= $books->discount ?>"
+                                                    />
+                                                </td>
+                                                <td class="align-middle">
+                                                    <span id="proforma-book-total-<?= $books->book_id ?>">
+                                                        Rp
+                                                        <?php
+                                                        $total = $books->qty * $books->price * (1 - $books->discount / 100);
+                                                        echo $total;
+                                                        ?>
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle"><button
+                                                        type="button"
+                                                        class="btn btn-danger remove"
+                                                    >Hapus</button></td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     <?php endif ?>
                                 </tbody>
@@ -433,37 +462,52 @@ $(document).ready(function() {
         $('#new-customer-name').val('')
         $('#new-customer-type').val('')
 
-        if(customerId != '')
-        {
+        if (customerId != '') {
             $.ajax({
-            type: "GET",
-            url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
-            datatype: "JSON",
-            success: function(res) {
-                $('#customer-info').show()
-                $('#discount').val(res.data.discount)
-                $('#info-customer-name').html(res.data.name)
-                $('#info-address').html(res.data.address)
-                $('#info-phone-number').html(res.data.phone_number)
-                $('#info-type').html(res.data.type)
-            },
-            error: function(err) {
-                $('#customer-info').hide()
-            },
-        });
-        }    
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#customer-info').show()
+                    $('#discount').val(res.data.discount)
+                    $('#info-customer-name').html(res.data.name)
+                    $('#info-address').html(res.data.address)
+                    $('#info-phone-number').html(res.data.phone_number)
+                    $('#info-type').html(res.data.type)
+                },
+                error: function(err) {
+                    $('#customer-info').hide()
+                },
+            });
+        }
     })
 
     //hilangin buku yg sudah ada
-    <?php if($form_type == 'edit'): ?>
+    <?php if ($form_type == 'edit') : ?>
         <?php foreach ($proforma_book as $books) : ?>
             $('#book-id option[value="' + <?= $books->book_id ?> + '"]').remove()
+
+            //fetch stock sekarang
+            $.ajax({
+                type: "GET",
+                url: "<?= base_url('proforma/api_get_book/'); ?>" + <?= $books->book_id ?>,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#proforma-book-qty-' + <?= $books->book_id ?>).attr({
+                        "max" : res.data.stock,
+                        "min" : 1
+                    });
+                },
+                error: function(err) {
+                    console.log(err);
+                },
+            });
         <?php endforeach; ?>
         $('#discount').val('<?= $discount ?>')
         $('#customer-info').show()
         $('#customer-id').val('<?= $proforma->customer_id ?>').trigger('change')
     <?php endif ?>
-    
+
     $('#tab-customer-new').click(function() {
         $('#customer-info').hide()
         $('#customer-id').val('').trigger('change')
@@ -474,7 +518,7 @@ $(document).ready(function() {
         $('#new-customer-address').val('')
         $('#new-customer-phone-number').val('')
         $('#new-customer-type').val('')
-    })    
+    })
 
     const $flatpickr = $('.dates').flatpickr({
         altInput: true,
@@ -528,7 +572,7 @@ $(document).ready(function() {
     });
 
     $('#book-id').change(function(e) {
-        if(e.target.value != '') {
+        if (e.target.value != '') {
             const bookId = e.target.value
             $.ajax({
                 type: "GET",
@@ -648,8 +692,7 @@ function updateQty(book_id) {
     var discount = $('#proforma-book-discount-' + book_id).val();
     var total_html = $('#proforma-book-total-' + book_id);
 
-    var total = Math.round(qty * price * (1 - discount/100));
+    var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
 }
-
 </script>

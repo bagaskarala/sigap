@@ -52,17 +52,19 @@ class Proforma extends Sales_Controller
         }
         $this->db->trans_begin();
         $flag = true;
+        $empty_books = array();
 
         // Confirm Proforma
         if ($proforma_status == 'confirm') {
             //cek stok gudang dengan proforma_book
             $books = $this->proforma->fetch_proforma_book($id);
             foreach ($books as $book) {
-                $stock = $this->proforma->fetch_warehouse_stock($book->book_id);
+                $book->stock = $this->proforma->fetch_warehouse_stock($book->book_id);
                 $qty = intval($book->qty);
-                $stock = intval($stock->warehouse_present);
+                $stock = intval($book->stock->warehouse_present);
                 if ($qty > $stock) {
                     $flag = false;
+                    array_push($empty_books, $book);
                 }
             }
             if ($flag) {
@@ -115,6 +117,8 @@ class Proforma extends Sales_Controller
         if (!$flag) {
             $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_convert_empty'));
+            $this->session->set_flashdata('empty_books', $empty_books);
+            redirect('proforma/edit/' . $id);
         } else {
             if ($this->db->trans_status() === false) {
                 $this->db->trans_rollback();
@@ -186,7 +190,7 @@ class Proforma extends Sales_Controller
         //View add proforma
         else {
             $customer_type = get_customer_type();
-            
+
             $dropdown_book_options = $this->proforma->get_ready_book_list();
 
             $form_action = "proforma/add";
@@ -271,6 +275,24 @@ class Proforma extends Sales_Controller
         }
     }
 
+    public function generate_pdf($proforma_id)
+    {
+        $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
+        $proforma_books = $this->proforma->fetch_proforma_book($proforma->proforma_id);
+        $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
+
+        // PDF
+        $this->load->library('pdf');
+        $data_format['proforma'] = $proforma ?? '';
+        $data_format['proforma_books'] = $proforma_books ?? '';
+
+        $html = $this->load->view('proforma/view_proforma_pdf', $data_format, true);
+
+        $file_name = $proforma->number . '_Proforma';
+
+        $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+    }
+
     public function api_get_book($book_id)
     {
         $book = $this->proforma->get_book($book_id);
@@ -290,10 +312,12 @@ class Proforma extends Sales_Controller
         return $this->send_json_output(true, $discount);
     }
 
-    // // Auto generate nomor faktur berdasar jenis faktur
-    // public function api_get_last_proforma_number()
-    // {
-    //     $number = $this->proforma->get_last_proforma_number();
-    //     return $this->send_json_output(true, $number);
-    // }
+    public function debug($id) {
+        $books = $this->proforma->fetch_proforma_book($id);
+        foreach ($books as $book) {
+            $book->stock = $this->proforma->fetch_warehouse_stock($book->book_id);
+        }
+        var_dump($books);
+        //return $books;
+    }
 }

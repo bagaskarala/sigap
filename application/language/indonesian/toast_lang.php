@@ -25,3 +25,6 @@ $lang['toast_error_file_not_found'] = 'File tidak dapat ditemukan.';
 
 //
 $lang['toast_mail_send_fail'] = 'Gagal mengirim email.';
+
+//proforma to invoice
+$lang['toast_convert_empty']    = 'Stok buku tidak mencukupi.';

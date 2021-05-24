@@ -74,12 +74,9 @@ class Proforma_model extends MY_Model
 
     public function fetch_warehouse_stock($book_id)
     {
-
         $stock = $this->db->select('warehouse_present')
             ->from('book_stock')
             ->where('book_id', $book_id)
-            ->order_by("book_stock_id", "DESC")
-            ->limit(1)
             ->get()
             ->row();
         return $stock;
