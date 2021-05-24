@@ -312,12 +312,4 @@ class Proforma extends Sales_Controller
         return $this->send_json_output(true, $discount);
     }
 
-    public function debug($id) {
-        $books = $this->proforma->fetch_proforma_book($id);
-        foreach ($books as $book) {
-            $book->stock = $this->proforma->fetch_warehouse_stock($book->book_id);
-        }
-        var_dump($books);
-        //return $books;
-    }
 }
