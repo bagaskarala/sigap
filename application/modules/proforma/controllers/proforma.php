@@ -8,6 +8,8 @@ class Proforma extends Sales_Controller
         $this->pages = 'proforma';
         $this->load->model('proforma_model', 'proforma');
         $this->load->model('book/book_model', 'book');
+        $this->load->model('book_stock/Book_stock_model', 'book_stock');
+        $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
         $this->load->helper('sales_helper');
     }
 
@@ -88,6 +90,8 @@ class Proforma extends Sales_Controller
                 // ID faktur terbaru untuk diisi buku
                 $invoice_id = $this->db->insert_id();
 
+                $total_weight = 0;
+
                 //pemindahan data dari proforma_book ke invoice_book
                 foreach ($books as $book) {
                     $add_book = [
@@ -98,14 +102,32 @@ class Proforma extends Sales_Controller
                         'discount'      => $book->discount
                     ];
                     $this->db->insert('invoice_book', $add_book);
+
+                    $book_weight = $this->proforma->get_book($book->book_id)->weight;
+                    $total_weight +=  $book_weight * $book->qty;
+
+                    // Kurangi Stock Buku
+                    $book_stock = $this->book_stock->where('book_id', $book->book_id)->get();
+                    $book_stock->warehouse_present -= $book->qty;
+                    $this->book_stock->where('book_id', $book->book_id)->update($book_stock);
+
+                    // Masukkan transaksi buku
+                    $this->book_transaction->insert([
+                        'book_id'            => $book->book_id,
+                        'invoice_id'         => $invoice_id,
+                        'book_stock_id'      => $book_stock->book_stock_id,
+                        'stock_initial'      => $book_stock->warehouse_present+$book->qty,
+                        'stock_mutation'     => $book->qty,
+                        'stock_last'         => $book_stock->warehouse_present,
+                        'date'               => $date_created
+                    ]);
                 }
 
                 //delete data proforma
-                // $this->db->where('proforma_id', $id)->delete('proforma');
-                // $this->db->where('proforma_id', $id)->delete('proforma_book');
+                $this->db->where('proforma_id', $id)->delete('proforma');
+                $this->db->where('proforma_id', $id)->delete('proforma_book');
                 $redirect = true;
             }
-            //fetch data proforma dan nomor invoice terbaru
 
         } else if ($proforma_status == 'cancel') {
             //delete data proforma
@@ -172,7 +194,7 @@ class Proforma extends Sales_Controller
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('proforma_book_id'));
 
-            // Masukkan buku di form faktur ke database
+            // Masukkan buku di form proforma ke database
             for ($i = 0; $i < $countsize; $i++) {
                 $book = [
                     'proforma_id'    => $proforma_id,
@@ -232,13 +254,13 @@ class Proforma extends Sales_Controller
 
             $this->db->set($edit)->where('proforma_id', $proforma_id)->update('proforma');
 
-            // Jumlah Buku di Faktur
+            // Jumlah Buku di Proforma
             $countsize = count($this->input->post('proforma_book_id'));
 
             //hapus proforma_book yang sudah ada 
             $this->db->where('proforma_id', $proforma_id)->delete('proforma_book');
 
-            // Masukkan buku di form faktur ke database
+            // Masukkan buku di form proforma ke database
             for ($i = 0; $i < $countsize; $i++) {
                 $book = [
                     'proforma_id'    => $proforma_id,
@@ -312,4 +334,9 @@ class Proforma extends Sales_Controller
         return $this->send_json_output(true, $discount);
     }
 
+    public function debug()
+    {
+        $a = $this->proforma->get_ready_book_list();
+        var_dump($a);
+    }
 }

@@ -53,7 +53,7 @@ function generate_proforma_action($proforma_id)
     </nav>
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="page-title"> Faktur </h1>
+            <h1 class="page-title"> Proforma </h1>
             <span class="badge badge-info">Total : <?= $total; ?></span>
         </div>
         <a

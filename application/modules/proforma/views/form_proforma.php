@@ -315,9 +315,9 @@ $empty_books        = $this->session->flashdata('empty_books');
                         </div>
 
                         <hr>
-                        <div class="card border-danger">
-                            <div class="card-body text-danger">
-                                <?php if (isset($empty_books)) : ?>
+                        <?php if (isset($empty_books)) : ?>
+                            <div class="card border-danger">
+                                <div class="card-body text-danger">
                                     <h5 class="card-title">Stock buku yang tidak mencukupi: </h5>
                                     <table class="table table-stripped text-danger">
                                         <thead>
@@ -335,9 +335,9 @@ $empty_books        = $this->session->flashdata('empty_books');
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
-                                <?php endif ?>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif ?>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>

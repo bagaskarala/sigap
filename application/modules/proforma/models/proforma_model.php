@@ -117,17 +117,17 @@ class Proforma_model extends MY_Model
 
     public function get_book($book_id)
     {
-        $book = $this->select('book.*')
-            ->where('book_id', $book_id)
-            ->get('book');
-
-        $stock = $this->fetch_warehouse_stock($book_id);
-
-        if ($stock == NULL) {
-            $book->stock = 0;
-        } else {
-            $book->stock = $stock->warehouse_present;
+        $book = $this->db->select('*')
+            ->from('book')
+            ->where('book.book_id', $book_id)
+            ->join('book_stock', 'book.book_id = book_stock.book_id', 'left')
+            ->get()
+            ->row();
+        
+        if ($book->warehouse_present == NULL) {
+            $book->warehouse_present = 0;
         }
+
         return $book;
     }
 
