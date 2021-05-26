@@ -334,9 +334,4 @@ class Proforma extends Sales_Controller
         return $this->send_json_output(true, $discount);
     }
 
-    public function debug()
-    {
-        $a = $this->proforma->get_ready_book_list();
-        var_dump($a);
-    }
 }
