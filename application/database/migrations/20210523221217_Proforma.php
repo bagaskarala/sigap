@@ -15,11 +15,6 @@ class Migration_Proforma extends CI_Migration
                 'type' => 'VARCHAR',
                 'constraint' => 50,
             ],
-            'source' => [
-                'type' => 'VARCHAR',
-                'constraint' => 100,
-                'null' => TRUE
-            ],
             'due_date' => [
                 'type' => 'DATETIME',
                 'null' => TRUE,
