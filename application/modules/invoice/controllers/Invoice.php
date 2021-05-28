@@ -227,7 +227,7 @@ class Invoice extends Sales_Controller
                 $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
             }
 
-            if($invoice->source == 'warehouse') {
+            if ($invoice->type != 'showroom') {
                 // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
                 $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $invoice_id)->get()->result();
                 foreach ($book_transactions as $book_transaction) {
@@ -366,7 +366,7 @@ class Invoice extends Sales_Controller
                 }
 
 
-                if($invoice->source == 'warehouse') {
+                if ($invoice->type != 'showroom')  {
                     // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
                     $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $id)->get()->result();
                     foreach ($book_transactions as $book_transaction) {
