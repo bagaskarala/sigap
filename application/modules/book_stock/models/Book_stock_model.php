@@ -52,7 +52,7 @@ class Book_stock_model extends MY_Model
         ];
     }
 
-    public function filter_excel($filters)
+    public function filter_excel_stock($filters)
     {
         $book_stocks =  $this->select([
             'author.author_name', 'draft.draft_id',
@@ -72,6 +72,67 @@ class Book_stock_model extends MY_Model
             ->group_by('draft.draft_id')
             ->get_all();
         return $book_stocks;
+    }
+
+    public function filter_book_asset($filters, $page)
+    {
+        $book_assets = $this->select([
+            'author.author_name', 'draft.draft_id',
+            'book_stock_id', 'book.book_id',
+            'book.book_title', 'book.published_date','book.harga',
+            'book_stock.*'])
+            ->join_table('book', 'book_stock', 'book')
+            ->join_table('draft', 'book', 'draft')
+            ->join_table('category', 'draft', 'category')
+            ->join_table('draft_author', 'draft', 'draft')
+            ->join_table('author', 'draft_author', 'author')
+            ->when('keyword', $filters['keyword'])
+            ->order_by('warehouse_present')
+            ->group_by('draft.draft_id')
+            ->paginate($page)
+            ->get_all();
+
+        $total = $this->select('book.book_id')
+            ->when('keyword', $filters['keyword'])
+            ->join_table('book', 'book_stock', 'book')
+            ->join_table('draft', 'book', 'draft')
+            ->join_table('category', 'draft', 'category')
+            ->join_table('draft_author', 'draft', 'draft')
+            ->join_table('author', 'draft_author', 'author')
+            ->group_by('draft.draft_id')
+            ->order_by('warehouse_present')
+            ->count();
+        foreach ($book_assets as $b) {
+            if ($b->draft_id) {
+                $b->authors = $this->get_id_and_name('author', 'draft_author', $b->draft_id, 'draft');
+            } else {
+                $b->authors = [];
+            }
+        }
+    
+        return [
+            'book_assets' => $book_assets,
+            'total' => $total
+        ];
+    }
+
+    public function filter_excel_asset($filters)
+    {
+        $book_assets =  $this->select([
+            'author.author_name', 'draft.draft_id',
+            'book_stock_id', 'book.book_id',
+            'book.book_title', 'book.published_date','book.harga',
+            'book_stock.*'])
+            ->join_table('book', 'book_stock', 'book')
+            ->join_table('draft', 'book', 'draft')
+            ->join_table('category', 'draft', 'category')
+            ->join_table('draft_author', 'draft', 'draft')
+            ->join_table('author', 'draft_author', 'author')
+            ->when('keyword', $filters['keyword'])
+            ->order_by('book.book_title')
+            ->group_by('draft.draft_id')
+            ->get_all();
+        return $book_assets;
     }
 
     public function when($params, $data)
