@@ -33,7 +33,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
             <section class="card card-fluid">
                 <div class="card-body p-0">
                 <h5 class="mb-0 mt-3 ml-3">Info Total Aset</h5>
-                    <div class="metric row">
+                    <div class="row px-3 mb-2">
                         <div class="col-12">
                             <div class="metric-row metric-flush ">
                                 <div class="col metric metric-bordered align-items-center">
@@ -110,7 +110,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                             value="1"
                                             data-toggle="tooltip"
                                             data-placement="top"
-                                            title="Download excel stok buku"
+                                            title="Download excel aset buku"
                                         ><i class="fas fa-file-excel mr-2"></i>Excel</button>
                                     <?php endif; ?>
                                 </div>

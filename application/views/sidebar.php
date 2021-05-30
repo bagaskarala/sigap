@@ -48,7 +48,7 @@ $menu_list = [
     [
         'name'  => 'Aset Buku',
         'url'   => 'book_asset',
-        'icon'  => 'fas fa-boxes',
+        'icon'  => 'fas fa-coins',
         'level' => 'superadmin|admin_gudang|admin_pemasaran',
     ],
     [
