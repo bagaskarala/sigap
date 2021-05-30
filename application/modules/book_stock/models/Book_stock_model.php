@@ -92,6 +92,14 @@ class Book_stock_model extends MY_Model
             ->paginate($page)
             ->get_all();
 
+        $book_assets_price = $this->select([
+            'book.harga',
+            'book_stock.*'])
+            ->join_table('book', 'book_stock', 'book')
+            ->order_by('warehouse_present')
+            ->paginate($page)
+            ->get_all();
+
         $total = $this->select('book.book_id')
             ->when('keyword', $filters['keyword'])
             ->join_table('book', 'book_stock', 'book')
@@ -112,6 +120,7 @@ class Book_stock_model extends MY_Model
     
         return [
             'book_assets' => $book_assets,
+            'book_assets_price' => $book_assets_price,
             'total' => $total
         ];
     }

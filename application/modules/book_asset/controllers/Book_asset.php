@@ -26,6 +26,7 @@ class Book_asset extends Warehouse_Sales_Controller
         $get_data = $this->book_stock->filter_book_asset($filters, $page);
 
         $book_assets = $get_data['book_assets'];
+        $book_assets_price = $get_data['book_assets_price'];
         $total = $get_data['total'];
 
         $count = array (
@@ -33,7 +34,7 @@ class Book_asset extends Warehouse_Sales_Controller
             'showroom' => 0,
             'library' => 0
         );
-        foreach ($book_assets as $book_asset){
+        foreach ($book_assets_price as $book_asset){
             $count['warehouse'] += $book_asset->harga*$book_asset->warehouse_present;
             $count['showroom'] += $book_asset->harga*$book_asset->showroom_present;
             $count['library'] += $book_asset->harga*$book_asset->library_present;
