@@ -97,7 +97,6 @@ class Book_stock_model extends MY_Model
             'book_stock.*'])
             ->join_table('book', 'book_stock', 'book')
             ->order_by('warehouse_present')
-            ->paginate($page)
             ->get_all();
 
         $total = $this->select('book.book_id')
