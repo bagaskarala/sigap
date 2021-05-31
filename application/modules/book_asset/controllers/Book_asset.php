@@ -164,17 +164,27 @@ class Book_asset extends Warehouse_Sales_Controller
             }
             $i++;
         }
-        $sheet->setCellValue('J'. $i, 'TOTAL');
-        $sheet->getStyle('J'.$i)
+        // total
+        $sheet->setCellValue('G'. $i, 'TOTAL');
+        $sheet->getStyle('G'.$i)
               ->getFill()
               ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
               ->getStartColor()
               ->setARGB('A6A6A6');
-        $sheet->getStyle('J'.$i)
+        $sheet->getStyle('G'.$i)
               ->getFont()
               ->setBold(true);
-        $sumrange = 'K4:K'.$i;
-        $sheet->setCellValue('K'.$i, '=SUM('.$sumrange.')');
+        $sum_warehouse_asset = 'H4:H'.$i;
+        $sheet->setCellValue('H'.$i, '=SUM('.$sum_warehouse_asset.')');
+        
+        $sum_showroom_asset = 'I4:I'.$i;
+        $sheet->setCellValue('I'.$i, '=SUM('.$sum_showroom_asset.')');
+        
+        $sum_library_asset = 'J4:J'.$i;
+        $sheet->setCellValue('J'.$i, '=SUM('.$sum_library_asset.')');
+        
+        $sum_total_asset = 'K4:K'.$i;
+        $sheet->setCellValue('K'.$i, '=SUM('.$sum_total_asset.')');
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');

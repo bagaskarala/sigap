@@ -38,31 +38,31 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                             <div class="metric-row metric-flush ">
                                 <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Gudang </h2>
-                                    <p class="metric-value h3">
-                                        <span class="value"><?= number_format($count['warehouse'], 2, ",", "."); ?></span>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">Rp <?= number_format($count['warehouse'], 2, ",", "."); ?></span>
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Showroom </h2>
-                                    <p class="metric-value h3">
+                                    <p class="metric-value h3 px-2">
                                         <span class="value">
-                                            <?= number_format($count['showroom'], 2, ",", "."); ?>
+                                            Rp <?= number_format($count['showroom'], 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Perpustakaan </h2>
-                                    <p class="metric-value h3">
+                                    <p class="metric-value h3 px-2">
                                         <span class="value">
-                                            <?= number_format($count['library'], 2, ",", "."); ?>
+                                            Rp <?= number_format($count['library'], 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Total Keseluruhan </h2>
-                                    <p class="metric-value h3">
+                                    <p class="metric-value h3 px-2">
                                         <span class="value">
-                                            <?= number_format($count['all'], 2, ",", "."); ?>
+                                            Rp <?= number_format($count['all'], 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
@@ -162,7 +162,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                             class="align-middle text-center"
                                             colspan="3"
                                         >
-                                            Aset</th>
+                                            Aset (Rupiah)</th>
                                     </tr>
                                     <tr>
                                         <th
