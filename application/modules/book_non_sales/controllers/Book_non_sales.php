@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-class Book_non_sales extends Warehouse_sales_controller
+class Book_non_sales extends Warehouse_Sales_Controller
 {
     public function __construct()
     {
