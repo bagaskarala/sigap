@@ -29,15 +29,14 @@ $level              = check_level();
         <header class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item ">
-                    <a class="nav-link active show" data-toggle="tab" href="#stock-data"><i
+                    <a class="nav-link active show" data-toggle="tab" href="#asset-data"><i
                             class="fa fa-warehouse pr-1"></i>Detail Aset Buku</a>
                 </li>
             </ul>
         </header>
         <div class="card-body">
             <div class="tab-content">
-                <!--stock data-->
-                <div class="tab-pane fade active show" id="stock-data">
+                <div class="tab-pane fade active show" id="asset-data">
                     <div id="reload-stock">
                     <?php if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran') : ?>
                         <?php $i = 1; ?>
@@ -149,7 +148,6 @@ $level              = check_level();
                     </div>
                     <?php endif?>
                 </div>
-                <!--stock data-->
             </div>
         </div>
     </section>
