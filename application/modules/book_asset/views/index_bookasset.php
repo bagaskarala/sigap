@@ -208,6 +208,8 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         <tr>
                                             <td class="align-middle text-center"><?= ++$i; ?></td>
                                             <td class="align-middle font-weight-bold">
+                                                <a href="<?= base_url('book_asset/view/' . $book_asset->book_id . ''); ?>"
+                                                class="font-weight-bold">
                                                 <?= highlight_keyword($book_asset->book_title, $keyword); ?>
                                             </td>
                                             <td class="align-middle text-center">

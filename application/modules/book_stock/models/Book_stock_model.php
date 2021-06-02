@@ -206,11 +206,6 @@ class Book_stock_model extends MY_Model
         ->row();
     }
 
-    public function delete_book_stock($where){
-        $this->db->where('book_stock_id', $where);
-        $this->db->delete('book_stock');
-    }
-
     public function get_stock_revision($book_id){
         return $this->db->select('*')
         ->from('book_stock_revision')

@@ -51,10 +51,18 @@ class Book_asset extends Warehouse_Sales_Controller
         }
     }
 
-    public function api_get_by_book_id($book_id)
-    {
-        $book_asset = $this->book_stock->get_book_asset_by_book_id($book_id);
-        return $this->send_json_output(true, $book_asset);
+    public function view($book_id){
+        $book_asset = $this->book_stock->get_book_stock_by_book_id($book_id);
+        if (!$book_asset) {
+            $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
+            redirect($this->pages);
+        }
+
+        $book_asset->library_stock = $this->book_stock->get_library_stock($book_asset->book_stock_id);
+        $pages                      = $this->pages;
+        $main_view                  = 'book_asset/view_bookasset';
+        $this->load->view('template', compact('pages', 'main_view', 'book_asset'));
+        return;
     }
 
     public function generate_excel($filters)
