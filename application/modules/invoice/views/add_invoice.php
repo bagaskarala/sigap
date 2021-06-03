@@ -45,7 +45,7 @@
                                 for="source"
                                 class="font-weight-bold"
                             >Asal Stok<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source', $source, 0, 'id="source" class="form-control custom-select d-block"'); ?>
+                            <?= form_dropdown('source', $source, 'warehouse', 'id="source" class="form-control custom-select d-block"'); ?>
                             <small
                                 id="error-source"
                                 class="d-none error-message text-danger"
@@ -78,6 +78,7 @@
                                     name="due-date"
                                     id="due-date"
                                     class="form-control dates"
+                                    required
                                 />
                                 <div class="input-group-append">
                                     <button
@@ -95,7 +96,10 @@
                         <hr class="my-4">
 
                         <div class="form-group">
-                            <label for="customer-id" class="font-weight-bold mb-0">
+                            <label
+                                for="customer-id"
+                                class="font-weight-bold mb-0"
+                            >
                                 Customer
                             </label>
                             <div class="form-group mb-4">
@@ -145,6 +149,10 @@
                                                 <tr>
                                                     <td width="175px"> Nomor Telepon </td>
                                                     <td id="info-phone-number"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="175px"> Email </td>
+                                                    <td id="info-email"></td>
                                                 </tr>
                                                 <tr>
                                                     <td width="175px"> Tipe Membership </td>
@@ -216,6 +224,19 @@
                                         </div>
                                         <div class="form-group">
                                             <label
+                                                for="new-customer-email"
+                                                class="font-weight-bold"
+                                            >Email
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="new-customer-email"
+                                                id="new-customer-email"
+                                                class="form-control"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label
                                                 for="new-customer-type"
                                                 class="font-weight-bold"
                                             >Jenis Customer<abbr title="Required">*</abbr></label>
@@ -230,15 +251,15 @@
                             </div>
 
                         </div>
-                        
+
                         <small
                             id="error-customer-info"
                             class="d-none error-message text-danger"
                         >Data customer wajib diisi!</small>
-                        
+
                         <hr class="my-4">
                         <div class="row">
-                            <div class="form-group col-md-8">
+                            <div id="book-dropdown" class="form-group col-md-8">
                                 <label
                                     for="book_id"
                                     class="font-weight-bold"
@@ -368,6 +389,12 @@
                                 <tbody id="invoice_items">
                                     <!-- Items -->
                                 </tbody>
+                                <tfoot>
+                                    <tr style="text-align:center;">
+                                        <td><b>Grand Total</b></td>
+                                        <td id="grand_total">Rp 0</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
 
@@ -392,7 +419,6 @@
 <script>
 $(document).ready(function() {
     $('#type').val('')
-    $('#source').val('')
 
     $('#tab-customer-new').click(function() {
         $('#customer-info').hide()
@@ -404,9 +430,8 @@ $(document).ready(function() {
         $('#new-customer-address').val('')
         $('#new-customer-phone-number').val('')
         $('#new-customer-type').val('')
+        $('#new-customer-email').val('')
     })
-
-    
 
     const $flatpickr = $('.dates').flatpickr({
         altInput: true,
@@ -452,6 +477,7 @@ $(document).ready(function() {
         } else {
             add_book_to_invoice(qty.max);
             reset_book();
+            updateGrandTotal()
         }
     });
 
@@ -464,25 +490,29 @@ $(document).ready(function() {
     });
 
     $('#book-id').change(function(e) {
-        if(e.target.value != '') {
-            const bookId = e.target.value
+        if (e.target.value != '') {
+            var bookId = e.target.value
+            var source =  $("#source").val()
+            var libraryId = 0
+            if ($("#source-library-id").val() != '') {
+                libraryId =  $("#source-library-id").val()
+            }
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('invoice/api_get_book/'); ?>" + bookId,
+                url: "<?= base_url('invoice/api_get_book_dynamic_stock/'); ?>" + bookId + '/' + source + '/' + libraryId,
                 datatype: "JSON",
                 success: function(res) {
                     var published_date = new Date(res.data.published_date);
-
                     $('#book-info').show()
                     $('#qty').attr({
-                        "max": res.data.warehouse_present
+                        "max": res.data.stock
                     });
                     $('#info-book-title').html(res.data.book_title)
                     $('#info-book-author').html(res.data.author_name)
                     $('#info-isbn').html(res.data.isbn)
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
-                    $('#info-stock').html(res.data.warehouse_present)
+                    $('#info-stock').html(res.data.stock)
                 },
                 error: function(err) {
                     console.log(err);
@@ -512,26 +542,26 @@ $(document).ready(function() {
         $('#new-customer-name').val('')
         $('#new-customer-type').val('')
 
-        if(customerId != '')
-        {
+        if (customerId != '') {
             $.ajax({
-            type: "GET",
-            url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
-            datatype: "JSON",
-            success: function(res) {
-                $('#customer-info').show()
-                $('#discount').val(res.data.discount)
-                $('#info-customer-name').html(res.data.name)
-                $('#info-address').html(res.data.address)
-                $('#info-phone-number').html(res.data.phone_number)
-                $('#info-type').html(res.data.type)
-            },
-            error: function(err) {
-                $('#customer-info').hide()
-            },
-        });
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#customer-info').show()
+                    $('#discount').val(res.data.discount)
+                    $('#info-customer-name').html(res.data.name)
+                    $('#info-address').html(res.data.address)
+                    $('#info-phone-number').html(res.data.phone_number)
+                    $('#info-email').html(res.data.email)
+                    $('#info-type').html(res.data.type)
+                },
+                error: function(err) {
+                    $('#customer-info').hide()
+                },
+            });
         }
-        
+
     })
 
     $('#type').change(function(e) {
@@ -540,9 +570,11 @@ $(document).ready(function() {
             $('#source-dropdown').show()
         } else {
             $('#source-dropdown').hide()
-            $('#source').val('')
-            $('#source-library-dropdown').hide()
-            $('#source-library-id').val('').trigger('change')
+            if ($('#source').val() != 'warehouse') {
+                $('#source').val('warehouse')
+                $('#source-library-dropdown').hide()
+                $('#source-library-id').val('').trigger('change')
+            }
         }
     })
 
@@ -552,6 +584,23 @@ $(document).ready(function() {
         } else {
             $("#source-library-dropdown").hide()
             $('#source-library-id').val('').trigger('change')
+        }
+    })
+
+    // update dropdown list buku
+    $('#source-library-id').change(function() {
+        var value = $("#source-library-id").val()
+        $('#book-info').hide()
+        if (value == '') {
+            $('#invoice_items tr').each(function() {
+                $(this).closest("tr").remove();
+            })
+            updateDropdown('warehouse', '')
+        } else {
+            $('#invoice_items tr').each(function() {
+                $(this).closest("tr").remove();
+            })
+            updateDropdown('library', value)
         }
     })
 
@@ -600,7 +649,7 @@ function add_book_to_invoice(stock) {
 
     // Jumlah
     html += '<td class="align-middle">';
-    html += '<input id="invoice-book-qty-' + bookId.value + '" type="number" required name="invoice_book_qty[]" class="form-control" value="' + document.getElementById('qty').value + '" max="' + stock + '" onchange=updateQty(' + bookId.value + ')>';
+    html += '<input id="invoice-book-qty-' + bookId.value + '" type="number" required name="invoice_book_qty[]" class="form-control" value="' + document.getElementById('qty').value + '"min=1 max="' + stock + '" onchange=updateQty(' + bookId.value + ')>';
     html += '</td>';
 
     // Diskon
@@ -610,17 +659,16 @@ function add_book_to_invoice(stock) {
 
     // Total
     var totalPrice = (parseFloat($('#info-price').text())) * (parseFloat($('#qty').val())) * (1 - (parseFloat($('#discount').val()) / 100));
-    html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
+    html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '">Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
 
     $('#invoice_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
 }
 
 function reset_book() {
-
     document.getElementById('qty').value = 1;
     $("#book-id").val('').trigger('change')
     $('#book-info').hide();
@@ -632,8 +680,45 @@ function updateQty(book_id) {
     var discount = $('#invoice-book-discount-' + book_id).val();
     var total_html = $('#invoice-book-total-' + book_id);
 
-    var total = Math.round(qty * price * (1 - discount/100));
+    var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
+    updateGrandTotal()
 }
 
+function updateGrandTotal() {
+    var grandTotal = 0
+    $('#invoice_items tr').each(function() {
+        $selector = $(this).find("td:first")
+        book_id = $selector.find("input").val()
+        grandTotal += Math.round($('#invoice-book-qty-' + book_id).val() * $('#invoice-book-price-' + book_id).val() * (1 - $('#invoice-book-discount-' + book_id).val() / 100))
+        $('#grand_total').html('Rp ' + grandTotal)
+    })
+}
+
+function decreaseGrandTotal(book_id) {
+    var total_html = $('#invoice-book-total-' + book_id).html()
+    var res = total_html.split(" ")
+    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
+    $('#grand_total').html('Rp ' + grandTotal)
+}
+
+function updateDropdown(type, library_id) {
+    $.ajax({
+		type: "GET",
+		url: "<?= base_url('invoice/api_get_book_dropdown/'); ?>" + type + '/' + library_id,
+		dataType: "JSON",
+		success: function(res) {
+            $('#book-id').empty();
+            for( i=0; i < Object.keys(res.data).length; i++) {
+                $('#book-id').append('<option value="'+ Object.keys(res.data)[i] +'">'+ Object.values(res.data)[i] +'</option>');
+            }
+		},
+        error: function(err) {
+            console.log(err)
+        },
+		complete: function() {
+            $('#book-id').val('').trigger('change')
+        }
+    }); 
+}
 </script>

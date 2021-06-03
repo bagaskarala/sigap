@@ -68,11 +68,12 @@ class Invoice extends Sales_Controller
                     'name'          => $this->input->post('new-customer-name'),
                     'address'       => $this->input->post('new-customer-address'),
                     'phone_number'  => $this->input->post('new-customer-phone-number'),
+                    'email'         => $this->input->post('new-customer-email'),
                     'type'          => $this->input->post('new-customer-type')
                 ];
                 $this->db->insert('customer', $add);
                 $customer_id = $this->db->insert_id();
-            } 
+            }
             //Customer null (showroom)
             else {
                 $customer_id = null;
@@ -80,16 +81,20 @@ class Invoice extends Sales_Controller
 
             $type = $this->input->post('type');
             $status = 'waiting';
+            $source = $this->input->post('source') ?? 'warehouse';
+
             if ($type == 'showroom') {
                 $status = 'finish';
+                $source = 'showroom';
             }
+            $library_id = $this->input->post('source-library-id');
             $add = [
                 'number'            => $this->invoice->get_last_invoice_number($type),
                 'customer_id'       => $customer_id,
                 'due_date'          => $this->input->post('due-date'),
                 'type'              => $type,
-                'source'            => $this->input->post('source'),
-                'source_library_id' => $this->input->post('source-library-id'),
+                'source'            => $source,
+                'source_library_id' => $library_id,
                 'status'            => $status,
                 'issued_date'       => $date_created
                 // 'user_created'      => $user_created
@@ -97,9 +102,6 @@ class Invoice extends Sales_Controller
             $this->db->insert('invoice', $add);
             // ID faktur terbaru untuk diisi buku
             $invoice_id = $this->db->insert_id();
-            if ($type == 'credit' || $type == 'online') {
-                $this->db->set('source', 'warehouse')->where('invoice_id', $invoice_id)->update('invoice');
-            }
 
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('invoice_book_id'));
@@ -115,6 +117,7 @@ class Invoice extends Sales_Controller
                     'discount'      => $this->input->post('invoice_book_discount')[$i]
                 ];
                 $this->db->insert('invoice_book', $book);
+                // Hitung berat buku
                 $book_weight = $this->invoice->get_book($book['book_id'])->weight;
                 $total_weight +=  $book_weight * $book['qty'];
 
@@ -122,8 +125,20 @@ class Invoice extends Sales_Controller
                 $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
                 if ($type == 'showroom') {
                     $book_stock->showroom_present -= $book['qty'];
-                } else {
+                } else 
+                if ($source == 'warehouse') {
                     $book_stock->warehouse_present -= $book['qty'];
+                } else
+                if ($source == 'library') {
+                    // kurangi stock detail perpus
+                    $library_stock = ($this->book_stock->get_one_library_stock($book_stock->book_stock_id, $library_id))->library_stock;
+                    $book_stock->library_present -= $book['qty'];
+                    $library_stock -= $book['qty'];
+
+                    $this->db->set('library_stock', $library_stock)
+                        ->where('book_stock_id', $book_stock->book_stock_id)
+                        ->where('library_id', $library_id)
+                        ->update('library_stock_detail');
                 }
                 $this->book_stock->where('book_id', $book['book_id'])->update($book_stock);
 
@@ -134,13 +149,12 @@ class Invoice extends Sales_Controller
                         'book_id'            => $book['book_id'],
                         'invoice_id'         => $invoice_id,
                         'book_stock_id'      => $book_stock->book_stock_id,
-                        'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
+                        'stock_initial'      => $book_stock->warehouse_present + $book['qty'],
                         'stock_mutation'     => $book['qty'],
                         'stock_last'         => $book_stock->warehouse_present,
                         'date'               => $date_created
-                    ]);        
+                    ]);
                 }
-                
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
 
@@ -158,13 +172,12 @@ class Invoice extends Sales_Controller
 
             $source = array(
                 'library'   => 'Perpustakaan',
-                'showroom'  => 'Showroom',
                 'warehouse' => 'Gudang'
             );
 
             $customer_type = get_customer_type();
 
-            $dropdown_book_options = $this->invoice->get_ready_book_list();
+            $dropdown_book_options = $this->invoice->get_available_book_list('warehouse', '');
 
             $pages       = $this->pages;
             $main_view   = 'invoice/add_invoice';
@@ -176,7 +189,7 @@ class Invoice extends Sales_Controller
     {
         $customer_type = get_customer_type();
 
-        $dropdown_book_options = $this->invoice->get_ready_book_list_showroom();
+        $dropdown_book_options = $this->invoice->get_available_book_list('showroom', '');
 
         $pages       = 'invoice/add_showroom';
         $main_view   = 'invoice/add_showroom';
@@ -187,8 +200,6 @@ class Invoice extends Sales_Controller
     {
         //post edit invoice
         if ($_POST) {
-            $invoice = $this->invoice->fetch_invoice_id($invoice_id);
-
             //validasi input edit
             $this->invoice->validate_invoice();
             //Nentuin customer id jika customer diambil dari database
@@ -201,6 +212,7 @@ class Invoice extends Sales_Controller
                     'name'          => $this->input->post('new-customer-name'),
                     'address'       => $this->input->post('new-customer-address'),
                     'phone_number'  => $this->input->post('new-customer-phone-number'),
+                    'email'         => $this->input->post('new-customer-email'),
                     'type'          => $this->input->post('new-customer-type')
                 ];
                 $this->db->insert('customer', $add);
@@ -210,8 +222,6 @@ class Invoice extends Sales_Controller
             $edit = [
                 'customer_id'       => $customer_id,
                 'due_date'          => $this->input->post('due-date'),
-                'source'            => $this->input->post('source'),
-                'source_library_id' => $this->input->post('source-library-id'),
                 'status'            => 'waiting'
                 // 'date_edited'   => date('Y-m-d H:i:s'),
                 // 'user_edited'   => $_SESSION['username']
@@ -219,44 +229,55 @@ class Invoice extends Sales_Controller
 
             $this->db->set($edit)->where('invoice_id', $invoice_id)->update('invoice');
 
+            $invoice = $this->invoice->fetch_invoice_id($invoice_id);
             // Kembalikan stock buku
             $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
             foreach ($invoice_books as $invoice_book) {
-                $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
-                $book_stock->warehouse_present += $invoice_book->qty;
-                $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-            }
-
-            if ($invoice->type != 'showroom') {
-                // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
-                $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $invoice_id)->get()->result();
-                foreach ($book_transactions as $book_transaction) {
-                    $mutation = $book_transaction->stock_mutation;
-                    $newer_transactions = $this->db->select('*')
-                                                    ->from('book_transaction')
-                                                    ->where('book_transaction_id >', $book_transaction->book_transaction_id)
-                                                    ->where('book_id', $book_transaction->book_id)
-                                                    ->get()->result();
-                    foreach ($newer_transactions as $newer_transaction) {
-                        $newer_transaction->stock_initial += $mutation;
-                        $newer_transaction->stock_last += $mutation;
-                        $this->book_transaction->where('book_transaction_id', $newer_transaction->book_transaction_id)->update($newer_transaction);
-                    }
+                if ($invoice->source == 'warehouse') {
+                    $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                    $book_stock->warehouse_present += $invoice_book->qty;
+                    $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
+                } else 
+                if ($invoice->source == 'library') {
+                    $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                    $library_id = $invoice->source_library_id;
+                    $library_stock = ($this->book_stock->get_one_library_stock($book_stock->book_stock_id, $library_id))->library_stock;
+                    $book_stock->library_present += $invoice_book->qty;
+                    $library_stock += $invoice_book->qty;
+                    $this->db->set('library_stock', $library_stock)
+                    ->where('book_stock_id', $book_stock->book_stock_id)
+                    ->where('library_id', $library_id)
+                    ->update('library_stock_detail');
                 }
-                // Hapus Transaction yang sudah ada
-                $this->db->where('invoice_id', $invoice_id)->delete('book_transaction');
+                $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
             }
 
             // Hapus invoice_book yang sudah ada 
             $this->db->where('invoice_id', $invoice_id)->delete('invoice_book');
-            
 
-            
+            // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
+            $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $invoice_id)->get()->result();
+            foreach ($book_transactions as $book_transaction) {
+                $mutation = $book_transaction->stock_mutation;
+                $newer_transactions = $this->db->select('*')
+                    ->from('book_transaction')
+                    ->where('book_transaction_id >', $book_transaction->book_transaction_id)
+                    ->where('book_id', $book_transaction->book_id)
+                    ->get()->result();
+                foreach ($newer_transactions as $newer_transaction) {
+                    $newer_transaction->stock_initial += $mutation;
+                    $newer_transaction->stock_last += $mutation;
+                    $this->book_transaction->where('book_transaction_id', $newer_transaction->book_transaction_id)->update($newer_transaction);
+                }
+            }
+            // Hapus Transaction yang sudah ada
+            $this->db->where('invoice_id', $invoice_id)->delete('book_transaction');
+
             // Jumlah Buku di Faktur
             $countsize = count($this->input->post('invoice_book_id'));
-            // Total berat buku
+
             $total_weight = 0;
-            // Masukkan buku di form faktur ke database
+            // Masukkan invoice_book yang baru (hasil edit) ke database
             for ($i = 0; $i < $countsize; $i++) {
                 $book = [
                     'invoice_id'    => $invoice_id,
@@ -269,9 +290,21 @@ class Invoice extends Sales_Controller
                 $book_weight = $this->invoice->get_book($book['book_id'])->weight;
                 $total_weight +=  $book_weight * $book['qty'];
 
-                // Kurangi Stock Buku
                 $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
-                $book_stock->warehouse_present -= $book['qty'];
+                if ($invoice->source == 'warehouse') {
+                    $book_stock->warehouse_present -= $book['qty'];
+                } else
+                if ($invoice->source == 'library') {
+                    // kurangi stock detail perpus
+                    $library_stock = ($this->book_stock->get_one_library_stock($book_stock->book_stock_id, $library_id))->library_stock;
+                    $book_stock->library_present -= $book['qty'];
+                    $library_stock -= $book['qty'];
+
+                    $this->db->set('library_stock', $library_stock)
+                        ->where('book_stock_id', $book_stock->book_stock_id)
+                        ->where('library_id', $library_id)
+                        ->update('library_stock_detail');
+                }
                 $this->book_stock->where('book_id', $book['book_id'])->update($book_stock);
 
                 // Masukkan transaksi buku
@@ -279,11 +312,11 @@ class Invoice extends Sales_Controller
                     'book_id'            => $book['book_id'],
                     'invoice_id'         => $invoice_id,
                     'book_stock_id'      => $book_stock->book_stock_id,
-                    'stock_initial'      => $book_stock->warehouse_present+$book['qty'],
+                    'stock_initial'      => $book_stock->warehouse_present + $book['qty'],
                     'stock_mutation'     => $book['qty'],
                     'stock_last'         => $book_stock->warehouse_present,
                     'date'               => date('Y-m-d H:i:s')
-                ]); 
+                ]);
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
 
@@ -303,20 +336,19 @@ class Invoice extends Sales_Controller
                 'credit'      => 'Kredit',
                 'online'      => 'Online',
                 'cash'        => 'Tunai',
-                'showroom'    => 'Showroom',
             );
 
             $source = array(
                 'library'   => 'Perpustakaan',
-                'showroom'  => 'Showroom',
-                'warehouse' => 'Gudang'
+                'warehouse' => 'Gudang',
             );
 
             $customer_type = get_customer_type();
 
             $invoice_book = $this->invoice->fetch_invoice_book($invoice->invoice_id);
 
-            $dropdown_book_options = $this->invoice->get_ready_book_list();
+
+            $dropdown_book_options = $this->invoice->get_available_book_list($invoice->source, $invoice->source_library_id);
 
             $pages       = $this->pages;
             $main_view   = 'invoice/edit_invoice';
@@ -334,62 +366,99 @@ class Invoice extends Sales_Controller
 
         $this->db->trans_begin();
 
-        // Confirm Faktur
-        if ($invoice_status == 'confirm') {
-            // M T W T F S S
-            // 1 2 3 4 5 6 7
-            if (date('N') < 5) {
-                $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ 1 day"));
-            } else {
-                $add_day = 8 - date('N');
-                $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ " . $add_day . "day"));
-            }
-            $this->invoice->where('invoice_id', $id)->update([
-                'status' => $invoice_status,
-                'confirm_date' => now(),
-                'preparing_deadline' => $preparing_deadline
-            ]);
-        } else
-            // Cancel Faktur
-            if ($invoice_status == 'cancel') {
+        if ($invoice->status == 'waiting') {
+            // Confirm Faktur
+            if ($invoice_status == 'confirm') {
+                // M T W T F S S
+                // 1 2 3 4 5 6 7
+                if (date('N') < 5) {
+                    $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ 1 day"));
+                } else {
+                    $add_day = 8 - date('N');
+                    $preparing_deadline = date("Y-m-d H:i:s", strtotime("+ " . $add_day . "day"));
+                }
+                if ($invoice->source != 'warehouse') {
+                    $invoice_status = 'finish';
+                }
                 $this->invoice->where('invoice_id', $id)->update([
                     'status' => $invoice_status,
-                    'cancel_date' => now(),
+                    'confirm_date' => now(),
+                    'preparing_deadline' => $preparing_deadline
                 ]);
-
-                // Kembalikan stock buku
-                $invoice_books  = $this->invoice->fetch_invoice_book($id);
-                foreach ($invoice_books as $invoice_book) {
-                    $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
-                    $book_stock->warehouse_present += $invoice_book->qty;
-                    $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-                }
-
-
-                if ($invoice->type != 'showroom')  {
-                    // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
-                    $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $id)->get()->result();
-                    foreach ($book_transactions as $book_transaction) {
-                        $mutation = $book_transaction->stock_mutation;
-                        $newer_transactions = $this->db->select('*')
-                                                        ->from('book_transaction')
-                                                        ->where('book_transaction_id >', $book_transaction->book_transaction_id)
-                                                        ->where('book_id', $book_transaction->book_id)
-                                                        ->get()->result();
-                        foreach ($newer_transactions as $newer_transaction) {
-                            $newer_transaction->stock_initial += $mutation;
-                            $newer_transaction->stock_last += $mutation;
-                            $this->book_transaction->where('book_transaction_id', $newer_transaction->book_transaction_id)->update($newer_transaction);
-                        }
+            } else
+                // Cancel Faktur
+                if ($invoice_status == 'cancel') {
+                    $this->invoice->where('invoice_id', $id)->update([
+                        'status' => $invoice_status,
+                        'cancel_date' => now(),
+                    ]);
+                    $invoice_books  = $this->invoice->fetch_invoice_book($id);
+                    // Harga dibuat 0 (Untuk bagian pendapatan)
+                    foreach ($invoice_books as $invoice_book) {
+                        $this->db->set('price', 0)->where('invoice_id', $id)->update('invoice_book');
                     }
-                    // Hapus Transaction yang sudah ada
-                    $this->db->where('invoice_id', $id)->delete('book_transaction');
+
+
+                    if ($invoice->type != 'showroom') {
+                        // Kembalikan stock buku
+                        $invoice_books  = $this->invoice->fetch_invoice_book($id);
+                        foreach ($invoice_books as $invoice_book) {
+                            if ($invoice->source == 'warehouse') {
+                                $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                                $book_stock->warehouse_present += $invoice_book->qty;
+                                $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
+                            } else 
+                            if ($invoice->source == 'library') {
+                                $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                                $library_id = $invoice->source_library_id;
+                                $library_stock = ($this->book_stock->get_one_library_stock($book_stock->book_stock_id, $library_id))->library_stock;
+                                $book_stock->library_present += $invoice_book->qty;
+                                $library_stock += $invoice_book->qty;
+                                $this->db->set('library_stock', $library_stock)
+                                ->where('book_stock_id', $book_stock->book_stock_id)
+                                ->where('library_id', $library_id)
+                                ->update('library_stock_detail');
+                            }
+                            $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
+                        }
+                        if ($invoice->source == 'warehouse') {
+                            // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
+                            $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $id)->get()->result();
+                            foreach ($book_transactions as $book_transaction) {
+                                $mutation = $book_transaction->stock_mutation;
+                                $newer_transactions = $this->db->select('*')
+                                    ->from('book_transaction')
+                                    ->where('book_transaction_id >', $book_transaction->book_transaction_id)
+                                    ->where('book_id', $book_transaction->book_id)
+                                    ->get()->result();
+                                foreach ($newer_transactions as $newer_transaction) {
+                                    $newer_transaction->stock_initial += $mutation;
+                                    $newer_transaction->stock_last += $mutation;
+                                    $this->book_transaction->where('book_transaction_id', $newer_transaction->book_transaction_id)->update($newer_transaction);
+                                }
+                            }
+                        }
+                        // Hapus Transaction yang sudah ada
+                        $this->db->where('invoice_id', $id)->delete('book_transaction');
+                    }
                 }
+        } else
+        if ($invoice->status == 'preparing_finish') {
+            // Finish Faktur
+            if ($invoice_status == 'finish') {
+                $this->invoice->where('invoice_id', $id)->update([
+                    'status' => $invoice_status,
+                    'finish_date' => now(),
+                ]);
             }
+        }
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
+        } else if ($this->db->trans_status() != false && $invoice_status == 'confirm') {
+            $this->db->trans_commit();
+            $this->session->set_flashdata('confirm_invoice', 'Permintaan diteruskan ke gudang');
         } else {
             $this->db->trans_commit();
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
@@ -400,8 +469,11 @@ class Invoice extends Sales_Controller
 
     public function update_delivery_fee($invoice_id)
     {
-        $delivery_fee = $this->input->post('delivery_fee');
-        $this->db->set('delivery_fee', $delivery_fee)->where('invoice_id', $invoice_id)->update('invoice');
+        $edit = [
+            'delivery_fee' => $this->input->post('delivery_fee'),
+            'receipt' => $this->input->post('receipt')
+        ];
+        $this->db->set($edit)->where('invoice_id', $invoice_id)->update('invoice');
         echo json_encode(['status' => TRUE]);
     }
 
@@ -433,16 +505,28 @@ class Invoice extends Sales_Controller
         return $this->send_json_output(true, $book);
     }
 
+    public function api_get_book_dynamic_stock($book_id, $source, $library_id)
+    {
+        $book = $this->invoice->get_book_dynamic_stock($book_id, $source, $library_id);
+        return $this->send_json_output(true, $book);
+    }
+
     public function api_get_customer($customer_id)
     {
         $customer =  $this->invoice->get_customer($customer_id);
         return $this->send_json_output(true, $customer);
     }
-    
+
     // Auto fill diskon berdasar jenis customer
     public function api_get_discount($customerType)
     {
         $discount = $this->invoice->get_discount($customerType);
         return $this->send_json_output(true, $discount);
-    }    
+    }
+
+    public function api_get_book_dropdown($type, $library_id='')
+    {
+        $data = $this->invoice->get_available_book_list($type, $library_id);
+        return $this->send_json_output(true, $data);
+    } 
 }

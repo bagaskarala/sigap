@@ -136,20 +136,22 @@
                 Kepada Yth.<br>
                 <?= $customer->name ?><br>
                 <?= $customer->address ?><br>
-                <?= $customer->phone_number ?><br><br>
-                No Faktur : <?= $invoice->number ?>
+                <?= $customer->phone_number ?><br>
+                <?= $customer->email ?><br><br>
+                No Faktur : <b><?= $invoice->number ?></b><br>
+                Bukti Bayar : <?= $invoice->receipt ?>
             </td>
             <td style="width:30%; vertical-align: top;">
                 <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
                 Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)))] . " " . date("Y", strtotime($invoice->issued_date)) ?><br>
                 Jatuh Tempo : <?= date("d", strtotime($invoice->due_date)) . " " . $month[intval(date("m", strtotime($invoice->due_date)))] . " " . date("Y", strtotime($invoice->due_date)) ?>
             </td>
-        </tr>
+        </tr>   
     </table>
 
     <table
         class="invoice-table"
-        style="width: 100%;"
+        style="width: 100%; margin-top: 10px;"
     >
         <thead
             class="invoice-table"
@@ -191,7 +193,7 @@
                     width="26%"
                     class="align-middle invoice-table"
                     colspan="2"
-                >Harga</th>
+                >Harga (Rp)</th>
             </tr>
 
             <tr>
@@ -203,25 +205,28 @@
             <?php $i = 1; ?>
             <?php foreach ($invoice_books as $invoice_book) : ?>
                 <tr class="invoice-table">
-                    <td class="invoice-table"><?= $i++ ?></td>
-                    <td class="invoice-table"></td>
-                    <td class="invoice-table"><?= $invoice_book->book_title ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right;"
+                        style="height: 33px; padding-left:5px;"
+                    ><?= $i++ ?></td>
+                    <td class="invoice-table"></td>
+                    <td class="invoice-table" style="padding-left:5px;"><?= $invoice_book->book_title ?></td>
+                    <td
+                        class="invoice-table"
+                        style="text-align: right; padding-right:5px;"
                     ><?= $invoice_book->qty ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right;"
+                        style="text-align: right; padding-right:5px;"
                     ><?= $invoice_book->discount ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right;"
-                    ><?= $invoice_book->price ?></td>
+                        style="text-align: right; padding-right:5px;"
+                    ><?= number_format($invoice_book->price, 0, ',', '.'); ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right;"
-                    ><?= $invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100) ?></td>
+                        style="text-align: right; padding-right:5px;"
+                    ><?= number_format($invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100), 0, ',', '.'); ?></td>
                 </tr>
             <?php endforeach ?>
 
@@ -237,13 +242,19 @@
 
     <table style="width: 100%;">
         <tr>
-            <td style="width:50%"></td>
+            <td
+                style="width:50%"
+                style="height: 33px;"
+            ></td>
             <td style="width:10%"></td>
             <td style="width:10%"></td>
             <td style="width:10%; text-align: right;"><?= $total_temp ?></td>
         </tr>
         <tr>
-            <td scope="col"></td>
+            <td
+                scope="col"
+                style="height: 33px;"
+            ></td>
             <td scope="col">Ongkos Kirim</td>
             <td
                 scope="col"
@@ -252,10 +263,13 @@
             <td
                 scope="col"
                 style="text-align: right; border-bottom: 1px solid black"
-            ><?= $invoice->delivery_fee ?></td>
+            ><?= number_format($invoice->delivery_fee, 0, ',', '.'); ?></td>
         </tr>
         <tr>
-            <td scope="col"></td>
+            <td
+                scope="col"
+                style="height: 33px;"
+            ></td>
             <td scope="col"><b>Jumlah</b></td>
             <td
                 scope="col"
@@ -264,18 +278,21 @@
             <td
                 scope="col"
                 style="text-align: right; border-bottom: 4px double black"
-            ><b><?= $total ?></b></td>
+            ><b><?= number_format($total, 0, ',', '.'); ?></b></td>
         </tr>
         <tr>
             <td
                 scope="col"
                 colspan="4"
-                style="text-align: right;"
+                style="text-align: right; height: 33px;"
             ><b><?= ucfirst(view_price_to_text($total)) ?> rupiah</b></td>
         </tr>
         <?php if ($invoice->type == 'cash') : ?>
             <tr>
-                <td scope="col"></td>
+                <td
+                    scope="col"
+                    style="height: 33px;"
+                ></td>
                 <td scope="col">Bayar</td>
                 <td
                     scope="col"
@@ -284,10 +301,13 @@
                 <td
                     scope="col"
                     style="text-align: right;"
-                ><?= $total ?></td>
+                ><?= number_format($total, 0, ',', '.'); ?></td>
             </tr>
             <tr>
-                <td scope="col"></td>
+                <td
+                    scope="col"
+                    style="height: 33px;"
+                ></td>
                 <td scope="col">Kurang</td>
                 <td
                     scope="col"
