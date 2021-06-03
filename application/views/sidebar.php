@@ -46,6 +46,12 @@ $menu_list = [
         'level' => 'superadmin|admin_gudang|admin_pemasaran',
     ],
     [
+        'name'  => 'Aset Buku',
+        'url'   => 'book_asset',
+        'icon'  => 'fas fa-coins',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran',
+    ],
+    [
         'name'  => 'Penerimaan Buku',
         'url'   => 'book_receive',
         'icon'  => 'fas fa-file-import',

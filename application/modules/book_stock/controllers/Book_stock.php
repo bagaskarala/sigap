@@ -309,7 +309,7 @@ class Book_stock extends Warehouse_Sales_Controller
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
 
-        $get_data = $this->book_stock->filter_excel($filters);
+        $get_data = $this->book_stock->filter_excel_stock($filters);
         $no = 1;
         $i = 4;
         // Column Content
