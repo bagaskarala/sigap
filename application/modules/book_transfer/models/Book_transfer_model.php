@@ -92,11 +92,6 @@ class Book_transfer_model extends MY_Model{
             ->result();
     }
 
-    public function delete_book_transfer($where){
-        $this->db->where('book_transfer_id', $where);
-        $this->db->delete('book_transfer');
-    }
-
     // ambil data buku yg ada di gudang
     public function fetch_warehouse_stock($book_id)
     {

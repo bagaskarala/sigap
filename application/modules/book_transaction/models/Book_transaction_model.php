@@ -93,7 +93,7 @@ class Book_transaction_model extends MY_Model{
             'print_order.print_order_id','print_order.order_number',
             'book_receive.book_receive_id',
             'invoice.invoice_id', 'invoice.number as invoice_number', 
-            'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type',
+            'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type', 'book_stock_revision.type',
             'book_non_sales.book_non_sales_id', 'book_non_sales.number as book_non_sales_number',
             'book_transfer.book_transfer_id', 'book_transfer.transfer_number',         
             'book.book_title', 'book_transaction.*'])

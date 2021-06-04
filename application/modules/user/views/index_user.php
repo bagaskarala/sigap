@@ -16,6 +16,7 @@ $level_options = [
    'admin_pemasaran'  => 'Admin Pemasaran',
    'admin_keuangan'   => 'Admin Keuangan',
    'staff_percetakan' => 'Staff Percetakan',
+   'staff_gudang'     => 'Staff Gudang',
    'author'           => 'Author',
    'reviewer'         => 'Reviewer',
    'editor'           => 'Editor',
