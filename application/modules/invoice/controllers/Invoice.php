@@ -451,6 +451,15 @@ class Invoice extends Sales_Controller
                     'finish_date' => now(),
                 ]);
             }
+        } else
+        if ($invoice->status == 'preparing_finish') {
+            // Finish Faktur
+            if ($invoice_status == 'finish') {
+                $this->invoice->where('invoice_id', $id)->update([
+                    'status' => $invoice_status,
+                    'finish_date' => now(),
+                ]);
+            }
         }
 
         if ($this->db->trans_status() === false) {
