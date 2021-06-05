@@ -17,93 +17,93 @@
         color: #333;
     }
 
-    .invoice-box {
+    .proforma-box {
         margin: auto;
         padding: 30px;
         /** box-shadow: 0 0 10px rgba(0, 0, 0, .15); **/
     }
 
-    .invoice-box table {
+    .proforma-box table {
         width: 100%;
         line-height: inherit;
         text-align: left;
     }
 
-    .invoice-box table td {
+    .proforma-box table td {
         padding: 5px;
         vertical-align: top;
         font-size: 12px;
     }
 
-    /**   .invoice-box table tr td:nth-child(2) {
+    /**   .proforma-box table tr td:nth-child(2) {
         text-align: left;
         font-size: 12px;
     } **/
 
-    .invoice-box table tr.top table td {
+    .proforma-box table tr.top table td {
         padding-bottom: 20px;
     }
 
-    .invoice-box table tr.top table td.title {
+    .proforma-box table tr.top table td.title {
         font-size: 45px;
         line-height: 45px;
         color: #333;
     }
 
-    .invoice-box table tr.information table td {
+    .proforma-box table tr.information table td {
         padding-bottom: 5px;
     }
 
-    .invoice-box table tr.heading td {
+    .proforma-box table tr.heading td {
         font-weight: bold;
     }
 
-    .invoice-box table tr.details td {
+    .proforma-box table tr.details td {
         padding-bottom: 20px;
     }
 
-    .invoice-box table tr.item td {
+    .proforma-box table tr.item td {
         border-bottom: 1px solid #eee;
     }
 
-    .invoice-box table tr.item.last td {
+    .proforma-box table tr.item.last td {
         border-bottom: none;
     }
 
-    .invoice-box table tr.main table thead {
+    .proforma-box table tr.main table thead {
         vertical-align: middle;
         text-align: center;
     }
 
 
-    .invoice-box table tr.main table {
+    .proforma-box table tr.main table {
         border: 1px solid black;
     }
 
-    .invoice-box table tr.total td:nth-child(7) {
+    .proforma-box table tr.total td:nth-child(7) {
         border-top: 2px solid #eee;
         font-weight: bold;
     }
 
     @media only screen and (max-width: 600px) {
-        .invoice-box table tr.top table td {
+        .proforma-box table tr.top table td {
             width: 100%;
             display: block;
             text-align: center;
         }
 
-        .invoice-box table tr.information table td {
+        .proforma-box table tr.information table td {
             width: 100%;
             display: block;
             text-align: center;
         }
     }
 
-    table.invoice-table,
-    thead.invoice-table,
-    td.invoice-table,
-    tr.invoice-table,
-    .invoice-table {
+    table.proforma-table,
+    thead.proforma-table,
+    td.proforma-table,
+    tr.proforma-table,
+    .proforma-table {
         border: 1px solid black;
         border-collapse: collapse;
     }
@@ -134,142 +134,114 @@
         <tr class="information">
             <td style="width:70%;">
                 Kepada Yth.<br>
-                <?= $customer->name ?><br>
-                <?= $customer->address ?><br>
-                <?= $customer->phone_number ?><br>
-                <?= $customer->email ?><br><br>
-                No Faktur : <b><?= $invoice->number ?></b><br>
-                Bukti Bayar : <?= $invoice->receipt ?>
+                <?= $proforma->customer->name ?><br>
+                <?= $proforma->customer->address ?><br>
+                <?= $proforma->customer->phone_number ?><br><br>
+                No Faktur : <?= $proforma->number ?>
             </td>
             <td style="width:30%; vertical-align: top;">
                 <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
-                Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)))] . " " . date("Y", strtotime($invoice->issued_date)) ?><br>
-                Jatuh Tempo : <?= date("d", strtotime($invoice->due_date)) . " " . $month[intval(date("m", strtotime($invoice->due_date)))] . " " . date("Y", strtotime($invoice->due_date)) ?>
+                Yogyakarta, <?= date("d", strtotime($proforma->issued_date)) . " " . $month[intval(date("m", strtotime($proforma->issued_date)))] . " " . date("Y", strtotime($proforma->issued_date)) ?><br>
+                Jatuh Tempo : <?= date("d", strtotime($proforma->due_date)) . " " . $month[intval(date("m", strtotime($proforma->due_date)))] . " " . date("Y", strtotime($proforma->due_date)) ?>
             </td>
-        </tr>   
+        </tr>
     </table>
 
     <table
-        class="invoice-table"
-        style="width: 100%; margin-top: 10px;"
+        class="proforma-table"
+        style="width: 100%;"
     >
         <thead
-            class="invoice-table"
+            class="proforma-table"
             style="text-align: center;"
         >
-            <tr class="invoice-table">
+            <tr class="proforma-table">
                 <th
                     scope="col"
                     width="5%"
-                    class="align-middle invoice-table"
+                    class="align-middle proforma-table"
                     rowspan="2"
                 >No</th>
                 <th
                     scope="col"
                     width="5%"
-                    class="align-middle invoice-table"
+                    class="align-middle proforma-table"
                     rowspan="2"
                 >Kode</th>
                 <th
                     scope="col"
                     width="54%"
-                    class="align-middle invoice-table"
+                    class="align-middle proforma-table"
                     rowspan="2"
                 >Judul</th>
                 <th
                     scope="col"
                     width="5%"
-                    class="align-middle invoice-table"
+                    class="align-middle proforma-table"
                     rowspan="2"
                 >Jml (eks)</th>
                 <th
                     scope="col"
                     width="5%"
-                    class="align-middle invoice-table"
+                    class="align-middle proforma-table"
                     rowspan="2"
                 >Disc (%)</th>
                 <th
                     scope="col"
                     width="26%"
-                    class="align-middle invoice-table"
+                    class="align-middle proforma-table"
                     colspan="2"
-                >Harga (Rp)</th>
+                >Harga</th>
             </tr>
 
             <tr>
-                <th class="align-middle invoice-table">Satuan</th>
-                <th class="align-middle invoice-table">Jumlah</th>
+                <th class="align-middle proforma-table">Satuan</th>
+                <th class="align-middle proforma-table">Jumlah</th>
             </tr>
         </thead>
         <tbody>
-            <?php $i = 1; ?>
-            <?php foreach ($invoice_books as $invoice_book) : ?>
-                <tr class="invoice-table">
+            <?php $i = 0; ?>
+            <?php if(is_array($proforma_books) || is_object($proforma_books)): ?>
+            <?php foreach ($proforma_books as $proforma_book) : ?>
+                <?php $i++; ?>
+                <tr class="proforma-table">
+                    <td class="proforma-table" style="height: 33px;"><?= $i ?></td>
+                    <td class="proforma-table"></td>
+                    <td class="proforma-table"><?= $proforma_book->book_title ?></td>
                     <td
-                        class="invoice-table"
-                        style="height: 33px; padding-left:5px;"
-                    ><?= $i++ ?></td>
-                    <td class="invoice-table"></td>
-                    <td class="invoice-table" style="padding-left:5px;"><?= $invoice_book->book_title ?></td>
+                        class="proforma-table"
+                        style="text-align: right;"
+                    ><?= $proforma_book->qty ?></td>
                     <td
-                        class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
-                    ><?= $invoice_book->qty ?></td>
+                        class="proforma-table"
+                        style="text-align: right;"
+                    ><?= $proforma_book->discount ?></td>
                     <td
-                        class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
-                    ><?= $invoice_book->discount ?></td>
+                        class="proforma-table"
+                        style="text-align: right;"
+                    ><?= $proforma_book->price ?></td>
                     <td
-                        class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
-                    ><?= number_format($invoice_book->price, 0, ',', '.'); ?></td>
-                    <td
-                        class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
-                    ><?= number_format($invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100), 0, ',', '.'); ?></td>
+                        class="proforma-table"
+                        style="text-align: right;"
+                    ><?= $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100) ?></td>
                 </tr>
-            <?php endforeach ?>
+            <?php endforeach; ?>
+            <?php endif; ?>
 
+            <?php if(is_array($proforma_books) || is_object($proforma_books)): ?>
             <?php
-            $total_temp = 0;
-            foreach ($invoice_books as $invoice_book) {
-                $total_temp += $invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100);
+            $total = 0;
+            foreach ($proforma_books as $proforma_book) {
+                $total += $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100);
             }
-            $total = $total_temp + $invoice->delivery_fee;
             ?>
+            <?php endif; ?>
         </tbody>
     </table>
 
     <table style="width: 100%;">
         <tr>
-            <td
-                style="width:50%"
-                style="height: 33px;"
-            ></td>
-            <td style="width:10%"></td>
-            <td style="width:10%"></td>
-            <td style="width:10%; text-align: right;"><?= $total_temp ?></td>
-        </tr>
-        <tr>
-            <td
-                scope="col"
-                style="height: 33px;"
-            ></td>
-            <td scope="col">Ongkos Kirim</td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            ></td>
-            <td
-                scope="col"
-                style="text-align: right; border-bottom: 1px solid black"
-            ><?= number_format($invoice->delivery_fee, 0, ',', '.'); ?></td>
-        </tr>
-        <tr>
-            <td
-                scope="col"
-                style="height: 33px;"
-            ></td>
+            <td scope="col" style="height: 33px;"></td>
             <td scope="col"><b>Jumlah</b></td>
             <td
                 scope="col"
@@ -278,7 +250,7 @@
             <td
                 scope="col"
                 style="text-align: right; border-bottom: 4px double black"
-            ><b><?= number_format($total, 0, ',', '.'); ?></b></td>
+            ><b><?= $total ?></b></td>
         </tr>
         <tr>
             <td
@@ -287,28 +259,9 @@
                 style="text-align: right; height: 33px;"
             ><b><?= ucfirst(view_price_to_text($total)) ?> rupiah</b></td>
         </tr>
-        <?php if ($invoice->type == 'cash') : ?>
             <tr>
-                <td
-                    scope="col"
-                    style="height: 33px;"
-                ></td>
+                <td scope="col" style="height: 33px;"></td>
                 <td scope="col">Bayar</td>
-                <td
-                    scope="col"
-                    style="text-align: right;"
-                ></td>
-                <td
-                    scope="col"
-                    style="text-align: right;"
-                ><?= number_format($total, 0, ',', '.'); ?></td>
-            </tr>
-            <tr>
-                <td
-                    scope="col"
-                    style="height: 33px;"
-                ></td>
-                <td scope="col">Kurang</td>
                 <td
                     scope="col"
                     style="text-align: right;"
@@ -318,7 +271,18 @@
                     style="text-align: right;"
                 >0</td>
             </tr>
-        <?php endif; ?>
+            <tr>
+                <td scope="col" style="height: 33px;"></td>
+                <td scope="col">Kurang</td>
+                <td
+                    scope="col"
+                    style="text-align: right;"
+                ></td>
+                <td
+                    scope="col"
+                    style="text-align: right;"
+                ><?= $total ?></td>
+            </tr>
     </table>
 
     <table style="width: 100%;">
@@ -328,7 +292,6 @@
         </tr>
         <tr class="information">
             <td>
-                <?php if ($invoice->type != 'cash') : ?>
                     <b>Keterangan :</b><br>
                     Bukti pembayaran mohon dikirimkan melalui email: ugmpress@ugm.ac.id<br>
                     atau whatsapp: 081228478888<br>
@@ -337,7 +300,6 @@
                     <a style="padding-left: 14px;">a/n Gadjah Mada University Press</a><br>
                     2. BNI Cab. UGM Yogyakarta : 0039226571<br>
                     <a style="padding-left: 14px;">a/n GAMA PRESS</a>
-                <?php endif ?>
             </td>
             <td style="text-align: center;">
                 a.n. Ka. Pemasaran<br><br><br><br><br><br><br>

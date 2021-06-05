@@ -1,3 +1,7 @@
+<?php
+$empty_books        = $this->session->flashdata('empty_books');
+?>
+
 <header class="page-title-bar">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -5,7 +9,7 @@
                 <a href="<?= base_url(); ?>"><span class="fa fa-home"></span></a>
             </li>
             <li class="breadcrumb-item">
-                <a href="<?= base_url('invoice'); ?>">Faktur</a>
+                <a href="<?= base_url('proforma'); ?>">Proforma</a>
             </li>
             <li class="breadcrumb-item">
                 <a class="text-muted">Form</a>
@@ -19,53 +23,27 @@
             <section class="card">
                 <div class="card-body">
                     <form
-                        id="invoice_form"
+                        id="proforma_form"
                         method="post"
-                        action="<?= base_url("invoice/add"); ?>"
+                        action="<?= $form_action ?>"
                     >
-                        <legend>Form Tambah Faktur</legend>
-                        <div class="form-group">
-                            <label
-                                for="type"
-                                class="font-weight-bold"
-                            >Jenis Faktur<abbr title="Required">*</abbr></label>
-
-                            <?= form_dropdown('type', $invoice_type, 0, 'id="type" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-type"
-                                class="d-none error-message text-danger"
-                            >Jenis Faktur wajib diisi!</small>
-                        </div>
-                        <div
-                            class="form-group"
-                            style="display: none;"
-                            id='source-dropdown'
-                        >
-                            <label
-                                for="source"
-                                class="font-weight-bold"
-                            >Asal Stok<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source', $source, 'warehouse', 'id="source" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-source"
-                                class="d-none error-message text-danger"
-                            >Asal stok wajib diisi jika jenis faktur adalah tunai!</small>
-                        </div>
-                        <div
-                            class="form-group"
-                            id="source-library-dropdown"
-                            style="display:none"
-                        >
-                            <label
-                                for="source-library-id"
-                                class="font-weight-bold"
-                            >Asal Perpustakaan<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source-library-id', get_dropdown_list_library(), 0, 'id="source-library-id" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-source-library"
-                                class="d-none error-message text-danger"
-                            >Asal perpustakaan wajib diisi jika asal stok faktur adalah perpustakaan!</small>
-                        </div>
+                        <legend>Form Proforma</legend>
+                        <?php if ($form_type == 'edit') : ?>
+                            <div
+                                id="proforma-number"
+                                style="display: none;"
+                            >
+                                <div class="form-group">
+                                    <input
+                                        type="text"
+                                        name="number"
+                                        id="number"
+                                        class="form-control"
+                                        hidden
+                                    />
+                                </div>
+                            </div>
+                        <?php endif ?>
                         <div class="form-group">
                             <label
                                 for="due-date"
@@ -78,7 +56,8 @@
                                     name="due-date"
                                     id="due-date"
                                     class="form-control dates"
-                                    required
+                                    <?php $current_date = date("Y/m/d", strtotime("+ 3 day")) ?>
+                                    value="<?= $current_date; ?>"
                                 />
                                 <div class="input-group-append">
                                     <button
@@ -151,10 +130,6 @@
                                                     <td id="info-phone-number"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="175px"> Email </td>
-                                                    <td id="info-email"></td>
-                                                </tr>
-                                                <tr>
                                                     <td width="175px"> Tipe Membership </td>
                                                     <td id="info-type"></td>
                                                 </tr>
@@ -224,19 +199,6 @@
                                         </div>
                                         <div class="form-group">
                                             <label
-                                                for="new-customer-email"
-                                                class="font-weight-bold"
-                                            >Email
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="new-customer-email"
-                                                id="new-customer-email"
-                                                class="form-control"
-                                            />
-                                        </div>
-                                        <div class="form-group">
-                                            <label
                                                 for="new-customer-type"
                                                 class="font-weight-bold"
                                             >Jenis Customer<abbr title="Required">*</abbr></label>
@@ -249,17 +211,16 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
                         <small
                             id="error-customer-info"
                             class="d-none error-message text-danger"
                         >Data customer wajib diisi!</small>
 
                         <hr class="my-4">
+
                         <div class="row">
-                            <div id="book-dropdown" class="form-group col-md-8">
+                            <div class="form-group col-md-8">
                                 <label
                                     for="book_id"
                                     class="font-weight-bold"
@@ -270,7 +231,6 @@
                                     class="d-none error-message text-danger"
                                 >Buku wajib diisi!</small>
                             </div>
-
                         </div>
 
                         <div
@@ -352,10 +312,32 @@
                                     >Tambah Barang</button>
                                 </div>
                             </div>
-
                         </div>
 
                         <hr>
+                        <?php if (isset($empty_books)) : ?>
+                            <div class="card border-danger">
+                                <div class="card-body text-danger">
+                                    <h5 class="card-title">Stock buku yang tidak mencukupi: </h5>
+                                    <table class="table table-stripped text-danger">
+                                        <thead>
+                                            <tr>
+                                                <th>Judul Buku</th>
+                                                <th>Stock Tersedia</th>    
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($empty_books as $book) : ?>
+                                                <tr>
+                                                    <td><?= $book->book_title ?></td>
+                                                    <td> <?= $book->stock->warehouse_present ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php endif ?>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -386,15 +368,68 @@
                                         >&nbsp;</th>
                                     </tr>
                                 </thead>
-                                <tbody id="invoice_items">
+                                <tbody id="proforma_items">
                                     <!-- Items -->
+                                    <?php if ($form_type == 'edit') : ?>
+                                        <?php foreach ($proforma_book as $books) : ?>
+                                            <tr class="text-center">
+                                                <td class="align-middle text-left font-weight-bold"><?= $books->book_title ?>
+                                                    <input
+                                                        type="text"
+                                                        hidden
+                                                        name="proforma_book_id[]"
+                                                        class="form-control"
+                                                        value="<?= $books->book_id ?>"
+                                                    />
+                                                </td>
+                                                <td class="align-middle">Rp <?= $books->price ?>
+                                                    <input
+                                                        id="proforma-book-price-<?= $books->book_id ?>"
+                                                        type="number"
+                                                        hidden
+                                                        name="proforma_book_price[]"
+                                                        class="form-control"
+                                                        value="<?= $books->price ?>"
+                                                    />
+                                                </td>
+                                                <td class="align-middle">
+                                                    <input
+                                                        id="proforma-book-qty-<?= $books->book_id ?>"
+                                                        type="number"
+                                                        required
+                                                        name="proforma_book_qty[]"
+                                                        class="form-control"
+                                                        value="<?= $books->qty ?>"
+                                                        onchange="updateQty(<?= $books->book_id ?>)"
+                                                    />
+                                                </td>
+                                                <td class="align-middle"><?= $books->discount ?>%
+                                                    <input
+                                                        id="proforma-book-discount-<?= $books->book_id ?>"
+                                                        type="number"
+                                                        hidden
+                                                        name="proforma_book_discount[]"
+                                                        class="form-control"
+                                                        value="<?= $books->discount ?>"
+                                                    />
+                                                </td>
+                                                <td class="align-middle">
+                                                    <span id="proforma-book-total-<?= $books->book_id ?>">
+                                                        Rp
+                                                        <?php
+                                                        $total = $books->qty * $books->price * (1 - $books->discount / 100);
+                                                        echo $total;
+                                                        ?>
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle"><button
+                                                        type="button"
+                                                        class="btn btn-danger remove"
+                                                    >Hapus</button></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif ?>
                                 </tbody>
-                                <tfoot>
-                                    <tr style="text-align:center;">
-                                        <td><b>Grand Total</b></td>
-                                        <td id="grand_total">Rp 0</td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
 
@@ -416,9 +451,62 @@
     </div>
 </div>
 
+
 <script>
 $(document).ready(function() {
-    $('#type').val('')
+    console.log("<?= $form_action ?>")
+
+
+    $('#customer-id').change(function(e) {
+        const customerId = e.target.value
+        $('#new-customer-name').val('')
+        $('#new-customer-type').val('')
+
+        if (customerId != '') {
+            $.ajax({
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#customer-info').show()
+                    $('#discount').val(res.data.discount)
+                    $('#info-customer-name').html(res.data.name)
+                    $('#info-address').html(res.data.address)
+                    $('#info-phone-number').html(res.data.phone_number)
+                    $('#info-type').html(res.data.type)
+                },
+                error: function(err) {
+                    $('#customer-info').hide()
+                },
+            });
+        }
+    })
+
+    //hilangin buku yg sudah ada
+    <?php if ($form_type == 'edit') : ?>
+        <?php foreach ($proforma_book as $books) : ?>
+            $('#book-id option[value="' + <?= $books->book_id ?> + '"]').remove()
+
+            //fetch stock sekarang
+            $.ajax({
+                type: "GET",
+                url: "<?= base_url('proforma/api_get_book/'); ?>" + <?= $books->book_id ?>,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#proforma-book-qty-' + <?= $books->book_id ?>).attr({
+                        "max" : res.data.stock,
+                        "min" : 1
+                    });
+                },
+                error: function(err) {
+                    console.log(err);
+                },
+            });
+        <?php endforeach; ?>
+        $('#discount').val('<?= $discount ?>')
+        $('#customer-info').show()
+        $('#customer-id').val('<?= $proforma->customer_id ?>').trigger('change')
+    <?php endif ?>
 
     $('#tab-customer-new').click(function() {
         $('#customer-info').hide()
@@ -430,7 +518,6 @@ $(document).ready(function() {
         $('#new-customer-address').val('')
         $('#new-customer-phone-number').val('')
         $('#new-customer-type').val('')
-        $('#new-customer-email').val('')
     })
 
     const $flatpickr = $('.dates').flatpickr({
@@ -449,10 +536,6 @@ $(document).ready(function() {
         dropdownParent: $('#app-main')
     });
     $("#book-id").select2({
-        placeholder: '-- Pilih --',
-        dropdownParent: $('#app-main')
-    });
-    $("#source-library-id").select2({
         placeholder: '-- Pilih --',
         dropdownParent: $('#app-main')
     });
@@ -477,7 +560,6 @@ $(document).ready(function() {
         } else {
             add_book_to_invoice(qty.max);
             reset_book();
-            updateGrandTotal()
         }
     });
 
@@ -491,28 +573,24 @@ $(document).ready(function() {
 
     $('#book-id').change(function(e) {
         if (e.target.value != '') {
-            var bookId = e.target.value
-            var source =  $("#source").val()
-            var libraryId = 0
-            if ($("#source-library-id").val() != '') {
-                libraryId =  $("#source-library-id").val()
-            }
+            const bookId = e.target.value
             $.ajax({
                 type: "GET",
-                url: "<?= base_url('invoice/api_get_book_dynamic_stock/'); ?>" + bookId + '/' + source + '/' + libraryId,
+                url: "<?= base_url('invoice/api_get_book/'); ?>" + bookId,
                 datatype: "JSON",
                 success: function(res) {
                     var published_date = new Date(res.data.published_date);
+
                     $('#book-info').show()
                     $('#qty').attr({
-                        "max": res.data.stock
+                        "max": res.data.warehouse_present
                     });
                     $('#info-book-title').html(res.data.book_title)
                     $('#info-book-author').html(res.data.author_name)
                     $('#info-isbn').html(res.data.isbn)
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
-                    $('#info-stock').html(res.data.stock)
+                    $('#info-stock').html(res.data.warehouse_present)
                 },
                 error: function(err) {
                     console.log(err);
@@ -537,80 +615,13 @@ $(document).ready(function() {
         });
     })
 
-    $('#customer-id').change(function(e) {
-        const customerId = e.target.value
-        $('#new-customer-name').val('')
-        $('#new-customer-type').val('')
-
-        if (customerId != '') {
-            $.ajax({
-                type: "GET",
-                url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
-                datatype: "JSON",
-                success: function(res) {
-                    $('#customer-info').show()
-                    $('#discount').val(res.data.discount)
-                    $('#info-customer-name').html(res.data.name)
-                    $('#info-address').html(res.data.address)
-                    $('#info-phone-number').html(res.data.phone_number)
-                    $('#info-email').html(res.data.email)
-                    $('#info-type').html(res.data.type)
-                },
-                error: function(err) {
-                    $('#customer-info').hide()
-                },
-            });
-        }
-
-    })
-
-    $('#type').change(function(e) {
-        const type = e.target.value
-        if (type == 'cash') {
-            $('#source-dropdown').show()
-        } else {
-            $('#source-dropdown').hide()
-            if ($('#source').val() != 'warehouse') {
-                $('#source').val('warehouse')
-                $('#source-library-dropdown').hide()
-                $('#source-library-id').val('').trigger('change')
-            }
-        }
-    })
-
-    $('#source').change(function() {
-        if ($("#source").val() == "library") {
-            $("#source-library-dropdown").show()
-        } else {
-            $("#source-library-dropdown").hide()
-            $('#source-library-id').val('').trigger('change')
-        }
-    })
-
-    // update dropdown list buku
-    $('#source-library-id').change(function() {
-        var value = $("#source-library-id").val()
-        $('#book-info').hide()
-        if (value == '') {
-            $('#invoice_items tr').each(function() {
-                $(this).closest("tr").remove();
-            })
-            updateDropdown('warehouse', '')
-        } else {
-            $('#invoice_items tr').each(function() {
-                $(this).closest("tr").remove();
-            })
-            updateDropdown('library', value)
-        }
-    })
-
-    $("#invoice_form").submit(function(e) {
+    $("#proforma_form").submit(function(e) {
         e.preventDefault(); // avoid to execute the actual submit of the form.
         var form = $(this);
         console.log(form.serialize())
         $.ajax({
             type: "POST",
-            url: "<?= base_url("invoice/add"); ?>",
+            url: "<?= base_url($form_action) ?>",
             data: form.serialize(), // serializes the form's elements.
             success: function(result) {
                 var response = $.parseJSON(result)
@@ -622,7 +633,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url('invoice'); ?>";
+                    location.href = "<?= base_url('proforma'); ?>";
                 }
             },
             error: function(req, err) {
@@ -639,86 +650,49 @@ function add_book_to_invoice(stock) {
 
     // Judul option yang di select
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;
-    html += '<input type="text" hidden name="invoice_book_id[]" class="form-control" value="' + bookId.value + '"/>';
+    html += '<input type="text" hidden name="proforma_book_id[]" class="form-control" value="' + bookId.value + '"/>';
     html += '</td>';
 
     // Harga
     html += '<td class="align-middle"> Rp ' + $('#info-price').text();
-    html += '<input <input id="invoice-book-price-' + bookId.value + '" type="number" hidden name="invoice_book_price[]" class="form-control" value="' + $('#info-price').text() + '"/>';
+    html += '<input <input id="proforma-book-price-' + bookId.value + '" type="number" hidden name="proforma_book_price[]" class="form-control" value="' + $('#info-price').text() + '"/>';
     html += '</td>';
 
     // Jumlah
     html += '<td class="align-middle">';
-    html += '<input id="invoice-book-qty-' + bookId.value + '" type="number" required name="invoice_book_qty[]" class="form-control" value="' + document.getElementById('qty').value + '"min=1 max="' + stock + '" onchange=updateQty(' + bookId.value + ')>';
+    html += '<input id="proforma-book-qty-' + bookId.value + '" type="number" required name="proforma_book_qty[]" class="form-control" value="' + document.getElementById('qty').value + '" max="' + stock + '" onchange=updateQty(' + bookId.value + ')>';
     html += '</td>';
 
     // Diskon
     html += '<td class="align-middle">' + document.getElementById('discount').value + '%';
-    html += '<input <input id="invoice-book-discount-' + bookId.value + '" type="number" hidden name="invoice_book_discount[]" class="form-control" value="' + document.getElementById('discount').value + '"/>';
+    html += '<input <input id="proforma-book-discount-' + bookId.value + '" type="number" hidden name="proforma_book_discount[]" class="form-control" value="' + document.getElementById('discount').value + '"/>';
     html += '</td>';
 
     // Total
     var totalPrice = (parseFloat($('#info-price').text())) * (parseFloat($('#qty').val())) * (1 - (parseFloat($('#discount').val()) / 100));
-    html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '">Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
+    html += '<td class="align-middle"> <span id="proforma-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
 
-    $('#invoice_items').append(html);
+    $('#proforma_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
 }
 
 function reset_book() {
+
     document.getElementById('qty').value = 1;
     $("#book-id").val('').trigger('change')
     $('#book-info').hide();
 }
 
 function updateQty(book_id) {
-    var qty = $('#invoice-book-qty-' + book_id).val();
-    var price = $('#invoice-book-price-' + book_id).val();
-    var discount = $('#invoice-book-discount-' + book_id).val();
-    var total_html = $('#invoice-book-total-' + book_id);
+    var qty = $('#proforma-book-qty-' + book_id).val();
+    var price = $('#proforma-book-price-' + book_id).val();
+    var discount = $('#proforma-book-discount-' + book_id).val();
+    var total_html = $('#proforma-book-total-' + book_id);
 
     var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
-    updateGrandTotal()
-}
-
-function updateGrandTotal() {
-    var grandTotal = 0
-    $('#invoice_items tr').each(function() {
-        $selector = $(this).find("td:first")
-        book_id = $selector.find("input").val()
-        grandTotal += Math.round($('#invoice-book-qty-' + book_id).val() * $('#invoice-book-price-' + book_id).val() * (1 - $('#invoice-book-discount-' + book_id).val() / 100))
-        $('#grand_total').html('Rp ' + grandTotal)
-    })
-}
-
-function decreaseGrandTotal(book_id) {
-    var total_html = $('#invoice-book-total-' + book_id).html()
-    var res = total_html.split(" ")
-    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
-    $('#grand_total').html('Rp ' + grandTotal)
-}
-
-function updateDropdown(type, library_id) {
-    $.ajax({
-		type: "GET",
-		url: "<?= base_url('invoice/api_get_book_dropdown/'); ?>" + type + '/' + library_id,
-		dataType: "JSON",
-		success: function(res) {
-            $('#book-id').empty();
-            for( i=0; i < Object.keys(res.data).length; i++) {
-                $('#book-id').append('<option value="'+ Object.keys(res.data)[i] +'">'+ Object.values(res.data)[i] +'</option>');
-            }
-		},
-        error: function(err) {
-            console.log(err)
-        },
-		complete: function() {
-            $('#book-id').val('').trigger('change')
-        }
-    }); 
 }
 </script>
