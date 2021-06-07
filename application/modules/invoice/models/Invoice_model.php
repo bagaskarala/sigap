@@ -215,6 +215,11 @@ class Invoice_model extends MY_Model
         return $this->select('discount')->where('membership', $type)->get('discount');
     }
 
+    public function get_book_royalty($book_id)
+    {
+        return $this->select('royalty')->where('book_id', $book_id)->get('book')->royalty;
+    }
+    
     public function get_customer($customer_id)
     {
         $this->db->select('customer_id, name, address, phone_number, email, type, discount');

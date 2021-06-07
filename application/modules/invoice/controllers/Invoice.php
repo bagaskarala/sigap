@@ -109,12 +109,14 @@ class Invoice extends Sales_Controller
             $total_weight = 0;
             // Masukkan buku di form faktur ke database
             for ($i = 0; $i < $countsize; $i++) {
+                $book_id = $this->input->post('invoice_book_id')[$i];
                 $book = [
                     'invoice_id'    => $invoice_id,
-                    'book_id'       => $this->input->post('invoice_book_id')[$i],
+                    'book_id'       => $book_id,
                     'qty'           => $this->input->post('invoice_book_qty')[$i],
                     'price'         => $this->input->post('invoice_book_price')[$i],
-                    'discount'      => $this->input->post('invoice_book_discount')[$i]
+                    'discount'      => $this->input->post('invoice_book_discount')[$i],
+                    'royalty'       => $this->invoice->get_book_royalty($book_id)
                 ];
                 $this->db->insert('invoice_book', $book);
                 // Hitung berat buku
@@ -157,8 +159,8 @@ class Invoice extends Sales_Controller
                 }
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
-
-            echo json_encode(['status' => TRUE]);
+            if ($type != 'showroom') echo json_encode(['status' => TRUE]);
+            else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
             $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
         }
 
@@ -279,12 +281,14 @@ class Invoice extends Sales_Controller
             $total_weight = 0;
             // Masukkan invoice_book yang baru (hasil edit) ke database
             for ($i = 0; $i < $countsize; $i++) {
+                $book_id = $this->input->post('invoice_book_id')[$i];
                 $book = [
                     'invoice_id'    => $invoice_id,
-                    'book_id'       => $this->input->post('invoice_book_id')[$i],
+                    'book_id'       => $book_id,
                     'qty'           => $this->input->post('invoice_book_qty')[$i],
                     'price'         => $this->input->post('invoice_book_price')[$i],
-                    'discount'      => $this->input->post('invoice_book_discount')[$i]
+                    'discount'      => $this->input->post('invoice_book_discount')[$i],
+                    'royalty'       => $this->invoice->get_book_royalty($book_id)
                 ];
                 $this->db->insert('invoice_book', $book);
                 $book_weight = $this->invoice->get_book($book['book_id'])->weight;
@@ -451,15 +455,6 @@ class Invoice extends Sales_Controller
                     'finish_date' => now(),
                 ]);
             }
-        } else
-        if ($invoice->status == 'preparing_finish') {
-            // Finish Faktur
-            if ($invoice_status == 'finish') {
-                $this->invoice->where('invoice_id', $id)->update([
-                    'status' => $invoice_status,
-                    'finish_date' => now(),
-                ]);
-            }
         }
 
         if ($this->db->trans_status() === false) {
@@ -506,6 +501,26 @@ class Invoice extends Sales_Controller
 
             $this->pdf->generate_pdf_a4_portrait($html, $file_name);
         }
+    }
+
+    public function showroom_pdf($invoice_id)
+    {
+        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+        $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
+        $customer       = $this->invoice->get_customer($invoice->customer_id);
+
+        // PDF
+        $this->load->library('pdf');
+        $data_format['invoice'] = $invoice ?? '';
+        $data_format['invoice_books'] = $invoice_books ?? '';
+        $data_format['customer'] = $customer ?? '';
+
+        $html = $this->load->view('invoice/view_showroom_receipt_pdf', $data_format, true);
+
+        $file_name = $invoice->number . '_Invoice';
+
+        $this->pdf->generate_pdf_a4_portrait($html, $file_name);
     }
 
     public function api_get_book($book_id)

@@ -155,6 +155,10 @@ $level              = check_level();
                                     <td width="200px"> Berat Buku</td>
                                     <td><?= $input->weight; ?> gram</td>
                                 </tr>
+                                <tr>
+                                    <td width="200px"> Royalti</td>
+                                    <td><?= $input->royalty; ?> %</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
