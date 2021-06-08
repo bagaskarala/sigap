@@ -9,7 +9,7 @@ $level              = check_level();
                 <a href="<?= base_url(); ?>"><span class="fa fa-home"></span></a>
             </li>
             <li class="breadcrumb-item">
-                <a href="<?= base_url('Book_request'); ?>">Pesanan Buku</a>
+                <a href="<?= base_url('book_request'); ?>">Pesanan Buku</a>
             </li>
             <li class="breadcrumb-item">
                 <a class="text-muted"><?= $book_request->number; ?></a>

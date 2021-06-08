@@ -8,7 +8,7 @@ $level              = check_level();
                 <a href="<?= base_url(); ?>"><span class="fa fa-home"></span></a>
             </li>
             <li class="breadcrumb-item">
-                <a href="<?= base_url('book_stock'); ?>">Aset Buku</a>
+                <a href="<?= base_url('book_asset'); ?>">Aset Buku</a>
             </li>
             <li class="breadcrumb-item">
                 <a class="text-muted">
