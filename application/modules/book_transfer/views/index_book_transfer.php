@@ -1,8 +1,8 @@
 <?php
 $level              = check_level();
-$per_page           = 10;
+$per_page           = $this->input->get('per_page') ?? 10;
 $keyword            = $this->input->get('keyword');
-$status     = $this->input->get('status');
+$status             = $this->input->get('status');
 $book_transfer_category = $this->input->get('book_transfer_category');
 $page               = $this->uri->segment(2);
 $i                  = isset($page) ? $page * $per_page - $per_page : 0;

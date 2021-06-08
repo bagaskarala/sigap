@@ -1,5 +1,5 @@
 <?php
-$per_page           = 10;
+$per_page           = $this->input->get('per_page') ?? 10;
 $keyword            = $this->input->get('keyword');
 $type               = $this->input->get('type');
 $status             = $this->input->get('status');
