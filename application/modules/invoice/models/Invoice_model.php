@@ -215,6 +215,11 @@ class Invoice_model extends MY_Model
         return $this->select('discount')->where('membership', $type)->get('discount');
     }
 
+    public function get_book_royalty($book_id)
+    {
+        return $this->select('royalty')->where('book_id', $book_id)->get('book')->royalty;
+    }
+    
     public function get_customer($customer_id)
     {
         $this->db->select('customer_id, name, address, phone_number, email, type, discount');
@@ -303,21 +308,31 @@ class Invoice_model extends MY_Model
     public function filter_book_request($filters, $page)
     {
         $book_request = $this->select(['invoice_id', 'number', 'issued_date', 'due_date', 'status', 'type', 'source'])
-            ->where('status', 'confirm')
-            ->or_where('status', 'preparing')
-            ->or_where('status', 'preparing_finish')
+            ->where('source', 'warehouse')
+                ->group_start()
+                ->where('status', 'confirm')
+                ->or_where('status', 'preparing')  
+                ->or_where('status', 'preparing_finish')
+                ->or_where('status', 'finish')                                              
+                ->group_end()
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
+            ->when_request('status', $filters['status'])
             ->order_by('invoice_id', 'DESC')
             ->paginate($page)
             ->get_all();
 
         $total = $this->select('invoice_id')
-            ->where('status', 'confirm')
-            ->or_where('status', 'preparing')
-            ->or_where('status', 'preparing_finish')
+            ->where('source', 'warehouse')
+                ->group_start()
+                ->where('status', 'confirm')
+                ->or_where('status', 'preparing')  
+                ->or_where('status', 'preparing_finish')
+                ->or_where('status', 'finish')                                              
+                ->group_end()
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
+            ->when_request('status', $filters['status'])
             ->order_by('invoice_id')
             ->count();
         return [

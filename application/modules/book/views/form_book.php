@@ -97,13 +97,27 @@
                             <?= form_error('published_date'); ?>
                         </div>
                         <div class="form-group">
-                            <label for="harga">Harga</label>
+                            <label for="harga">Harga (Rp)</label>
                             <?= form_input([
                                 'name'  => "harga",
                                 'class' => 'form-control',
                                 'id'    => "harga",
                                 'value' => $input->harga,
                                 'type' => 'number'
+                            ]);
+                            ?>
+                            <?= form_error('harga'); ?>
+                        </div>
+                        <div class="form-group">
+                            <label for="harga">Royalti (%)</label>
+                            <?= form_input([
+                                'name'  => "royalty",
+                                'class' => 'form-control',
+                                'id'    => "royalty",
+                                'value' => $input->royalty,
+                                'type' => 'number',
+                                'min'   => 0,
+                                'max'   => 100,
                             ]);
                             ?>
                             <?= form_error('harga'); ?>
