@@ -43,18 +43,18 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
-                                    <h2 class="metric-label"> Showroom </h2>
-                                    <p class="metric-value h3 px-2">
-                                        <span class="value">
-                                            Rp <?= number_format($count['showroom'], 2, ",", "."); ?>
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Perpustakaan </h2>
                                     <p class="metric-value h3 px-2">
                                         <span class="value">
                                             Rp <?= number_format($count['library'], 2, ",", "."); ?>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col metric metric-bordered align-items-center">
+                                    <h2 class="metric-label"> Showroom </h2>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">
+                                            Rp <?= number_format($count['showroom'], 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
