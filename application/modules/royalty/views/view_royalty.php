@@ -243,7 +243,7 @@ if ($latest_royalty == NULL) {
                     <?php if (!$pending_royalty) : ?>
                         <button
                             type="button"
-                            class="btn btn-primary float-right ml-3"
+                            class="btn btn-primary mt-3 float-right ml-3"
                             id="pay-royalty"
                         ><?= $button_label; ?></button>
                     <?php endif ?>
