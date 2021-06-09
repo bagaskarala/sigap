@@ -170,10 +170,10 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                         <?php $total_online = round($details['online'] / $total * 100, 2) ?>
                                     <?php endif ?>
                                     <tr class="text-center">
-                                        <td><?= intval($details['cash']) . '(' . $total_cash . '%)' ?></td>
-                                        <td><?= intval($details['showroom']) . '(' . $total_showroom . '%)' ?></td>
-                                        <td><?= intval($details['credit']) . '(' . $total_credit . '%)' ?></td>
-                                        <td><?= intval($details['online']) . '(' . $total_online . '%)' ?></td>
+                                        <td>Rp <?= intval($details['cash']) . ' (' . $total_cash . '%)' ?></td>
+                                        <td>Rp <?= intval($details['showroom']) . ' (' . $total_showroom . '%)' ?></td>
+                                        <td>Rp <?= intval($details['credit']) . ' (' . $total_credit . '%)' ?></td>
+                                        <td>Rp <?= intval($details['online']) . ' (' . $total_online . '%)' ?></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -206,20 +206,6 @@ var total_year = new Chart(ctx, {
         }]
     },
     options: {
-        scales: {
-            yAxes: [{
-                display: true,
-                ticks: {
-                    beginAtZero: true
-                }
-            }],
-            xAxes: [{
-                display: true,
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        },
         layout: {
             padding: {
                 left: 0,

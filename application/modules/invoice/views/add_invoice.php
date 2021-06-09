@@ -437,7 +437,8 @@ $(document).ready(function() {
         altInput: true,
         altFormat: 'j F Y',
         dateFormat: 'Y-m-d',
-        enableTime: false
+        enableTime: false,
+        minDate: new Date()
     });
 
     $("#due_clear").click(function() {

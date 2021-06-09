@@ -162,7 +162,7 @@ $invoice_type_options = [
                                         >No</th>
                                         <th
                                             scope="col"
-                                            style="width:25%;"
+                                            style="width:20%;"
                                         >Nomor Faktur</th>
                                         <th
                                             scope="col"
@@ -170,11 +170,11 @@ $invoice_type_options = [
                                         >Jenis Faktur</th>
                                         <th
                                             scope="col"
-                                            style="width:25%;"
+                                            style="width:15%;"
                                         >Tanggal Dikeluarkan</th>
                                         <th
                                             scope="col"
-                                            style="width:25%;"
+                                            style="width:10%;"
                                         >Status</th>
                                         <th
                                             scope="col"
@@ -366,12 +366,14 @@ function populateTable(data) {
     for (i = 0; i < data.length; i++) {
         var type = get_invoice_type(data[i].type)
         var status = get_invoice_status(data[i].status)
+        var url = "<?= base_url('invoice/view/'); ?>" + data[i].invoice_id
+
         if (parseInt(data[i].earning) >= 1000) {
             data[i].earning = 'Rp ' + data[i].earning.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         } else {
             data[i].earning = 'Rp ' + data[i].earning;
         }
-        htmlContent += "<tr class='text-center'><td>" + (i + 1) + "</td><td>" + data[i].number + "</td><td>" + type + "</td><td>" + data[i].issued_date.substring(0, 10) + "</td><td>" + status + "</td><td>" + data[i].earning + " </td></tr>"
+        htmlContent += "<tr class='text-center'><td>" + (i + 1) + "</td><td><a class='font-weight-bold' href='" + url + "'>" + data[i].number + "</a></td><td>" + type + "</td><td>" + data[i].issued_date.substring(0, 10) + "</td><td>" + status + "</td><td>" + data[i].earning + " </td></tr>"
     }
     $('#table_content').html(htmlContent)
 }

@@ -40,7 +40,7 @@ class Earning_model extends MY_Model
 
     public function get_invoice($filters)
     {
-        return $this->db->select('invoice.number, invoice.issued_date, invoice.type, status ,sum(price*(1-discount/100)*qty) as earning')
+        return $this->db->select('invoice.invoice_id, invoice.number, invoice.issued_date, invoice.type, status ,sum(price*(1-discount/100)*qty) as earning')
             ->from('invoice')
             ->join('invoice_book', 'invoice.invoice_id = invoice_book.invoice_id', 'right')
             ->order_by('invoice.invoice_id', 'ASC')
