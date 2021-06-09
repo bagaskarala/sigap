@@ -13,7 +13,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
 
     public function index($page = NULL)
     {
-        if ($this->_is_warehouse_sales_admin() == TRUE) :
+        if ($this->_is_book_non_sales_user() == TRUE) :
             // all filter
             $filters = [
                 'keyword'           => $this->input->get('keyword', true),
@@ -137,7 +137,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
 
     public function view($book_non_sales_id)
     {
-        if(!$this->_is_warehouse_sales_admin()){
+        if(!$this->_is_book_non_sales_user()){
             redirect($this->pages);
         }
         $book_non_sales = $this->book_non_sales->fetch_book_non_sales($book_non_sales_id);
@@ -253,6 +253,16 @@ class Book_non_sales extends Warehouse_Sales_Controller
             return true;
         } else {
             $this->session->set_flashdata('error', 'Hanya admin pemasaran dan superadmin yang dapat mengakses.');
+            return false;
+        }
+    }
+
+    private function _is_book_non_sales_user()
+    {
+        if ($this->level == 'superadmin' || $this->level == 'admin_gudang' || $_SESSION['level'] == 'admin_pemasaran' || $this->level == 'staff_gudang') {
+            return true;
+        } else {
+            $this->session->set_flashdata('error', 'Hanya admin gudang dan superadmin yang dapat mengakses.');
             return false;
         }
     }
