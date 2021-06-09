@@ -109,9 +109,9 @@ $staff_gudang              = $this->book_receive->get_staff_gudang_by_progress('
                 <!-- button aksi -->
                 <?php if (($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang') && !$is_final) : ?>
                 <button title="Aksi admin"
-                    class="btn btn-outline-dark <?= !$book_receive->handover_end_date ? 'btn-disabled' : ''; ?>"
+                    class="btn btn-outline-dark <?= !$uploaded_file ? 'btn-disabled' : ''; ?>"
                     data-toggle="modal" data-target="#modal-action-handover"
-                    <?= !$book_receive->handover_end_date ? 'disabled' : ''; ?>>Aksi</button>
+                    <?= !$uploaded_file ? 'disabled' : ''; ?>>Aksi</button>
                 <?php endif; ?>
 
                 <!-- button tanggapan handover -->
