@@ -179,7 +179,7 @@ function royalti_action()
                                     <td class="text-right align-middle">
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
-                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?></td>
+                                    <td><?= $lData->end_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
                                     <td><?= get_royalty_status()[$lData->status] ?></td>
                                     <td></td>
                                 </tr>
