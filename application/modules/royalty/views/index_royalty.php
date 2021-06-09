@@ -11,6 +11,30 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
     $date_year_options[$dy] = $dy;
 }
 
+function royalti_action()
+{
+    return html_escape('
+    <div class="list-group list-group-bordered" style="margin: -9px -15px;border-radius:0;">
+      <a href="' . base_url("royalty/index") . '" class="list-group-item list-group-item-action p-2">
+        <div class="list-group-item-figure">
+        <div class="tile bg-success">
+        <span class="fa fa-check"></span>
+        </div>
+        </div>
+        <div class="list-group-item-body"> Sudah Dibayar </div>
+      </a>
+      <a href="' . base_url("royalty/index") . '" class="list-group-item list-group-item-action p-2">
+        <div class="list-group-item-figure">
+        <div class="tile bg-danger">
+        <span class="fa fa-ban"></span>
+        </div>
+        </div>
+        <div class="list-group-item-body"> Belum Dibayar </div>
+      </a>
+    </div>
+    ');
+}
+
 ?>
 
 <header class="page-title-bar">
@@ -55,7 +79,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     min="2021-01-01"
                                     max="<?php
                                             echo date('Y-m-d', strtotime("-1 days"));
-                                        ?>"
+                                            ?>"
                                 >
                             </div>
                             <div class="col-12 col-md-8 mt-2">
@@ -155,7 +179,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     <td class="text-right align-middle">
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
-                                    <td><?= $lData->last_paid_date ? date("d F Y", strtotime($lData->last_paid_date)) : '' ?></td>
+                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?></td>
                                     <td><?= get_royalty_status()[$lData->status] ?></td>
                                     <td></td>
                                 </tr>

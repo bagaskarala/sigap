@@ -22,32 +22,35 @@ class Royalty_model extends MY_Model
             ->result();
     }
 
-    public function fetch_royalty_history ($author_id) {
+    public function fetch_royalty_history($author_id)
+    {
         return $this->db->select('*')
-                        ->from('royalty')
-                        ->where('author_id', $author_id)
-                        ->order_by('royalty_id', 'DESC')
-                        ->get()
-                        ->result();
+            ->from('royalty')
+            ->where('author_id', $author_id)
+            ->order_by('royalty_id', 'DESC')
+            ->get()
+            ->result();
     }
 
-    public function fetch_latest_royalty ($author_id) {
+    public function fetch_latest_royalty($author_id)
+    {
         return $this->db->select('*')
-                        ->from('royalty')
-                        ->where('author_id', $author_id)
-                        ->order_by('royalty_id', 'DESC')
-                        ->limit(1)
-                        ->get()
-                        ->row();
+            ->from('royalty')
+            ->where('author_id', $author_id)
+            ->order_by('royalty_id', 'DESC')
+            ->limit(1)
+            ->get()
+            ->row();
     }
 
+    
     public function author_earning($filters)
     {
-        $this->db->select('author.author_id, author_name, last_paid_date, royalty_payment.status as status, SUM(qty*price) AS total_sales, SUM(qty*price*book.royalty/100) as earned_royalty')
+        $this->db->select('author.author_id, author_name, royalty.start_date as start_date, royalty.end_date as end_date, royalty.status as status, SUM(qty*price) AS total_sales, SUM(qty*price*book.royalty/100) as earned_royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('author', 'draft_author.author_id = author.author_id')
-            ->join('royalty_payment', 'author.author_id = royalty_payment.author_id', 'left')
+            ->join('royalty', 'author.author_id = royalty.author_id AND royalty_id = (SELECT royalty_id from royalty where royalty.author_id = author.author_id order by royalty_id DESC limit 1)', 'left')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')
             ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
             ->group_by('author.author_id');
@@ -56,9 +59,9 @@ class Royalty_model extends MY_Model
         }
         if ($filters['period_end'] != null) {
             //if author.last_paid_date == null
-            $this->db->where('issued_date BETWEEN IFNULL(royalty_payment.last_paid_date, "2000/01/01") and "' . $filters['period_end'] . ' 23:59:59"');
+            $this->db->where('issued_date BETWEEN IFNULL((SELECT IF(royalty.status = "paid", end_date, start_date - INTERVAL 1 SECOND)), "2000/01/01") and "' . $filters['period_end'] . ' 23:59:59"');
         } else {
-            $this->db->where('issued_date BETWEEN IFNULL(royalty_payment.last_paid_date, "2000/01/01") and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
+            $this->db->where('issued_date BETWEEN IFNULL((SELECT IF(royalty.status = "paid", end_date, start_date - INTERVAL 1 SECOND)), "2000/01/01") and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
         }
         $this->db->where('invoice.status', 'finish');
         return $this->db->get()->result();
@@ -69,11 +72,12 @@ class Royalty_model extends MY_Model
         $last_paid_date = '';
         if ($filters['last_paid_date'] == '') $last_paid_date = "2021/01/01";
         else $last_paid_date = $filters['last_paid_date'];
-        $this->db->select('book.book_id, book.book_title, harga, SUM(qty) AS count, SUM(qty*price) AS total_sales, SUM(qty*price*invoice_book.royalty/100) as earned_royalty')
+        $this->db->select('book.book_id, book.book_title, SUM(invoice_book.qty) AS count, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')
             ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
+            ->group_by('book.book_id')
             ->where('invoice.status', 'finish')
             ->where('draft_author.author_id', $author_id);
         if ($filters['period_end'] != null) {
@@ -82,7 +86,7 @@ class Royalty_model extends MY_Model
         } else {
             $this->db->where('issued_date BETWEEN "' . $last_paid_date .  '" and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
         }
-        
+
         return $this->db->get()->result();
     }
 
