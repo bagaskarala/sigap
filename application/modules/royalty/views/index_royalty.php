@@ -122,7 +122,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     scope="col"
                                     style="width:20%;"
                                     class="pr-4"
-                                >Tanggal Pembayaran Terakhir</th>
+                                >Periode</th>
                                 <th
                                     scope="col"
                                     style="width:20%;"
@@ -155,7 +155,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     <td class="text-right align-middle">
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
-                                    <td><?= $lData->end_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
+                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
                                     <td><?= get_royalty_status()[$lData->status] ?></td>
                                     <td></td>
                                 </tr>
