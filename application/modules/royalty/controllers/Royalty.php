@@ -201,5 +201,6 @@ class Royalty extends Sales_Controller
             }
         }
         $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+        echo json_encode(['status' => TRUE]);
     }
 }

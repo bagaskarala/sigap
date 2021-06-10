@@ -448,7 +448,6 @@ $(document).ready(function() {
             success: function(result) {
                 var response = $.parseJSON(result)
                 //Validation Error
-                console.log(response)
                 if (response.status != true) {
                     $(".error-message").addClass('d-none');
                     for (var i = 0; i < response.input_error.length; i++) {
