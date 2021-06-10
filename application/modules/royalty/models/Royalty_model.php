@@ -4,6 +4,25 @@ class Royalty_model extends MY_Model
 {
     public $per_page = 10;
 
+    public function validate_royalty() {
+        $data = array();
+        $data['input_error'] = array();
+        $data['status'] = TRUE;
+
+        if ($this->input->post('start-date') == '') {
+            $data['input_error'][] = 'null-start-date';
+            $data['status'] = FALSE;
+        } else if ($this->input->post('start-date') > $this->input->post('end-date')) {
+            $data['input_error'][] = 'invalid-range';
+            $data['status'] = FALSE;
+        }
+
+        if ($data['status'] === FALSE) {
+            echo json_encode($data);
+            exit();
+        }
+    }
+
     public function get_authors()
     {
         return $this->db->select('author_name')

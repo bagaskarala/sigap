@@ -75,11 +75,25 @@ class Royalty extends Sales_Controller
             $latest_royalty->details = $this->royalty->author_details($author_id, $latest_filters)[0];
         }
 
-        if ($latest_royalty == NULL) $last_paid_date = '2021/01/01';
-        else if ($latest_royalty->status == 'paid') $last_paid_date = $latest_royalty->end_date;
+        if ($latest_royalty != NULL) {
+            if ($latest_royalty->status == 'paid') { 
+                // Sudah pernah bayar
+                $last_paid_date = $latest_royalty->end_date;
+                $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
+            }
+            else {
+                // Sedang diajukan
+                $last_paid_date = date('Y-m-d H:i:s', strtotime($latest_royalty->start_date) - 1);
+                $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
+            }
+        } 
         else {
-            $last_paid_date = date('Y-m-d H:i:s', strtotime($latest_royalty->start_date) - 1);
+            // Baru pertama kali
+            $last_paid_date = NULL;
+            $current_start_date = NULL;
         }
+        
+        
         $filters = [
             'period_end'        => $period_end,
             'last_paid_date'    => $last_paid_date
@@ -96,7 +110,7 @@ class Royalty extends Sales_Controller
         }
         $pages          = $this->pages;
         $main_view      = 'royalty/view_royalty';
-        $this->load->view('template', compact('pages', 'main_view', 'author', 'last_paid_date', 'latest_royalty', 'royalty_details', 'royalty_history', 'period_end'));
+        $this->load->view('template', compact('pages', 'main_view', 'author', 'last_paid_date', 'current_start_date', 'latest_royalty', 'royalty_details', 'royalty_history', 'period_end'));
     }
 
     public function view_detail($royalty_id)
@@ -146,18 +160,18 @@ class Royalty extends Sales_Controller
 
     public function pay()
     {
+        $this->royalty->validate_royalty();
         $author_id = $this->input->post('author_id');
         $latest_royalty = $this->royalty->fetch_latest_royalty($author_id);
         //jika belum ada data royalti
         if ($latest_royalty == NULL) {
-            $last_paid_date = '2021/01/01';
-            $date = $this->input->post('paid_date');
-
+            $end_date = $this->input->post('end_date');
+            $start_date = $this->input->post('start_date');
             //tambahkan data royalti author
             $data = [
                 'author_id' => $author_id,
-                'start_date' => $last_paid_date,
-                'end_date' =>  $date . ' 23:59:59',
+                'start_date' => $start_date. ' 00:00:00',
+                'end_date' =>  $end_date . ' 23:59:59',
                 'status' => 'requested'
             ];
             $this->db->insert('royalty', $data);
@@ -174,19 +188,18 @@ class Royalty extends Sales_Controller
             //jika sudah ada dan belum diajukan
             else if ($latest_royalty->status == 'paid') {
                 $last_paid_date = strtotime($latest_royalty->end_date) + 1;
-                $last_paid_date = date('Y-m-d H:i:s', $last_paid_date);
-                $date = $this->input->post('paid_date');
+                $start_date = date('Y-m-d H:i:s', $last_paid_date);
+                $end_date = $this->input->post('end_date');
 
                 $data = [
                     'author_id' => $author_id,
-                    'start_date' => $last_paid_date,
-                    'end_date' => $date . ' 23:59:59',
+                    'start_date' => $start_date,
+                    'end_date' => $end_date . ' 23:59:59',
                     'status' => 'requested'
                 ];
                 $this->db->insert('royalty', $data);
             }
         }
         $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
-        redirect('royalty');
     }
 }

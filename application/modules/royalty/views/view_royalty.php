@@ -22,6 +22,7 @@ $level              = check_level();
 if ($period_end != null) {
     $selected_date = $period_end;
 }
+$yesterday = date('Y-m-d', strtotime("-1 days"));
 $url = '';
 if ($period_end == null) $url = '';
 else $url = '/' . $period_end;
@@ -127,118 +128,136 @@ if ($latest_royalty == NULL) {
                         <hr>
                         <br>
                     <?php endif ?>
-                    
                     <h5 class="mb-3">Form Pengajuan Royalti</h5>
-                    <div class="form-group row">
-                        <div class="col-12 col-md-6 mt-2">
-                            <label
-                                for="last-paid-date"
-                                class="font-weight-bold"
-                            >
-                                Akhir Periode Royalti Sebelumnya</label>
-                            <!-- <?php if ($pending_royalty) : ?> -->
-                            <input
-                                type="date"
-                                id="last-paid-date"
-                                class="form-control dates d-none"
-                                value="<?= $latest_royalty->end_date ?>"
-                            />
-                            <input
-                                type="text"
-                                class="form-control"
-                                value="<?= date("d", strtotime($latest_royalty->end_date)) . " " . $month[intval(date("m", strtotime($latest_royalty->end_date))) - 1] . " " . date("Y", strtotime($latest_royalty->end_date)) ?>"
-                                readonly
-                            />
-                            <!-- <?php else : ?> -->
-                            <input
-                                type="date"
-                                id="last-paid-date"
-                                class="form-control dates d-none"
-                                value="<?= $last_paid_date ?>"
-                            />
-                            <input
-                                type="text"
-                                class="form-control"
-                                value="<?= date("d", strtotime($last_paid_date)) . " " . $month[intval(date("m", strtotime($last_paid_date))) - 1] . " " . date("Y", strtotime($last_paid_date)) ?>"
-                                readonly
-                            />
-                            <!-- <?php endif ?> -->
+                    <?php if(strtotime($current_start_date) > strtotime($yesterday)): ?>
+                        <div
+                            class="alert alert-info alert-dismissible fade show"
+                            role="alert"
+                        >
+                            <h5>Info</h5>
+                            <div>Semua royalti hingga saat ini sudah diajukan/dibayar.</div>
                         </div>
-                        <div class="col-12 col-md-6 mt-2">
-                            <label
-                                for="due-date"
-                                class="font-weight-bold"
-                            >
-                                Akhir Periode Royalti Saat Ini</label>
-                            <div class="input-group mb-3">
-                                <input
-                                    name="due-date"
-                                    id="due-date"
-                                    class="form-control dates"
-                                    value="<?= $selected_date ?>"
-                                />
+                    <?php endif ?>
+                    <div
+                        id="form-royalty"
+                        class="<?php if(strtotime($current_start_date) > strtotime($yesterday)){echo 'd-none';} ?>"
+                    >
+                        <div class="form-group row">
+                            <div class="col-12 col-md-6 mt-2">
+                                <label
+                                    for="last-paid-date"
+                                    class="font-weight-bold"
+                                >
+                                    Tanggal Awal Periode yang Akan Diajukan</label>
+                                <small
+                                    id="error-null-start-date"
+                                    class="d-none error-message text-danger"
+                                >Tanggal mulai periode wajib diisi!</small>
+                                <small
+                                    id="error-invalid-range"
+                                    class="d-none error-message text-danger"
+                                >Tanggal mulai periode tidak bisa melebihi tanggal akhir periode!</small>
+
+                                <?php if ($last_paid_date == NULL): //Baru pertama kali?>
+                                    <input
+                                        id="start-date"
+                                        name="start-date"
+                                        class="form-control dates"
+                                    />
+                                <?php else: ?>
+                                    
+                                    
+                                        <input
+                                            id="start-date"
+                                            name="start-date"
+                                            class="form-control dates d-none"
+                                            value="<?= $current_start_date ?>"
+                                        />
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            value="<?= date("d", strtotime($current_start_date)) . " " . $month[intval(date("m", strtotime($current_start_date))) - 1] . " " . date("Y", strtotime($current_start_date)) ?>"
+                                            readonly
+                                        />
+                                <?php endif ?>
+                            </div>
+                            <div class="col-12 col-md-6 mt-2">
+                                <label
+                                    for="due-date"
+                                    class="font-weight-bold"
+                                >
+                                    Tanggal Akhir Periode yang Akan Diajukan</label>
+                                <div class="input-group mb-3">
+                                    <input
+                                        name="due-date"
+                                        id="due-date"
+                                        class="form-control dates"
+                                        value="<?= $selected_date ?>"
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="paid_period"></div>
-                    <table class="table table-striped mb-0">
-                        <thead>
-                            <tr class="text-center">
-                                <th
-                                    scope="col"
-                                    style="width:2%;"
-                                >No</th>
-                                <th
-                                    scope="col"
-                                    style="width:30%;"
-                                >Judul Buku</th>
-                                <th
-                                    scope="col"
-                                    style="width:15%;"
-                                >Jumlah Buku Terjual</th>
-                                <th
-                                    scope="col"
-                                    style="width:15%;"
-                                >Penjualan</th>
-                                <th
-                                    scope="col"
-                                    style="width:15%;"
-                                >Royalti</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $index = 0;
-                            $total_sales = 0;
-                            $total_royalty = 0; ?>
-                            <?php foreach ($royalty_details as $royalty) : ?>
-                                <tr>
-                                    <td class="text-center"><?= $index + 1; ?></td>
-                                    <td class="text-left"><?= $royalty->book_title; ?></td>
-                                    <td class="text-center"><?= $royalty->count; ?></td>
-                                    <td class="text-right pr-5">Rp <?= $royalty->total_sales; ?></td>
-                                    <td class="text-right pr-5">Rp <?= round($royalty->earned_royalty, 0); ?></td>
+                        
+                        <div id="paid_period"></div>
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr class="text-center">
+                                    <th
+                                        scope="col"
+                                        style="width:2%;"
+                                    >No</th>
+                                    <th
+                                        scope="col"
+                                        style="width:30%;"
+                                    >Judul Buku</th>
+                                    <th
+                                        scope="col"
+                                        style="width:15%;"
+                                    >Jumlah Buku Terjual</th>
+                                    <th
+                                        scope="col"
+                                        style="width:15%;"
+                                    >Penjualan</th>
+                                    <th
+                                        scope="col"
+                                        style="width:15%;"
+                                    >Royalti</th>
                                 </tr>
-                                <?php $index++;
-                                $total_sales += $royalty->total_sales;
-                                $total_royalty += $royalty->earned_royalty; ?>
-                            <?php endforeach; ?>
-                            <tr style="text-align:center;">
-                                <td
-                                    scope="col"
-                                    class="align-middle"
-                                    colspan="3"
-                                >
-                                    <b>Total</b>
-                                </td>
-                                <td class="text-right pr-5">
-                                    <b>Rp <?= $total_sales; ?></b>
-                                </td>
-                                <td class="text-right pr-5">
-                                    <b>Rp <?= $total_royalty; ?></b>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php $index = 0;
+                                $total_sales = 0;
+                                $total_royalty = 0; ?>
+                                <?php foreach ($royalty_details as $royalty) : ?>
+                                    <tr>
+                                        <td class="text-center"><?= $index + 1; ?></td>
+                                        <td class="text-left"><?= $royalty->book_title; ?></td>
+                                        <td class="text-center"><?= $royalty->count; ?></td>
+                                        <td class="text-right pr-5">Rp <?= $royalty->total_sales; ?></td>
+                                        <td class="text-right pr-5">Rp <?= round($royalty->earned_royalty, 0); ?></td>
+                                    </tr>
+                                    <?php $index++;
+                                    $total_sales += $royalty->total_sales;
+                                    $total_royalty += $royalty->earned_royalty; ?>
+                                <?php endforeach; ?>
+                                <tr style="text-align:center;">
+                                    <td
+                                        scope="col"
+                                        class="align-middle"
+                                        colspan="3"
+                                    >
+                                        <b>Total</b>
+                                    </td>
+                                    <td class="text-right pr-5">
+                                        <b>Rp <?= $total_sales; ?></b>
+                                    </td>
+                                    <td class="text-right pr-5">
+                                        <b>Rp <?= $total_royalty; ?></b>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     
                     <?php if (!$pending_royalty) : ?>
                         <button
@@ -297,7 +316,8 @@ if ($latest_royalty == NULL) {
                                             Apakah Anda yakin akan mengajukan royalty periode ini?
                                         </p>
                                     <?php endif ?>
-
+                                    
+                                    
                                     <div class="modal-footer">
                                         <button
                                             type="submit"
@@ -411,25 +431,34 @@ $(document).ready(function() {
         $('#modal-confirm').modal('toggle')
     })
 
-    $('#confirm-royalty').on("submit", function() {
-        var paid_date = "<?= $period_end; ?>"
-        if (paid_date == "") {
-            paid_date = new Date()
-            paid_date.setDate(paid_date.getDate() - 1)
-            paid_date = paid_date.toISOString().slice(0, 10)
-        }
+    $('#confirm-royalty').on("submit", function(e) {
+        e.preventDefault();
         var receipt = $('#receipt').val()
+        var end_date = $('#due-date').val()
+        var start_date = $('#start-date').val()
         $.ajax({
             type: "POST",
             url: "<?= base_url("royalty/pay"); ?>",
             data: {
-                paid_date: paid_date,
+                start_date : start_date,
+                end_date: end_date,
                 author_id: "<?= $author->author_id ?>",
                 receipt: receipt
             },
             success: function(result) {
                 var response = $.parseJSON(result)
-                window.location = "<?= base_url('royalty'); ?>"
+                //Validation Error
+                console.log(response)
+                if (response.status != true) {
+                    $(".error-message").addClass('d-none');
+                    for (var i = 0; i < response.input_error.length; i++) {
+                        alert("Input tidak valid! Pastikan tanggal awal periode tidak kosong dan tidak melebihi tanggal akhir periode")
+                        // Show error message
+                        $('#' + response.input_error[i]).removeClass('d-none');
+                    }
+                } else {
+                    location.href = "<?= base_url('royalty'); ?>";
+                }
             },
             error: function(req, err) {
                 console.log(err)

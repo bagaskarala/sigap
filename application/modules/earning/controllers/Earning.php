@@ -21,7 +21,7 @@ class Earning extends Sales_Controller
             'excel'         => $this->input->get('excel', true)
         ];
         if ($filters['date_year'] == NULL && $filters['invoice_type'] == NULL) {
-            $filters['date_year'] = '2021';
+            $filters['date_year'] = date("Y");
         }
 
         if ($filters['invoice_type'] == NULL) {
