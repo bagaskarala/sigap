@@ -121,7 +121,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         Stok</th>
                                     <?php if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
                                     <th style="min-width:150px;" class="align-middle text-center" rowspan="2">
-                                    </th>
+                                        Aksi</th>
                                     <?php endif; ?>
                                 </tr>
                                 <tr>
@@ -177,6 +177,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                                 data-target="#modal-edit-rak-<?= $book_stock->book_id; ?>"><i
                                                     class="fa fa-map-marker-alt"></i><span class="sr-only">Edit Lokasi
                                                     Rak</span></button>
+                                            <?php if ($level == 'superadmin') : ?>
                                             <a href="<?= base_url(
                                                                         'book_stock/edit/' . $book_stock->book_stock_id . ''
                                                                     ); ?>" class="btn btn-sm btn-secondary"
@@ -184,6 +185,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                                 <i class="fa fa-pencil-alt"></i>
                                                 <span class="sr-only">Edit Stok Buku</span>
                                             </a>
+                                            <?php endif ?>
                                             <a href="<?= base_url(
                                                                         'book_stock/retur/' . $book_stock->book_stock_id . ''
                                                                     ); ?>" class="btn btn-sm btn-secondary"

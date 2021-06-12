@@ -49,7 +49,7 @@ $menu_list = [
         'name'  => 'Aset Buku',
         'url'   => 'book_asset',
         'icon'  => 'fas fa-coins',
-        'level' => 'superadmin|admin_gudang|admin_pemasaran|staff_gudang',
+        'level' => 'superadmin|admin_gudang|staff_gudang',
     ],
     [
         'name'  => 'Penerimaan Buku',

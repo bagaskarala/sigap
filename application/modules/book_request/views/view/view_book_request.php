@@ -136,7 +136,7 @@ $is_preparing_started       = format_datetime($book_request->preparing_start_dat
 $is_preparing_finished      = format_datetime($book_request->preparing_end_date);
 $is_preparing_deadline_set  = format_datetime($book_request->preparing_deadline);
 $staff_gudang               = $this->book_request->get_staff_gudang_by_invoice($book_request->invoice_id);
-if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran') : 
+if ($level == 'superadmin'|| $level == 'admin_gudang') : 
 ?>
 <section id="preparing-progress-wrapper" class="card">
     <div id="preparing-progress">
