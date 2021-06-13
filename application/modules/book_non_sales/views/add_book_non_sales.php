@@ -26,14 +26,6 @@
                                 <input type="text" id="name" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label for="requester">Peminta<abbr title="Required">*</abbr></label>
-                                <input type="text" id="requester" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="receiver">Penerima<abbr title="Required">*</abbr></label>
-                                <input type="text" id="receiver" class="form-control" required>
-                            </div>
-                            <div class="form-group">
                                 <label for="address">Alamat<abbr title="Required">*</abbr></label>
                                 <?= form_textarea([
                                 'name'  => "address",
@@ -44,6 +36,14 @@
                                 'required' => true
                             ]); ?>
                             <?= form_error('address'); ?>
+                            </div>
+                            <div class="form-group">
+                                <label for="requester">Peminta<abbr title="Required">*</abbr></label>
+                                <input type="text" id="requester" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiver">Penerima<abbr title="Required">*</abbr></label>
+                                <input type="text" id="receiver" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="type">Tipe Permintaan Non Penjualan<abbr title="Required">*</abbr></label>
