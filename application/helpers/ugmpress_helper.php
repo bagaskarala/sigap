@@ -879,7 +879,7 @@ function get_book_transfer_destination(){
 function get_book_non_sales_type(){
     return [
         '' => '--Pilih--',
-        'presentgift' => 'Present Gift',
+        'presentcopies' => 'Present Copies',
         'doorprize' => 'Doorprize',
         'bedahbuku' => 'Bedah Buku',
         'dll' => 'Lain-lain'

@@ -77,6 +77,8 @@ class Book_transfer extends Warehouse_Sales_Controller
             else{
                 $data_format['destination'] = 'Showroom';
             }
+            $data_format['requester']     = $book_transfer->requester ?? '';
+            $data_format['receiver']      = $book_transfer->receiver ?? '';
             $data_format['number']        = $book_transfer->transfer_number ?? '';
             $data_format['transfer_date'] = $book_transfer->transfer_date ?? '';
             $data_format['book_list']     = $book_transfer_list ?? '';
@@ -338,6 +340,8 @@ class Book_transfer extends Warehouse_Sales_Controller
             'transfer_date' => now(),
             'destination' => $input->destination,
             'library_id' => $input->library_id,
+            'requester' => $input->requester,
+            'receiver' => $input->receiver,
         ];
         $this->db->trans_begin();
         // insert book transfer

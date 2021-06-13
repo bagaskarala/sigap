@@ -52,6 +52,16 @@ $level              = check_level();
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td width="200px"> Peminta </td>
+                                    <td><?= $book_transfer->requester?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Penerima </td>
+                                    <td><?= $book_transfer->receiver?>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td width="200px"> Tanggal Pindah </td>
                                     <td><?= format_datetime($book_transfer->transfer_date)?>
                                     </td>

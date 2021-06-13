@@ -76,7 +76,9 @@ class Book_non_sales extends Warehouse_Sales_Controller
             'type' => $input->type,
             'name' => $input->name,
             'address' => $input->address,
-            'notes' => $input->notes
+            'notes' => $input->notes,
+            'requester' => $input->requester,
+            'receiver' => $input->receiver,
         ];
         // insert book non sales
         $book_non_sales_success = $this->book_non_sales->insert($book_non_sales);
@@ -171,6 +173,8 @@ class Book_non_sales extends Warehouse_Sales_Controller
             $data_format['address']       = $book_non_sales->address ?? '';
             $data_format['notes']         = $book_non_sales->notes ?? '';
             $data_format['book_list']     = $book_non_sales_list ?? '';
+            $data_format['requester']     = $book_non_sales->requester ?? '';
+            $data_format['receiver']      = $book_non_sales->receiver ?? '';
             $html = $this->load->view('book_non_sales/format_pdf_non_sales', $data_format, true);        $file_name = $data_format['number'].'_Pemindahan Buku';
             $file_name = $data_format['number'].'_Pemindahan Buku';
             $this->pdf->generate_pdf_a4_landscape($html, $file_name);

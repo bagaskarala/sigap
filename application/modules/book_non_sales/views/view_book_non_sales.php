@@ -80,6 +80,16 @@ $level              = check_level();
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td width="200px"> Peminta </td>
+                                    <td><?= $book_non_sales->requester?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Penerima </td>
+                                    <td><?= $book_non_sales->receiver?>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td width="200px"> Jenis Bon Buku Non Penjualan </td>
                                     <td>
                                         <?= get_book_non_sales_type()[$book_non_sales->type] ?>
