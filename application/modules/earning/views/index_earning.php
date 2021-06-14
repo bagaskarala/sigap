@@ -158,11 +158,11 @@ $invoice_type_options = [
                                     <tr class="text-center">
                                         <th
                                             scope="col"
-                                            style="width:8%;"
+                                            style="width:5%;"
                                         >No</th>
                                         <th
                                             scope="col"
-                                            style="width:20%;"
+                                            style="width:25%;"
                                         >Nomor Faktur</th>
                                         <th
                                             scope="col"
@@ -170,11 +170,11 @@ $invoice_type_options = [
                                         >Jenis Faktur</th>
                                         <th
                                             scope="col"
-                                            style="width:15%;"
+                                            style="width:25%;"
                                         >Tanggal Dikeluarkan</th>
                                         <th
                                             scope="col"
-                                            style="width:10%;"
+                                            style="width:25%;"
                                         >Status</th>
                                         <th
                                             scope="col"
@@ -186,6 +186,12 @@ $invoice_type_options = [
                                     id="table_content"
                                     class="align-middle text-center"
                                 >
+                                    <button
+                                        type="button"
+                                        class="btn btn-success mr-3 mb-3"
+                                        style="float: right;"
+                                        id="print_month"
+                                    >Excel</button>
                                     <!-- isi tabel -->
                                 </tbody>
                             </table>
@@ -258,6 +264,20 @@ $invoice_type_options = [
                     }
                 }]
             },
+            tooltips: {
+                displayColors: false,
+                callbacks: {
+                    label: function(tooltipItems, data) {
+                        var value = parseInt(data.datasets[0].data[tooltipItems.index])
+                        if (value >= 1000) {
+                            return data.labels[tooltipItems.index] + ' - Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                        } else {
+                            return data.labels[tooltipItems.index] + ' - Rp ' + value;
+                        }
+                        // return data.labels[tooltipItems.index] + 'asdadk' + data.datasets[0].data[tooltipItems.index].toLocaleString();
+                    }
+                }
+            },
             layout: {
                 padding: {
                     left: 0,
@@ -320,6 +340,20 @@ $invoice_type_options = [
                     }
                 }]
             },
+            tooltips: {
+                displayColors: false,
+                callbacks: {
+                    label: function(tooltipItems, data) {
+                        var value = parseInt(data.datasets[0].data[tooltipItems.index])
+                        if (value >= 1000) {
+                            return data.labels[tooltipItems.index] + ' - Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                        } else {
+                            return data.labels[tooltipItems.index] + ' - Rp ' + value;
+                        }
+                        // return data.labels[tooltipItems.index] + 'asdadk' + data.datasets[0].data[tooltipItems.index].toLocaleString();
+                    }
+                }
+            },
             layout: {
                 padding: {
                     left: 0,
@@ -352,6 +386,8 @@ function appendTable(year, month, invoice_type) {
         url: "<?= base_url('earning/api_get_invoice/'); ?>" + year + '/' + month + '/' + type[invoice_type],
         datatype: "JSON",
         success: function(res) {
+            $('#print_month').attr("onclick", "generateExcel(" + year + ',' + month + ",'" + type[invoice_type] + "')")
+            // $('#print_month').attr("onclick", "generateExcel(" + year + "," + month + ", '" + type[invoice_type] + "')")
             populateTable(res.data)
             $('#table_laporan').show()
         },
@@ -361,21 +397,29 @@ function appendTable(year, month, invoice_type) {
     });
 }
 
+function generateExcel(year, month, type) {
+    window.location.href = "<?= base_url('earning/call_generate_excel/'); ?>" + year + '/' + month + '/' + type
+}
+
 function populateTable(data) {
     var htmlContent = ""
+    var grandTotal = 0
     for (i = 0; i < data.length; i++) {
+        grandTotal += data[i].earning
         var type = get_invoice_type(data[i].type)
         var status = get_invoice_status(data[i].status)
-        var url = "<?= base_url('invoice/view/'); ?>" + data[i].invoice_id
-
-        if (parseInt(data[i].earning) >= 1000) {
-            data[i].earning = 'Rp ' + data[i].earning.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        } else {
-            data[i].earning = 'Rp ' + data[i].earning;
-        }
-        htmlContent += "<tr class='text-center'><td>" + (i + 1) + "</td><td><a class='font-weight-bold' href='" + url + "'>" + data[i].number + "</a></td><td>" + type + "</td><td>" + data[i].issued_date.substring(0, 10) + "</td><td>" + status + "</td><td>" + data[i].earning + " </td></tr>"
+        htmlContent += "<tr class='text-center'><td>" + (i + 1) + "</td><td>" + data[i].number + "</td><td>" + type + "</td><td>" + data[i].issued_date.substring(0, 10) + "</td><td>" + status + "</td><td style='text-align:left'>" + convertToRp(data[i].earning) + " </td></tr>"
     }
+    htmlContent += "<tr><td colspan='4' style='text-align:center'><b>Grand Total</b></td><td colspan='2' style='text-align:leftt'><b>" + convertToRp(grandTotal) + "</b></td></tr>"
     $('#table_content').html(htmlContent)
+}
+
+function convertToRp(earning) {
+    if (earning >= 1000) {
+        return 'Rp ' + earning.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    } else {
+        return 'Rp ' + earning;
+    }
 }
 
 function get_invoice_type(type) {

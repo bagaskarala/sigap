@@ -14,8 +14,12 @@ $endDate        = $this->input->get('end_date');
                 <a href="<?= base_url('royalty'); ?>">Royalti</a>
             </li>
             <li class="breadcrumb-item">
+                <a href="<?= base_url("royalty/view/$author->author_id"); ?>"><?= $author->author_name ?></a>
+            </li>
+            <li class="breadcrumb-item">
                 <a class="text-muted">
-                    <?= $author->author_name ?></a>
+                    Detail Royalti
+                </a>
             </li>
         </ol>
     </nav>
@@ -71,8 +75,8 @@ $endDate        = $this->input->get('end_date');
                                 <td class="text-center"><?= $index + 1; ?></td>
                                 <td class="text-left"><?= $lData->book_title; ?></td>
                                 <td class="text-center"><?= $lData->count; ?></td>
-                                <td class="text-right pr-5">Rp <?= $lData->total_sales; ?></td>
-                                <td class="text-right pr-5">Rp <?= round($lData->earned_royalty, 0); ?></td>
+                                <td class="text-right pr-5">Rp <?= number_format($lData->total_sales, 0, ',', '.'); ?></td>
+                                <td class="text-right pr-5">Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?></td>
                             </tr>
                             <?php $index++;
                             $total_sales += $lData->total_sales;
@@ -87,10 +91,10 @@ $endDate        = $this->input->get('end_date');
                                 <b>Total</b>
                             </td>
                             <td class="text-right pr-5">
-                                <b>Rp <?= $total_sales; ?></b>
+                                <b>Rp <?= number_format($total_sales, 0, ',', '.'); ?></b>
                             </td>
                             <td class="text-right pr-5">
-                                <b>Rp <?= $total_royalty; ?></b>
+                                <b>Rp <?= number_format($total_royalty, 0, ',', '.'); ?></b>
                             </td>
                         </tr>
                     </tbody>

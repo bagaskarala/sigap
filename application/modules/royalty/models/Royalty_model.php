@@ -4,12 +4,12 @@ class Royalty_model extends MY_Model
 {
     public $per_page = 10;
 
-    public function validate_royalty() {
+    public function validate_royalty()
+    {
         $data = array();
         $data['input_error'] = array();
         $data['status'] = TRUE;
 
-        // echo($this->input->post('start_date'));
         if ($this->input->post('start_date') == '') {
             $data['input_error'][] = 'null-start-date';
             $data['status'] = FALSE;
@@ -63,9 +63,41 @@ class Royalty_model extends MY_Model
             ->row();
     }
 
-    
-    public function author_earning($filters)
+    public function fetch_all_royalty_history($filters, $page)
     {
+        $this->db->start_cache();
+        $this->db->select('royalty_id, author.author_id, author_name, start_date, end_date, status, paid_date, receipt')
+            ->from('royalty')
+            ->join('author', 'royalty.author_id = author.author_id')
+            ->order_by('author.author_name', 'ASC')
+            //->group_by('author.author_name')
+            ->limit($this->per_page, $this->calculate_real_offset($page));
+        if ($filters['keyword'] != '') {
+            $this->db->like('author_name', $filters['keyword']);
+        }
+        if ($filters['start_date'] != null) {
+            $this->db->where('start_date >=', $filters['start_date']);
+        }
+        if ($filters['period_end'] != null) {
+            $this->db->where('end_date <=', $filters['period_end']);
+        }
+        
+        $this->db->stop_cache();
+        $royalty = $this->db->get()->result();
+        $total = $this->db->count_all_results();
+        $this->db->flush_cache();
+        return [
+            'royalty' => $royalty,
+            'total'   => $total
+        ];
+        
+        return $this->db->get()->result();
+    }
+
+
+    public function author_earning($filters, $page)
+    {
+        $this->db->start_cache();
         $this->db->select('author.author_id, author_name, royalty.start_date as start_date, royalty.end_date as end_date, royalty.status as status, SUM(qty*price) AS total_sales, SUM(qty*price*book.royalty/100) as earned_royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
@@ -73,7 +105,8 @@ class Royalty_model extends MY_Model
             ->join('royalty', 'author.author_id = royalty.author_id AND royalty_id = (SELECT royalty_id from royalty where royalty.author_id = author.author_id order by royalty_id DESC limit 1)', 'left')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')
             ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
-            ->group_by('author.author_id');
+            ->group_by('author.author_id')
+            ->order_by('author.author_name');
         if ($filters['keyword'] != '') {
             $this->db->like('author_name', $filters['keyword']);
         }
@@ -83,8 +116,16 @@ class Royalty_model extends MY_Model
         } else {
             $this->db->where('issued_date BETWEEN IFNULL((SELECT IF(royalty.status = "paid", end_date, start_date - INTERVAL 1 SECOND)), "2000/01/01") and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
         }
-        $this->db->where('invoice.status', 'finish');
-        return $this->db->get()->result();
+        $this->db->where('invoice.status', 'finish')->limit($this->per_page, $this->calculate_real_offset($page));
+        
+        $this->db->stop_cache();
+        $royalty = $this->db->get()->result();
+        $total = $this->db->count_all_results();
+        $this->db->flush_cache();
+        return [
+            'royalty' => $royalty,
+            'total'   => $total
+        ];
     }
 
     public function author_details($author_id, $filters)
@@ -92,7 +133,7 @@ class Royalty_model extends MY_Model
         $last_paid_date = '';
         if ($filters['last_paid_date'] == '') $last_paid_date = "2021/01/01";
         else $last_paid_date = $filters['last_paid_date'];
-        $this->db->select('book.book_id, book.book_title, SUM(invoice_book.qty) AS count, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty')
+        $this->db->select('book.book_id, book.book_title, price, SUM(invoice_book.qty) AS count, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')

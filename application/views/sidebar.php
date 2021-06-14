@@ -114,7 +114,19 @@ $menu_list = [
         'name' => 'Royalti',
         'url'  => 'royalty',
         'icon' => 'fa fa-star',
-        'level' => 'superadmin|admin_gudang|admin_keuangan'
+        'level' => 'superadmin|admin_gudang|admin_keuangan',
+        'child' => [
+            [
+                'name' => 'Dashboard',
+                'url'  => 'royalty',
+                'level' => 'superadmin|admin_gudang|admin_pemasaran',
+            ],
+            [
+                'name' => 'Riwayat',
+                'url'  => 'royalty/history',
+                'level' => 'superadmin|admin_gudang|admin_pemasaran'
+            ],
+        ]
     ],
     [
         'title' => 'Data',
