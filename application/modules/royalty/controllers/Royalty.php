@@ -86,13 +86,12 @@ class Royalty extends Sales_Controller
         }
 
         $total = $get_data['total'];
+        $dropdown_author = $this->royalty->get_dropdown_author();
 
-        $pagination = $this->royalty->make_pagination(site_url('royalty/history'), 2, $total);
+        $pagination = $this->royalty->make_pagination(site_url('royalty/history'), 3, $total);
         $pages      = $this->pages;
-        $page = ($page!='') ? $page : 0;
-        $config["cur_page"] = $page;
         $main_view  = 'royalty/history_royalty';
-        $this->load->view('template', compact('pages', 'main_view', 'pagination', 'royalty_history', 'total', 'page'));
+        $this->load->view('template', compact('pages', 'main_view', 'pagination', 'royalty_history', 'total', 'dropdown_author'));
     }
 
     public function view($author_id)

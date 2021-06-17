@@ -42,24 +42,6 @@ if ($latest_royalty == NULL) {
 ?>
 <div class="page-section">
     <section class="card">
-        <header class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item">
-                    <a
-                        class="nav-link active show"
-                        data-toggle="tab"
-                        href="#request-royalty"
-                    ><i class="fa fa-info-circle"></i> Ajukan Royalti </a>
-                </li>
-                <li class="nav-item">
-                    <a
-                        class="nav-link"
-                        data-toggle="tab"
-                        href="#history-royalty"
-                    ><i class="fa fa-user-tie"></i> Riwayat Royalti </a>
-                </li>
-            </ul>
-        </header>
         <div class="card-body">
             <div class="tab-content">
                 <div
@@ -104,7 +86,7 @@ if ($latest_royalty == NULL) {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="text-center align-middle"><?= date("d F Y", strtotime($latest_royalty->start_date)) ?? '1 Januari 2021'; ?> </td>
+                                        <td class="text-center align-middle"><?= date("d F Y", strtotime($latest_royalty->start_date)) ?? ''; ?> </td>
                                         <td class="text-center align-middle"><?= date("d F Y", strtotime($latest_royalty->end_date)) ?? '' ?></td>
                                         <td class="text-center align-middle">Rp <?= number_format($latest_royalty->details->earned_royalty, 0, ',', '.') ?? 0; ?></td>
                                         <td class="text-center">
@@ -180,7 +162,7 @@ if ($latest_royalty == NULL) {
                                         type="text"
                                         class="form-control"
                                         value="<?= date("d", strtotime($current_start_date)) . " " . $month[intval(date("m", strtotime($current_start_date))) - 1] . " " . date("Y", strtotime($current_start_date)) ?>"
-                                        readonly
+                                        disabled
                                     />
                                 <?php endif ?>
                             </div>
@@ -216,14 +198,12 @@ if ($latest_royalty == NULL) {
                             </div>
                         </div>
                         <?= form_close(); ?>
-                        <div
-                            class="<?php if ($start_date == NULL) {
-                                    echo 'd-block';
-                                } else {
-                                    echo 'd-none';
-                                }
-                                ?>"
-                        >
+                        <div class="<?php if ($start_date == NULL) {
+                                        echo 'd-block';
+                                    } else {
+                                        echo 'd-none';
+                                    }
+                                    ?>">
                             <div
                                 class="alert alert-info alert-dismissible fade show"
                                 role="alert"
@@ -232,12 +212,13 @@ if ($latest_royalty == NULL) {
                                 <div>Silakan filter tanggal awal dan akhir pembayaran royalti untuk menampilkan data royalti</div>
                             </div>
                         </div>
-                        <div
-                            class="<?php if ($start_date == NULL) {
-                                    echo 'd-none';
-                                } ?>"
-                        >
-                            <div id="changed_date" style="display: none;">
+                        <div class="<?php if ($start_date == NULL) {
+                                        echo 'd-none';
+                                    } ?>">
+                            <div
+                                id="changed_date"
+                                style="display: none;"
+                            >
                                 <div
                                     class="alert alert-info alert-dismissible fade show"
                                     role="alert"
@@ -314,7 +295,7 @@ if ($latest_royalty == NULL) {
                                 ><?= $button_label; ?></button>
                             <?php endif ?>
 
-                                   
+
                         </div>
                     </div>
                     <div
@@ -382,73 +363,6 @@ if ($latest_royalty == NULL) {
                                 </form>
                             </div>
                         </div>
-                    </div>
-
-                </div>
-                <div
-                    id="history-royalty"
-                    class="tab-pane fade"
-                >
-                    <div class="text-center mb-4">
-                        <h4>Riwayat Royalti</h4>
-                        <h6><?= $author->author_name ?></h6>
-                    </div>
-                    <div>
-                        <table class="table table-striped mb-0">
-                            <thead>
-                                <tr class="text-center">
-                                    <th
-                                        scope="col"
-                                        style="width:2%;"
-                                    >No</th>
-                                    <th
-                                        scope="col"
-                                        style="width:20%;"
-                                    >Tanggal Mulai Periode</th>
-                                    <th
-                                        scope="col"
-                                        style="width:20%;"
-                                    >Tanggal Akhir Periode</th>
-                                    <th
-                                        scope="col"
-                                        style="width:15%;"
-                                    >Status</th>
-                                    <th
-                                        scope="col"
-                                        style="width:15%;"
-                                    >Tanggal Dibayar</th>
-                                    <th
-                                        scope="col"
-                                        style="width:15%;"
-                                    >Total</th>
-                                    <th
-                                        scope="col"
-                                        style="width:15%;"
-                                    >Detail</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $index = 0; ?>
-                                <?php foreach ($royalty_history as $lData) : ?>
-                                    <tr>
-                                        <td class="text-center align-middle"><?= $index + 1; ?></td>
-                                        <td class="text-center align-middle"><?= date("d F Y", strtotime($lData->start_date)) ?></td>
-                                        <td class="text-center align-middle"><?= date("d F Y", strtotime($lData->end_date)) ?></td>
-                                        <td class="text-center align-middle"><?= get_royalty_status()[$lData->status] ?></td>
-                                        <td class="text-center align-middle"><?= $lData->paid_date ? date("d F Y", strtotime($lData->paid_date)) : '' ?></td>
-                                        <td class="text-right align-middle">Rp <?= number_format($lData->details->earned_royalty, 0, ',', '.');; ?></td>
-                                        <td class="text-center">
-                                            <a
-                                                type="button btn-success"
-                                                class="btn btn-primary float-right"
-                                                href="<?= base_url('royalty/view_detail/' . $lData->royalty_id) ?>"
-                                            >Detail</a>
-                                        </td>
-                                    </tr>
-                                    <?php $index++; ?>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -532,5 +446,4 @@ $('#due-date').change(function() {
 $('#start-date').change(function() {
     $('#changed_date').show()
 })
-
 </script>

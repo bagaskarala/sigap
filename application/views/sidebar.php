@@ -46,6 +46,12 @@ $menu_list = [
         'level' => 'superadmin|admin_gudang|admin_pemasaran',
     ],
     [
+        'name'  => 'Aset Buku',
+        'url'   => 'book_asset',
+        'icon'  => 'fas fa-coins',
+        'level' => 'superadmin|admin_gudang|admin_pemasaran',
+    ],
+    [
         'name'  => 'Penerimaan Buku',
         'url'   => 'book_receive',
         'icon'  => 'fas fa-file-import',
@@ -115,18 +121,6 @@ $menu_list = [
         'url'  => 'royalty',
         'icon' => 'fa fa-star',
         'level' => 'superadmin|admin_gudang|admin_keuangan',
-        'child' => [
-            [
-                'name' => 'Dashboard',
-                'url'  => 'royalty',
-                'level' => 'superadmin|admin_gudang|admin_pemasaran',
-            ],
-            [
-                'name' => 'Riwayat',
-                'url'  => 'royalty/history',
-                'level' => 'superadmin|admin_gudang|admin_pemasaran'
-            ],
-        ]
     ],
     [
         'title' => 'Data',

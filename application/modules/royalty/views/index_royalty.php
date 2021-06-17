@@ -36,6 +36,22 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
         <div class="col-12">
             <section class="card card-fluid">
                 <div class="card-body p-0">
+                    <header class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link active"
+                                    href="<?= base_url('royalty/'); ?>"
+                                >Tagihan Royalti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link"
+                                    href="<?= base_url('royalty/history'); ?>"
+                                >Riwayat Royalti</a>
+                            </li>
+                        </ul>
+                    </header>
                     <div class="p-3">
                         <?= form_open($pages, ['method' => 'GET']); ?>
                         <div class="row">
@@ -52,7 +68,6 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     class="form-control dates"
                                     value="<?= $period_end ?>"
                                     class="form-control custom-select d-block"
-                                    min="2021-01-01"
                                     max="<?php
                                             echo date('Y-m-d', strtotime("-1 days"));
                                             ?>"
@@ -104,17 +119,13 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >Nama</th>
                                 <th
                                     scope="col"
-                                    style="width:15%;"
-                                >Jumlah Penjualan</th>
-                                <th
-                                    scope="col"
-                                    style="width:15%;"
-                                >Jumlah Royalti</th>
-                                <th
-                                    scope="col"
                                     style="width:20%;"
                                     class="pr-4"
                                 >Periode</th>
+                                <th
+                                    scope="col"
+                                    style="width:25%;"
+                                >Jumlah Royalti</th>
                                 <th
                                     scope="col"
                                     style="width:20%;"
@@ -133,7 +144,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     <td class="align-middle pl-4">
                                         <?= ++$i; ?>
                                     </td>
-                                    <td class="text-left align-middle">
+                                    <td class="align-middle text-left">
                                         <a
                                             href="<?= base_url("$pages/view/$lData->author_id" . $url); ?>"
                                             class="font-weight-bold"
@@ -141,13 +152,10 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                             <?= highlight_keyword($lData->author_name, $keyword); ?>
                                         </a>
                                     </td>
-                                    <td class="text-right align-middle">
-                                        Rp <?= number_format($lData->total_sales, 0, ',', '.'); ?>
-                                    </td>
+                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
                                     <td class="text-right align-middle">
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
-                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
                                     <td><?= get_royalty_status()[$lData->status] ?></td>
                                     <td></td>
                                 </tr>
@@ -162,7 +170,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 </td>
                                 <td
                                     scope="col"
-                                    class="text-right align-middle"
+                                    class="text-align-middle"
                                 >
                                     <b>Rp <?= number_format($total_penjualan, 0, ',', '.'); ?></b>
                                 </td>
