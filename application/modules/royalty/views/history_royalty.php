@@ -90,7 +90,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >
                             </div>
                             <div class="col-12 col-md-6 mt-2">
-                                <label for="status">Pencarian</label>
+                                <label for="status">Filter Penulis</label>
                                 <?= form_dropdown('keyword', $dropdown_author, $keyword, 'id="dropdown-author" class="form-control custom-select d-block"'); ?>
                             </div>
                             <div class="col-12 col-md-6 mt-2">
@@ -191,10 +191,8 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
 <script>
 $(document).ready(function() {
     <?php if (isset($keyword)) { ?>
-        console.log("test")
         $('#dropdown-author').select2({});
     <?php } else { ?>
-        console.log("test2")
         $('#dropdown-author').prepend('<option selected="" disabled></option>').select2({
             placeholder: '-- Pilih --'
         });

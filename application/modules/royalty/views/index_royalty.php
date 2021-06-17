@@ -74,8 +74,8 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >
                             </div>
                             <div class="col-12 col-md-8 mt-2">
-                                <label for="status">Pencarian</label>
-                                <?= form_input('keyword', $keyword, 'placeholder="Cari berdasarkan Nama Penulis" class="form-control"'); ?>
+                                <label for="status">Filter Penulis</label>
+                                <?= form_dropdown('keyword', $dropdown_author, $keyword, 'id="dropdown-author" class="form-control custom-select d-block"'); ?>
                             </div>
                             <div class="col-12 col-md-4 mt-2">
                                 <label>&nbsp;</label>
@@ -115,7 +115,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >No</th>
                                 <th
                                     scope="col"
-                                    style="width:35%;"
+                                    style="width:25%;"
                                 >Nama</th>
                                 <th
                                     scope="col"
@@ -133,9 +133,10 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >Status</th>
                                 <th
                                     scope="col"
-                                    style="width:20%;"
-                                    class="pr-4"
+                                    style="width:30%;"
+                                    class="pr-5"
                                 > &nbsp; </th>
+                                <th>&nbsp</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,9 +145,9 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     <td class="align-middle pl-4">
                                         <?= ++$i; ?>
                                     </td>
-                                    <td class="align-middle text-left">
+                                    <td class="align-middle">
                                         <a
-                                            href="<?= base_url("$pages/view/$lData->author_id" . $url); ?>"
+                                            href="<?= base_url("author/view/royalty_history/$lData->author_id"); ?>"
                                             class="font-weight-bold"
                                         >
                                             <?= highlight_keyword($lData->author_name, $keyword); ?>
@@ -157,6 +158,16 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
                                     <td><?= get_royalty_status()[$lData->status] ?></td>
+                                    <td
+                                        class="text-center"
+                                        style="white-space:nowrap"
+                                    >
+                                        <a
+                                            type="button btn-success"
+                                            class="btn btn-primary float-right"
+                                            href="<?= base_url("$pages/view/$lData->author_id" . $url); ?>"
+                                        >Form Pengajuan</a>
+                                    </td>
                                     <td></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -190,3 +201,14 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function() {
+    <?php if (isset($keyword)) { ?>
+        $('#dropdown-author').select2({});
+    <?php } else { ?>
+        $('#dropdown-author').prepend('<option selected="" disabled></option>').select2({
+            placeholder: '-- Pilih --'
+        });
+    <?php } ?>
+})
+</script>

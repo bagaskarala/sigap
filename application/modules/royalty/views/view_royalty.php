@@ -162,7 +162,7 @@ if ($latest_royalty == NULL) {
                                         type="text"
                                         class="form-control"
                                         value="<?= date("d", strtotime($current_start_date)) . " " . $month[intval(date("m", strtotime($current_start_date))) - 1] . " " . date("Y", strtotime($current_start_date)) ?>"
-                                        disabled
+                                        readonly
                                     />
                                 <?php endif ?>
                             </div>

@@ -30,19 +30,20 @@ class Royalty extends Sales_Controller
 
         $royalty = $get_data['royalty'];
         // Hilangkan author yang tidak dapat royalti periode ini
-        foreach ($royalty as $key => $each_royalty) {
-            if ($each_royalty->status == 'paid') {
-                $filters_next_royalty = [
-                    'last_paid_date'    => $each_royalty->end_date,
-                    'period_end'        => $filters['period_end']
-                ];
-                $next_royalty = $this->royalty->author_details($each_royalty->author_id, $filters_next_royalty);
-                // Buku penulis tidak ada yg terjual selama periode ini
-                if ($next_royalty[0]->book_id == NULL) {
-                    unset($royalty[$key]);
-                }
-            }
+        $royalty = $this->filter_author($royalty, $filters);
+
+        //set dropdown filter penulis
+        $filter_dropdown = [
+            'keyword'           => '',
+            'period_end'        => NULL
+        ];
+        $dropdown_list = $this->royalty->author_earning($filter_dropdown, NULL)['royalty'];
+        $dropdown_list = $this->filter_author($dropdown_list, $filters);
+        $dropdown_author = [];
+        foreach ($dropdown_list as $each_author) {
+            $dropdown_author += [$each_author->author_name => $each_author->author_name];
         }
+
         $total = $get_data['total'];
         $total_penjualan = 0;
         $total_royalty = 0;
@@ -55,7 +56,7 @@ class Royalty extends Sales_Controller
 
         $pages      = $this->pages;
         $main_view  = 'royalty/index_royalty';
-        $this->load->view('template', compact('pages', 'main_view', 'royalty', 'pagination', 'total', 'total_penjualan', 'total_royalty'));
+        $this->load->view('template', compact('pages', 'main_view', 'royalty', 'pagination', 'total', 'total_penjualan', 'total_royalty', 'dropdown_author'));
     }
 
     public function history($page = NULL)
@@ -86,7 +87,7 @@ class Royalty extends Sales_Controller
         }
 
         $total = $get_data['total'];
-        $dropdown_author = $this->royalty->get_dropdown_author();
+        $dropdown_author = $this->royalty->get_dropdown_author_history();
 
         $pagination = $this->royalty->make_pagination(site_url('royalty/history'), 3, $total);
         $pages      = $this->pages;
@@ -187,7 +188,6 @@ class Royalty extends Sales_Controller
             'current_stock' => $current_stock
         );
 
-        // $html = $this->load->view('royalty/view_royalty_pdf', compact('author', 'royalty_details', 'period_time', 'date_year'));
         $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
 
         $file_name = 'Royalti_' . $data['author']->author_name;
@@ -241,5 +241,23 @@ class Royalty extends Sales_Controller
         }
         $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         echo json_encode(['status' => TRUE]);
+    }
+
+    public function filter_author($royalty, $filters)
+    {
+        foreach ($royalty as $key => $each_royalty) {
+            if ($each_royalty->status == 'paid') {
+                $filters_next_royalty = [
+                    'last_paid_date'    => $each_royalty->end_date,
+                    'period_end'        => $filters['period_end']
+                ];
+                $next_royalty = $this->royalty->author_details($each_royalty->author_id, $filters_next_royalty);
+                // Buku penulis tidak ada yg terjual selama periode ini
+                if ($next_royalty[0]->book_id == NULL) {
+                    unset($royalty[$key]);
+                }
+            }
+        }
+        return $royalty;
     }
 }

@@ -114,7 +114,8 @@
             $total_earning = 0;
             $total_royalty = 0; ?>
             <?php foreach ($royalty_details as $royalty) :
-                $stock = $current_stock[$index]->WP + $current_stock[$index]->LP + $current_stock[$index]->SP ?>
+                $stock = $current_stock[$index]->WP + $current_stock[$index]->LP + $current_stock[$index]->SP;
+                $prev_stock =  $stock + $current_stock[$index]->count; ?>
                 <tr class="royalty-table">
                     <td
                         class="royalty-table"
@@ -130,7 +131,7 @@
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= $stock + $royalty->count ?></td>
+                    ><?= $prev_stock ?></td>
                     <td
                         class="royalty-table"
                         style="text-align: left; padding-left:5px;"
@@ -155,7 +156,7 @@
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= $stock ?></td>
+                    ><?= $prev_stock - $royalty->count ?></td>
                 </tr>
                 <?php $index++;
                 $total_royalty += $royalty->earned_royalty; ?>
