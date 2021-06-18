@@ -71,7 +71,7 @@ class Book_transfer_model extends MY_Model{
         if ($data != '') {
             if($params == 'keyword'){
                 $this->group_start();
-                $this->or_like('book_title',$data);
+                $this->like('transfer_number',$data);
                 $this->group_end();
             }
             if($params == 'status'){
