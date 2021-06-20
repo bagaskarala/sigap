@@ -38,7 +38,7 @@
                     style="width:100%; max-width:120px;"
                 >
             </td>
-            <td style="width:80%">
+            <td style="width:80%; padding-left: -5px;">
                 <b>GADJAH MADA UNIVERSITY PRESS</b><br>
                 Jl. Sendok, Karanggayam CT VIII<br>
                 Caturtunggal Depok, Sleman, D.I. Yogyakarta 55281<br>
@@ -49,12 +49,12 @@
     </table>
     <br>
     <div style="text-align: center;">
-        <h3>Daftar Penerima Royalti</h3>
-        <h4><b><?= $author->author_name ?></b></h4>
+        <h2>Daftar Penerima Royalti</h2>
+        <h3><b><?= $author->author_name ?></b></h3>
         <?php if ($period_end == NULL) { ?>
             <h4><?= date("d F Y") ?></h4>
         <?php } else { ?>
-            <h4><?= date("d F Y", strtotime($period_end)) ?></h4>
+            <h4><?= date("d F Y", strtotime($start_date)) ?> - <?= date("d F Y", strtotime($period_end)) ?></h4>
         <?php } ?>
     </div>
     <br>
@@ -114,11 +114,12 @@
             $total_earning = 0;
             $total_royalty = 0; ?>
             <?php foreach ($royalty_details as $royalty) :
-                $stock = $current_stock[$index]->WP + $current_stock[$index]->LP + $current_stock[$index]->SP ?>
+                $stock = $current_stock[$index]->WP + $current_stock[$index]->LP + $current_stock[$index]->SP;
+                $prev_stock =  $stock + $current_stock[$index]->count; ?>
                 <tr class="royalty-table">
                     <td
                         class="royalty-table"
-                        style="text-align: center; height: 30px; padding-left:5px;"
+                        style="text-align: center; height: 30px;"
                         width="5%"
                     ><?= $index + 1; ?></td>
                     <td
@@ -130,12 +131,12 @@
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= $stock + $royalty->count ?></td>
+                    ><?= $prev_stock ?></td>
                     <td
                         class="royalty-table"
-                        style="text-align: center;"
+                        style="text-align: left; padding-left:5px;"
                         width="10%"
-                    ><?= $royalty->harga ?></td>
+                    >Rp <?= number_format($royalty->price, 0, ',', '.'); ?></td>
                     <td
                         class="royalty-table"
                         style="text-align: center;"
@@ -155,7 +156,7 @@
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= $stock ?></td>
+                    ><?= $prev_stock - $royalty->count ?></td>
                 </tr>
                 <?php $index++;
                 $total_royalty += $royalty->earned_royalty; ?>

@@ -14,8 +14,12 @@ $endDate        = $this->input->get('end_date');
                 <a href="<?= base_url('royalty'); ?>">Royalti</a>
             </li>
             <li class="breadcrumb-item">
+                <a href="<?= base_url("royalty/view/$author->author_id"); ?>"><?= $author->author_name ?></a>
+            </li>
+            <li class="breadcrumb-item">
                 <a class="text-muted">
-                    <?= $author->author_name ?></a>
+                    Detail Royalti
+                </a>
             </li>
         </ol>
     </nav>
@@ -71,8 +75,8 @@ $endDate        = $this->input->get('end_date');
                                 <td class="text-center"><?= $index + 1; ?></td>
                                 <td class="text-left"><?= $lData->book_title; ?></td>
                                 <td class="text-center"><?= $lData->count; ?></td>
-                                <td class="text-right pr-5">Rp <?= $lData->total_sales; ?></td>
-                                <td class="text-right pr-5">Rp <?= round($lData->earned_royalty, 0); ?></td>
+                                <td class="text-right pr-5">Rp <?= number_format($lData->total_sales, 0, ',', '.'); ?></td>
+                                <td class="text-right pr-5">Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?></td>
                             </tr>
                             <?php $index++;
                             $total_sales += $lData->total_sales;
@@ -87,20 +91,20 @@ $endDate        = $this->input->get('end_date');
                                 <b>Total</b>
                             </td>
                             <td class="text-right pr-5">
-                                <b>Rp <?= $total_sales; ?></b>
+                                <b>Rp <?= number_format($total_sales, 0, ',', '.'); ?></b>
                             </td>
                             <td class="text-right pr-5">
-                                <b>Rp <?= $total_royalty; ?></b>
+                                <b>Rp <?= number_format($total_royalty, 0, ',', '.'); ?></b>
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="d-flex d-flex justify-content-end mt-3">
-                    <?php if ($royalty->status == 'requested'): ?>
+                    <?php if ($royalty->status == 'requested') : ?>
                         <button
                             type="button"
                             class="btn btn-primary text-right mr-3"
-                            data-toggle="modal" 
+                            data-toggle="modal"
                             data-target="#modal-confirm"
                         >Bayar</button>
                         <div
@@ -124,7 +128,7 @@ $endDate        = $this->input->get('end_date');
                                         method="post"
                                     >
                                         <p class="mt-3 mx-3">
-                                            Apakah Anda yakin akan membayar royalty periode 
+                                            Apakah Anda yakin akan membayar royalty periode
                                             <b><?= date("d F Y", strtotime($royalty->start_date)) ?></b>
                                             hingga
                                             <b><?= date("d F Y", strtotime($royalty->end_date)) ?></b>
@@ -145,7 +149,7 @@ $endDate        = $this->input->get('end_date');
                                                 class="form-control"
                                                 required
                                             />
-                                        </div>                                        
+                                        </div>
                                         <div class="modal-footer">
                                             <button
                                                 type="submit"
@@ -162,32 +166,32 @@ $endDate        = $this->input->get('end_date');
                             </div>
                         </div>
                         <script>
-                            $('#confirm-royalty').on("submit", function() {
-                                var paid_date = new Date()
-                                paid_date.setDate(paid_date.getDate() - 1)
-                                paid_date = paid_date.toISOString().slice(0, 10)
-                                var receipt = $('#receipt').val()
-                                $.ajax({
-                                    type: "POST",
-                                    url: "<?= base_url("royalty/pay"); ?>",
-                                    data: {
-                                        paid_date: paid_date,
-                                        author_id: "<?= $author->author_id ?>",
-                                        receipt: receipt
-                                    },
-                                    success: function(result) {
-                                        var response = $.parseJSON(result)
-                                        location.href = "<?= base_url('royalty'); ?>"
-                                    },
-                                    error: function(req, err) {
-                                        console.log(err)
-                                    }
-                                });
-                            })
+                        $('#confirm-royalty').on("submit", function() {
+                            var paid_date = new Date()
+                            paid_date.setDate(paid_date.getDate() - 1)
+                            paid_date = paid_date.toISOString().slice(0, 10)
+                            var receipt = $('#receipt').val()
+                            $.ajax({
+                                type: "POST",
+                                url: "<?= base_url("royalty/pay"); ?>",
+                                data: {
+                                    paid_date: paid_date,
+                                    author_id: "<?= $author->author_id ?>",
+                                    receipt: receipt
+                                },
+                                success: function(result) {
+                                    var response = $.parseJSON(result)
+                                    location.href = "<?= base_url('royalty'); ?>"
+                                },
+                                error: function(req, err) {
+                                    console.log(err)
+                                }
+                            });
+                        })
                         </script>
-                    <?php endif?>
+                    <?php endif ?>
                     <a
-                        href = "<?= base_url('royalty/generate_pdf/' . $royalty->royalty_id); ?>"
+                        href="<?= base_url('royalty/generate_pdf/' . $royalty->royalty_id); ?>"
                         class="btn btn-outline-danger mr-3"
                         id="btn-generate-pdf"
                         title="Generate PDF"
@@ -202,20 +206,3 @@ $endDate        = $this->input->get('end_date');
         </div>
     </section>
 </div>
-<script>
-$(document).ready(function() {
-    <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    if ($startDate == "") {
-        $startDate = '1 Januari 2021';
-    } else {
-        $startDate = date("d", strtotime($startDate)) . " " . $month[intval(date("m", strtotime($startDate))) - 1] . " " . date("Y", strtotime($startDate));
-    } ?>
-    <?php if ($endDate == "") {
-        $endDate = date("Y/m/d", strtotime("-1 day"));
-        $endDate = date("d", strtotime($endDate)) . " " . $month[intval(date("m", strtotime($endDate))) - 1] . " " . date("Y", strtotime($endDate));
-    } else {
-        $endDate = date("d", strtotime($endDate)) . " " . $month[intval(date("m", strtotime($endDate))) - 1] . " " . date("Y", strtotime($endDate));
-    } ?>
-    $('#period_exp').html("Menampilkan seluruh royalti pada periode <b><?= $startDate ?></b> hingga <b><?= $endDate ?></b>")
-})
-</script>

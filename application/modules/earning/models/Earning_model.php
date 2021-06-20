@@ -57,7 +57,7 @@ class Earning_model extends MY_Model
 
     public function filter_excel_total($filters)
     {
-        return $this->db->select('number, issued_date, type, status, sum(price*(1-discount/100)*qty) as earning')
+        return $this->db->select('number, issued_date, type, status, receipt, sum(price*(1-discount/100)*qty) as earning')
             ->from('invoice')
             ->join('invoice_book', 'invoice.invoice_id = invoice_book.invoice_id', 'right')
             ->order_by('invoice.invoice_id', 'ASC')
@@ -72,7 +72,7 @@ class Earning_model extends MY_Model
 
     public function filter_excel_detail($filters)
     {
-        $this->db->select('number, issued_date, type, status, sum(price*(1-discount/100)*qty) as earning')
+        $this->db->select('number, issued_date, type, status, receipt, sum(price*(1-discount/100)*qty) as earning')
             ->from('invoice')
             ->join('invoice_book', 'invoice.invoice_id = invoice_book.invoice_id', 'right')
             ->order_by('invoice.invoice_id', 'ASC')
@@ -84,6 +84,9 @@ class Earning_model extends MY_Model
             ->where('YEAR(invoice.issued_date)', $filters['date_year']);
         if ($filters['date_month'] != '') {
             $this->db->where('MONTH(invoice.issued_date)', $filters['date_month']);
+        }
+        if ($filters['invoice_type'] != '') {
+            $this->db->where('invoice.type', $filters['invoice_type']);
         }
         return $this->db->get()->result();
     }

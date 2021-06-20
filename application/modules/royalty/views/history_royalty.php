@@ -3,8 +3,9 @@ $level              = check_level();
 $per_page           = 10;
 $keyword            = $this->input->get('keyword');
 $date_year          = $this->input->get('date_year');
+$start_date         = $this->input->get('start_date');
 $period_end         = $this->input->get('end_date');
-$page               = $this->uri->segment(2);
+$page               = $this->uri->segment(3);
 $i                  = isset($page) ? $page * $per_page - $per_page : 0;
 
 for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
@@ -20,13 +21,17 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                 <a href="<?= base_url(); ?>"><span class="fa fa-home"></span></a>
             </li>
             <li class="breadcrumb-item active">
-                <a class="text-muted">Royalti</a>
+                <a href="<?= base_url('royalty'); ?>">Royalti</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="text-muted">
+                    Riwayat</a>
             </li>
         </ol>
     </nav>
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="page-title"> Royalti </h1>
+            <h1 class="page-title"> Riwayat Royalti </h1>
             <span class="badge badge-info">Total : <?= $total ?></span>
         </div>
     </div>
@@ -40,27 +45,38 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                         <ul class="nav nav-tabs card-header-tabs">
                             <li class="nav-item">
                                 <a
-                                    class="nav-link active"
+                                    class="nav-link"
                                     href="<?= base_url('royalty/'); ?>"
                                 >Tagihan Royalti</a>
                             </li>
                             <li class="nav-item">
                                 <a
-                                    class="nav-link"
+                                    class="nav-link active"
                                     href="<?= base_url('royalty/history'); ?>"
                                 >Riwayat Royalti</a>
                             </li>
                         </ul>
                     </header>
                     <div class="p-3">
-                        <?= form_open($pages, ['method' => 'GET']); ?>
+                        <?= form_open(base_url('royalty/history/'), ['method' => 'GET']); ?>
                         <div class="row">
-                            <div class="col-12 col-md-6 mt-2">
+                            <div class="col-12 col-md-4 mt-2">
                                 <label for="per_page">Data per halaman</label>
                                 <?= form_dropdown('per_page', get_per_page_options(), $per_page, 'id="per_page" class="form-control custom-select d-block" title="List per page"'); ?>
                             </div>
-                            <div class="col-12 col-md-6 mt-2">
-                                <label for="date_end">Tanggal Terakhir Periode</label>
+                            <div class="col-12 col-md-4 mt-2">
+                                <label for="date_end">Tanggal Awal Periode</label>
+                                <input
+                                    type="date"
+                                    id="start_date"
+                                    name="start_date"
+                                    class="form-control dates"
+                                    value="<?= $start_date ?>"
+                                    class="form-control custom-select d-block"
+                                >
+                            </div>
+                            <div class="col-12 col-md-4 mt-2">
+                                <label for="date_end">Tanggal Akhir Periode</label>
                                 <input
                                     type="date"
                                     id="end_date"
@@ -73,11 +89,11 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                             ?>"
                                 >
                             </div>
-                            <div class="col-12 col-md-8 mt-2">
+                            <div class="col-12 col-md-6 mt-2">
                                 <label for="status">Filter Penulis</label>
                                 <?= form_dropdown('keyword', $dropdown_author, $keyword, 'id="dropdown-author" class="form-control custom-select d-block"'); ?>
                             </div>
-                            <div class="col-12 col-md-4 mt-2">
+                            <div class="col-12 col-md-6 mt-2">
                                 <label>&nbsp;</label>
                                 <div
                                     class="btn-group btn-block"
@@ -87,7 +103,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                     <button
                                         class="btn btn-secondary"
                                         type="button"
-                                        onclick="location.href = '<?= base_url($pages); ?>'"
+                                        onclick="location.href = '<?= base_url('royalty/history/'); ?>'"
                                     > Reset</button>
                                     <button
                                         class="btn btn-primary"
@@ -100,10 +116,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                         <?= form_close(); ?>
                     </div><br>
                     <div class="text-center">
-                        <h5>Daftar Penerima Royalti</h5>
-                        <?php $url = '';
-                        if ($period_end == null) $url = '';
-                        else $url = '/' . $period_end; ?>
+                        <h5>Riwayat Royalti</h5>
                     </div>
                     <table class="table table-striped mb-0 table-responsive">
                         <thead>
@@ -115,37 +128,37 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >No</th>
                                 <th
                                     scope="col"
-                                    style="width:25%;"
+                                    style="width:15%;"
                                 >Nama</th>
                                 <th
                                     scope="col"
-                                    style="width:20%;"
-                                    class="pr-4"
+                                    style="width:25%;"
                                 >Periode</th>
                                 <th
                                     scope="col"
-                                    style="width:25%;"
+                                    style="width:15%;"
                                 >Jumlah Royalti</th>
                                 <th
                                     scope="col"
-                                    style="width:20%;"
-                                    class="pr-4"
+                                    style="width:15%;"
                                 >Status</th>
                                 <th
                                     scope="col"
+                                    style="width:20%;"
+                                >Tanggal Dibayar</th>
+                                <th
+                                    scope="col"
                                     style="width:30%;"
-                                    class="pr-5"
-                                > &nbsp; </th>
-                                <th>&nbsp</th>
+                                > Detail </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($royalty as $lData) : ?>
+                            <?php foreach ($royalty_history as $lData) : ?>
                                 <tr class="text-center">
                                     <td class="align-middle pl-4">
                                         <?= ++$i; ?>
                                     </td>
-                                    <td class="align-middle">
+                                    <td class="text-left align-middle">
                                         <a
                                             href="<?= base_url("author/view/royalty_history/$lData->author_id"); ?>"
                                             class="font-weight-bold"
@@ -153,46 +166,20 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                             <?= highlight_keyword($lData->author_name, $keyword); ?>
                                         </a>
                                     </td>
-                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
-                                    <td class="text-right align-middle">
-                                        Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
-                                    </td>
-                                    <td><?= get_royalty_status()[$lData->status] ?></td>
-                                    <td
-                                        class="text-center"
-                                        style="white-space:nowrap"
-                                    >
+                                    <td class="align-middle"><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->end_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
+                                    <td class="align-middle text-right">Rp <?= number_format($lData->details->earned_royalty,  0, ',', '.'); ?></td>
+                                    <td class="align-middle"><?= get_royalty_status()[$lData->status] ?></td>
+                                    <td class="align-middle"><?= $lData->paid_date ? date("d F Y", strtotime($lData->paid_date)) : '' ?></td>
+                                    <td class="text-center">
                                         <a
                                             type="button btn-success"
                                             class="btn btn-primary float-right"
-                                            href="<?= base_url("$pages/view/$lData->author_id" . $url); ?>"
-                                        >Form Pengajuan</a>
+                                            href="<?= base_url('royalty/view_detail/' . $lData->royalty_id) ?>"
+                                        >Detail</a>
                                     </td>
                                     <td></td>
                                 </tr>
                             <?php endforeach; ?>
-                            <tr style="text-align:center;">
-                                <td>&nbsp;</td>
-                                <td
-                                    scope="col"
-                                    class="align-middle"
-                                >
-                                    <b>Total</b>
-                                </td>
-                                <td
-                                    scope="col"
-                                    class="text-align-middle"
-                                >
-                                    <b>Rp <?= number_format($total_penjualan, 0, ',', '.'); ?></b>
-                                </td>
-                                <td
-                                    scope="col"
-                                    class="text-right align-middle"
-                                >
-                                    <b>Rp <?= number_format($total_royalty, 0, ',', '.'); ?></b>
-                                </td>
-                                <td>&nbsp;</td>
-                            </tr>
                         </tbody>
                     </table>
                     <?= $pagination ?? null; ?>
