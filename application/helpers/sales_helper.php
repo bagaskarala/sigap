@@ -55,6 +55,15 @@ function get_dropdown_list_library()
     return get_dropdown_list('library', ['library_id', 'library_name'], $condition);
 }
 
+function get_royalty_status()
+{
+    return [
+        ''              => '',
+        'requested'     => 'Diajukan',
+        'paid'          => 'Dibayar',
+    ];
+}
+
 function price_to_text($total) {
     $total = abs($total);
     $words = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");

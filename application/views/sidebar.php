@@ -120,7 +120,7 @@ $menu_list = [
         'name' => 'Royalti',
         'url'  => 'royalty',
         'icon' => 'fa fa-star',
-        'level' => 'superadmin|admin_gudang|admin_keuangan'
+        'level' => 'superadmin|admin_gudang|admin_keuangan',
     ],
     [
         'title' => 'Data',

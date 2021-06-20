@@ -53,6 +53,12 @@
                   >Riwayat Buku
                      <span class="badge badge-primary"><?=$total_book;?></span>
                   </a>
+                  <a
+                     class="nav-link <?=($third_uri == 'royalty_history') ? 'active' : '';?>"
+                     href="<?=base_url('author/view/royalty_history/' . $author->author_id);?>"
+                  >Riwayat Royalti
+                     <span class="badge badge-primary"><?=$total_royalty;?></span>
+                  </a>
                </div>
             </div>
          </nav>
@@ -66,6 +72,9 @@
 
          <?php elseif ($third_uri == 'book_history'): ?>
          <?php $this->load->view('author/view/book_history');?>
+
+         <?php elseif ($third_uri == 'royalty_history'): ?>
+         <?php $this->load->view('author/view/royalty_history');?>
 
          <?php endif;?>
       </div>

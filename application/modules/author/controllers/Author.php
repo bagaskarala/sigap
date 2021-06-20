@@ -8,6 +8,10 @@ class Author extends Admin_Controller
 
         // load model
         $this->load->model('author_model', 'author');
+        $this->load->model('royalty/royalty_model', 'royalty');
+
+        // load helper
+        $this->load->helper('sales_helper');
     }
 
     public function index($page = null)
@@ -46,7 +50,7 @@ class Author extends Admin_Controller
             redirect($this->pages);
         }
 
-        if ($halaman != 'profile' && $halaman != 'book_history' && $halaman != 'draft_history') {
+        if ($halaman != 'profile' && $halaman != 'book_history' && $halaman != 'draft_history' && $halaman != 'royalty_history') {
             redirect($this->pages);
         }
 
@@ -58,15 +62,26 @@ class Author extends Admin_Controller
         }
 
         // total draft
-        $drafts      = $this->author->get_author_drafts($id);
-        $total_draft = count($drafts);
+        $drafts         = $this->author->get_author_drafts($id);
+        $total_draft    = count($drafts);
         // total buku
-        $books      = $this->author->get_author_books($id);
-        $total_book = count($books);
+        $books          = $this->author->get_author_books($id);
+        $total_book     = count($books);
+        // total royalti
+        $royalty = $this->royalty->fetch_royalty_history($id);
+        foreach ($royalty as $history) {
+            $history_filter = [
+                'last_paid_date'    => $history->start_date,
+                'period_end'        => $history->end_date
+            ];
+            $history->details = $this->royalty->author_details($id, $history_filter)[0];
+        }
+        $total_royalty  = count($royalty);
+
 
         $main_view = 'author/view_author';
         $pages     = $this->pages;
-        $this->load->view('template', compact('pages', 'main_view', 'drafts', 'author', 'total_draft', 'books', 'total_book'));
+        $this->load->view('template', compact('pages', 'main_view', 'drafts', 'author', 'total_draft', 'books', 'total_book', 'royalty', 'total_royalty'));
     }
 
     public function add()
