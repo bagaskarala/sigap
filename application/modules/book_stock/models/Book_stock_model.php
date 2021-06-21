@@ -25,7 +25,8 @@ class Book_stock_model extends MY_Model
             ->paginate($page)
             ->get_all();
 
-        $book_stocks_max = $this->select(['book_stock.warehouse_present'])
+        $book_stocks_max = $this->select(['book_stock.warehouse_present', 'book.published_date',])
+            ->join_table('book', 'book_stock', 'book')
             ->when('keyword', $filters['keyword'])
             ->when('published_year', $filters['published_year'])
             ->when('stock_moreeq', $filters['stock_moreeq'])
@@ -33,7 +34,7 @@ class Book_stock_model extends MY_Model
             ->order_by('warehouse_present','desc')
             ->get();
 
-        $total = $this->select('book.book_id')
+        $total = $this->select('book_stock.warehouse_present','book.book_id')
             ->when('keyword', $filters['keyword'])
             ->when('published_year', $filters['published_year'])
             ->when('stock_moreeq', $filters['stock_moreeq'])
