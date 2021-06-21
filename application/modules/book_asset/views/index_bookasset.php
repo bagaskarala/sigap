@@ -77,14 +77,14 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                                 <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Gudang </h2>
                                     <p class="metric-value h3 px-2">
-                                        <span class="value">Rp <?= number_format($count['warehouse'] * $hpp_percent, 2, ",", "."); ?></span>
+                                        <span class="value">Rp <?= number_format($count['warehouse'] - $count['warehouse'] * $hpp_percent, 2, ",", "."); ?></span>
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Perpustakaan </h2>
                                     <p class="metric-value h3 px-2">
                                         <span class="value">
-                                            Rp <?= number_format($count['library'] * $hpp_percent, 2, ",", "."); ?>
+                                            Rp <?= number_format($count['library'] - $count['library'] * $hpp_percent, 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
@@ -92,7 +92,7 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                                     <h2 class="metric-label"> Showroom </h2>
                                     <p class="metric-value h3 px-2">
                                         <span class="value">
-                                            Rp <?= number_format($count['showroom'] * $hpp_percent, 2, ",", "."); ?>
+                                            Rp <?= number_format($count['showroom'] - $count['showroom'] * $hpp_percent, 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
@@ -100,7 +100,7 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                                     <h2 class="metric-label"> Total Keseluruhan </h2>
                                     <p class="metric-value h3 px-2">
                                         <span class="value">
-                                            Rp <?= number_format($count['all'] * $hpp_percent, 2, ",", "."); ?>
+                                            Rp <?= number_format($count['all'] - $count['all'] * $hpp_percent, 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
@@ -311,9 +311,9 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                                             <td class="align-middle text-center"><?= number_format($book_asset->warehouse_present * $book_asset->harga, 2, ",", ".") ?></td>
                                             <td class="align-middle text-center"><?= number_format($book_asset->library_present * $book_asset->harga, 2, ",", ".") ?></td>
                                             <td class="align-middle text-center"><?= number_format($book_asset->showroom_present * $book_asset->harga, 2, ",", ".") ?></td>
-                                            <td class="align-middle text-center"><?= number_format($book_asset->warehouse_present * $book_asset->harga * $hpp_percent, 2, ",", ".") ?></td>
-                                            <td class="align-middle text-center"><?= number_format($book_asset->library_present * $book_asset->harga * $hpp_percent, 2, ",", ".") ?></td>
-                                            <td class="align-middle text-center"><?= number_format($book_asset->showroom_present * $book_asset->harga * $hpp_percent, 2, ",", ".") ?></td>
+                                            <td class="align-middle text-center"><?= number_format($book_asset->warehouse_present * $book_asset->harga * (1-$hpp_percent), 2, ",", ".") ?></td>
+                                            <td class="align-middle text-center"><?= number_format($book_asset->library_present * $book_asset->harga * (1-$hpp_percent), 2, ",", ".") ?></td>
+                                            <td class="align-middle text-center"><?= number_format($book_asset->showroom_present * $book_asset->harga * (1-$hpp_percent), 2, ",", ".") ?></td>
                                         </tr>
                                     <?php endforeach ?>
                                 </tbody>

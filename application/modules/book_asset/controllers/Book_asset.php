@@ -165,7 +165,7 @@ class Book_asset extends Warehouse_Controller
                         break;
                     }
                     case 'I': {
-                        $value = $data->harga*$data->library_present;
+                        $value = $data->harga*$data->showroom_present;
                         break;
                     }
                     case 'J': {
@@ -174,26 +174,24 @@ class Book_asset extends Warehouse_Controller
                     }
                     case 'K': {
                         $value = ($data->harga*$data->warehouse_present) + 
-                                 ($data->harga*$data->library_present) +
+                                 ($data->harga*$data->showroom_present) +
                                  ($data->harga*$data->library_present);
                         break;
                     }
                     case 'L': {
-                        $value = $data->harga*$data->warehouse_present*$hpp;
+                        $value = $data->harga*$data->warehouse_present*(1-$hpp);
                         break;
                     }
                     case 'M': {
-                        $value = $data->harga*$data->library_present*$hpp;
+                        $value = $data->harga*$data->showroom_present*(1-$hpp);
                         break;
                     }
                     case 'N': {
-                        $value = $data->harga*$data->library_present*$hpp;
+                        $value = $data->harga*$data->library_present*(1-$hpp);
                         break;
                     }
                     case 'O': {
-                        $value = ($data->harga*$data->warehouse_present*$hpp) + 
-                                 ($data->harga*$data->library_present*$hpp) +
-                                 ($data->harga*$data->library_present*$hpp);
+                        $value = ($data->harga*(1-$hpp))*($data->warehouse_present+$data->showroom_present+$data->library_present);
                         break;
                     }
                 }
