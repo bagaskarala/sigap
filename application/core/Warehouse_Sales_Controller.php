@@ -9,7 +9,7 @@ class Warehouse_Sales_Controller extends MY_Controller
             redirect('auth');
         }
 
-        if (!is_admin() && $_SESSION['level'] == "admin_gudang" && $_SESSION['level']=='admin_pemasaran') {
+        if (!is_admin() && $_SESSION['level'] == "admin_gudang" && $_SESSION['level']=='admin_pemasaran' && $_SESSION['level'] == "staff_gudang") {
             $this->session->set_flashdata('error', $this->lang->line('toast_error_not_authorized'));
             redirect();
         }

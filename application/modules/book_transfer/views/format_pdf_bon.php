@@ -169,13 +169,13 @@
     <br><br>
     <div class="row" style="margin-left:50px; margin-right:50px">
         <div class="column sign-addressee" style="text-align:left">
-            <p>Tanggal, <?=date('d F Y', strtotime($transfer_date))?> <br>
-            Yang Menerima<br><br><br><br><br><br><br>..........................</h2>
+            <p>Tanggal, <?=date('d-m-Y', strtotime($transfer_date))?> <br>
+            Yang Menerima<br><br><br><br><br><br><br><?= $receiver?></h2>
         </div>
         <div class="column sign-space" style="text-align:left"></div>
         <div class="column sign-stated" style="text-align:left">
             <br>
-            <p>Yang Menyatakan<br><br><br><br><br><br><br>..........................</h2>
+            <p>Yang Meminta<br><br><br><br><br><br><br><?= $requester?></h2>
         </div>
     </div>
 

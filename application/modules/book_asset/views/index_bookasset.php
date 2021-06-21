@@ -4,6 +4,7 @@ $per_page           = $this->input->get('per_page') ?? 10;
 $keyword            = $this->input->get('keyword');
 $page               = $this->uri->segment(2);
 $i                  = isset($page) ? $page * $per_page - $per_page : 0;
+$hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
 
 ?>
 
@@ -43,14 +44,6 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
-                                    <h2 class="metric-label"> Showroom </h2>
-                                    <p class="metric-value h3 px-2">
-                                        <span class="value">
-                                            Rp <?= number_format($count['showroom'], 2, ",", "."); ?>
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Perpustakaan </h2>
                                     <p class="metric-value h3 px-2">
                                         <span class="value">
@@ -59,10 +52,55 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     </p>
                                 </div>
                                 <div class="col metric metric-bordered align-items-center">
+                                    <h2 class="metric-label"> Showroom </h2>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">
+                                            Rp <?= number_format($count['showroom'], 2, ",", "."); ?>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col metric metric-bordered align-items-center">
                                     <h2 class="metric-label"> Total Keseluruhan </h2>
                                     <p class="metric-value h3 px-2">
                                         <span class="value">
                                             Rp <?= number_format($count['all'], 2, ",", "."); ?>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h5 class="mb-0 mt-3 ml-3"> Info HPP Aset</h5>
+                    <div class="row px-3 mb-2">
+                        <div class="col-12">
+                            <div class="metric-row metric-flush ">
+                                <div class="col metric metric-bordered align-items-center">
+                                    <h2 class="metric-label"> Gudang </h2>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">Rp <?= number_format($count['warehouse'] * $hpp_percent, 2, ",", "."); ?></span>
+                                    </p>
+                                </div>
+                                <div class="col metric metric-bordered align-items-center">
+                                    <h2 class="metric-label"> Perpustakaan </h2>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">
+                                            Rp <?= number_format($count['library'] * $hpp_percent, 2, ",", "."); ?>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col metric metric-bordered align-items-center">
+                                    <h2 class="metric-label"> Showroom </h2>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">
+                                            Rp <?= number_format($count['showroom'] * $hpp_percent, 2, ",", "."); ?>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col metric metric-bordered align-items-center">
+                                    <h2 class="metric-label"> Total Keseluruhan </h2>
+                                    <p class="metric-value h3 px-2">
+                                        <span class="value">
+                                            Rp <?= number_format($count['all'] * $hpp_percent, 2, ",", "."); ?>
                                         </span>
                                     </p>
                                 </div>
@@ -80,9 +118,13 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                 <label for="per_page">Data per halaman</label>
                                 <?= form_dropdown('per_page', get_per_page_options(), $per_page, 'id="per_page" class="form-control custom-select d-block" title="List per page"'); ?>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-4">
                                 <label for="status">Pencarian</label>
                                 <?= form_input('keyword', $keyword, 'placeholder="Cari berdasarkan Nama" class="form-control"'); ?>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <label for="status">HPP (%)</label>
+                                <?= form_input('hpp_percent', $hpp_percent*100, 'placeholder="Input persentase HPP" class="form-control"'); ?>
                             </div>
                             <div class="col-12 col-md-4">
                                 <label>&nbsp;</label>
@@ -163,8 +205,33 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                             colspan="3"
                                         >
                                             Aset (Rupiah)</th>
+                                        <th
+                                            scope="col"
+                                            style="min-width:100px;"
+                                            class="align-middle text-center"
+                                            colspan="3"
+                                        >
+                                            HPP Aset (Rupiah)</th>
                                     </tr>
                                     <tr>
+                                        <th
+                                            scope="col"
+                                            style="min-width:100px;"
+                                            class="align-middle text-center"
+                                        >Gudang
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            style="min-width:100px;"
+                                            class="align-middle text-center"
+                                        >
+                                            Perpustakaan</th>
+                                        <th
+                                            scope="col"
+                                            style="min-width:100px;"
+                                            class="align-middle text-center"
+                                        >Showroom
+                                        </th>
                                         <th
                                             scope="col"
                                             style="min-width:100px;"
@@ -244,6 +311,9 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                             <td class="align-middle text-center"><?= number_format($book_asset->warehouse_present * $book_asset->harga, 2, ",", ".") ?></td>
                                             <td class="align-middle text-center"><?= number_format($book_asset->library_present * $book_asset->harga, 2, ",", ".") ?></td>
                                             <td class="align-middle text-center"><?= number_format($book_asset->showroom_present * $book_asset->harga, 2, ",", ".") ?></td>
+                                            <td class="align-middle text-center"><?= number_format($book_asset->warehouse_present * $book_asset->harga * $hpp_percent, 2, ",", ".") ?></td>
+                                            <td class="align-middle text-center"><?= number_format($book_asset->library_present * $book_asset->harga * $hpp_percent, 2, ",", ".") ?></td>
+                                            <td class="align-middle text-center"><?= number_format($book_asset->showroom_present * $book_asset->harga * $hpp_percent, 2, ",", ".") ?></td>
                                         </tr>
                                     <?php endforeach ?>
                                 </tbody>

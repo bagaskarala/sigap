@@ -82,7 +82,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         onclick="location.href = '<?= base_url($pages); ?>'"> Reset</button>
                                     <button class="btn btn-primary col-3" type="submit" value="Submit"><i
                                             class="fa fa-filter"></i> Filter</button>
-                                    <?php if ($level == "superadmin" || $level == "admin_gudang") : ?>
+                                    <?php if ($level == "superadmin" || $level == "admin_gudang" || $level == "admin_pemasaran") : ?>
                                     <button class="btn btn-success col-3" type="submit" id="excel" name="excel"
                                         value="1" data-toggle="tooltip" data-placement="top"
                                         title="Download excel stok buku"><i class="fas fa-file-excel mr-2"></i>Stok
@@ -119,9 +119,9 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     <th scope="col" style="min-width:100px;" class="align-middle text-center"
                                         colspan="3">
                                         Stok</th>
-                                    <?php if ($level == 'superadmin') : ?>
+                                    <?php if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
                                     <th style="min-width:150px;" class="align-middle text-center" rowspan="2">
-                                    </th>
+                                        Aksi</th>
                                     <?php endif; ?>
                                 </tr>
                                 <tr>
@@ -169,7 +169,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                     <?php endif ?>
                                     <td class="align-middle text-center"><?= $book_stock->library_present ?></td>
                                     <td class="align-middle text-center"><?= $book_stock->showroom_present ?></td>
-                                    <?php if ($level == 'superadmin') : ?>
+                                    <?php if ($level == 'superadmin' || $level == 'admin_gudang') : ?>
                                     <td style="min-width: 130px" class="align-middle text-center">
                                         <div class="text-center">
                                             <button title="Edit Lokasi Rak" type="button"
@@ -177,6 +177,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                                 data-target="#modal-edit-rak-<?= $book_stock->book_id; ?>"><i
                                                     class="fa fa-map-marker-alt"></i><span class="sr-only">Edit Lokasi
                                                     Rak</span></button>
+                                            <?php if ($level == 'superadmin') : ?>
                                             <a href="<?= base_url(
                                                                         'book_stock/edit/' . $book_stock->book_stock_id . ''
                                                                     ); ?>" class="btn btn-sm btn-secondary"
@@ -184,6 +185,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                                 <i class="fa fa-pencil-alt"></i>
                                                 <span class="sr-only">Edit Stok Buku</span>
                                             </a>
+                                            <?php endif ?>
                                             <a href="<?= base_url(
                                                                         'book_stock/retur/' . $book_stock->book_stock_id . ''
                                                                     ); ?>" class="btn btn-sm btn-secondary"

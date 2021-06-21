@@ -38,9 +38,17 @@
                             <?= form_error('address'); ?>
                             </div>
                             <div class="form-group">
+                                <label for="requester">Peminta<abbr title="Required">*</abbr></label>
+                                <input type="text" id="requester" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiver">Penerima<abbr title="Required">*</abbr></label>
+                                <input type="text" id="receiver" class="form-control" required>
+                            </div>
+                            <div class="form-group">
                                 <label for="type">Tipe Permintaan Non Penjualan<abbr title="Required">*</abbr></label>
                                 <select name="type" id="type" class="form-control custom-select d-block">
-                                    <option value="presentgift">Present Gift</option>
+                                    <option value="presentcopies">Present Copies</option>
                                     <option value="doorprize">Doorprize</option>
                                     <option value="bedahbuku">Bedah Buku</option>
                                     <option value="dll">Lain-lain</option>
@@ -164,6 +172,8 @@ $(document).ready(function() {
             'name': $("#name").val(),
             'address': $("#address").val(),
             'notes': $("#notes").val(),
+            'requester': $("#requester").val(),
+            'receiver': $("#receiver").val(),
             'book_list': []
         }
         $("#book-list-content tr").each(function(){

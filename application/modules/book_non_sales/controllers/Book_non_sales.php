@@ -13,7 +13,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
 
     public function index($page = NULL)
     {
-        if ($this->_is_warehouse_sales_admin() == TRUE) :
+        if ($this->_is_book_non_sales_user() == TRUE) :
             // all filter
             $filters = [
                 'keyword'           => $this->input->get('keyword', true),
@@ -76,7 +76,9 @@ class Book_non_sales extends Warehouse_Sales_Controller
             'type' => $input->type,
             'name' => $input->name,
             'address' => $input->address,
-            'notes' => $input->notes
+            'notes' => $input->notes,
+            'requester' => $input->requester,
+            'receiver' => $input->receiver,
         ];
         // insert book non sales
         $book_non_sales_success = $this->book_non_sales->insert($book_non_sales);
@@ -137,7 +139,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
 
     public function view($book_non_sales_id)
     {
-        if(!$this->_is_warehouse_sales_admin()){
+        if(!$this->_is_book_non_sales_user()){
             redirect($this->pages);
         }
         $book_non_sales = $this->book_non_sales->fetch_book_non_sales($book_non_sales_id);
@@ -171,6 +173,8 @@ class Book_non_sales extends Warehouse_Sales_Controller
             $data_format['address']       = $book_non_sales->address ?? '';
             $data_format['notes']         = $book_non_sales->notes ?? '';
             $data_format['book_list']     = $book_non_sales_list ?? '';
+            $data_format['requester']     = $book_non_sales->requester ?? '';
+            $data_format['receiver']      = $book_non_sales->receiver ?? '';
             $html = $this->load->view('book_non_sales/format_pdf_non_sales', $data_format, true);        $file_name = $data_format['number'].'_Pemindahan Buku';
             $file_name = $data_format['number'].'_Pemindahan Buku';
             $this->pdf->generate_pdf_a4_landscape($html, $file_name);
@@ -253,6 +257,16 @@ class Book_non_sales extends Warehouse_Sales_Controller
             return true;
         } else {
             $this->session->set_flashdata('error', 'Hanya admin pemasaran dan superadmin yang dapat mengakses.');
+            return false;
+        }
+    }
+
+    private function _is_book_non_sales_user()
+    {
+        if ($this->level == 'superadmin' || $this->level == 'admin_gudang' || $_SESSION['level'] == 'admin_pemasaran' || $this->level == 'staff_gudang') {
+            return true;
+        } else {
+            $this->session->set_flashdata('error', 'Hanya admin gudang dan superadmin yang dapat mengakses.');
             return false;
         }
     }

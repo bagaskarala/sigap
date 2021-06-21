@@ -93,10 +93,18 @@ class Book_stock_model extends MY_Model
             ->get_all();
 
         $book_assets_price = $this->select([
-            'book.harga',
+            'author.author_name', 'draft.draft_id',
+            'book_stock_id', 'book.book_id',
+            'book.book_title', 'book.published_date','book.harga',
             'book_stock.*'])
             ->join_table('book', 'book_stock', 'book')
+            ->join_table('draft', 'book', 'draft')
+            ->join_table('category', 'draft', 'category')
+            ->join_table('draft_author', 'draft', 'draft')
+            ->join_table('author', 'draft_author', 'author')
+            ->when('keyword', $filters['keyword'])
             ->order_by('warehouse_present')
+            ->group_by('draft.draft_id')
             ->get_all();
 
         $total = $this->select('book.book_id')

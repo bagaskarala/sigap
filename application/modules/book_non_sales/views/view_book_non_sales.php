@@ -18,7 +18,7 @@ $level              = check_level();
     </nav>
     <div class="d-flex justify-content-between align-items-center my-3">
         <div class="page-title mb-0 pb-0 h1"> Buku Non Penjualan </div>
-        <?php if($book_non_sales->status=='waiting') : ?>
+        <?php if($book_non_sales->status=='waiting' && ($level == 'superadmin' || $level == 'admin_gudang')) : ?>
         <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
             data-target="#finish_modal"><i class="fa fa-check fa-fw"></i> Selesaikan Proses</button>
             <!-- Modal -->
@@ -77,6 +77,16 @@ $level              = check_level();
                                     <td width="200px"> Nomor Bon </td>
                                     <td>
                                         <?= $book_non_sales->number;?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Peminta </td>
+                                    <td><?= $book_non_sales->requester?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Penerima </td>
+                                    <td><?= $book_non_sales->receiver?>
                                     </td>
                                 </tr>
                                 <tr>

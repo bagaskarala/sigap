@@ -18,8 +18,10 @@ $level              = check_level();
     </nav>
     <div class="d-flex justify-content-between align-items-center my-3">
         <div class="page-title mb-0 pb-0 h1"> Pemindahan Buku </div>
+        <?php if($level == 'superadmin' || $level == 'admin_gudang') : ?>
         <a href="<?= base_url('book_transfer/edit/'.$book_transfer->book_transfer_id); ?>"
             class="btn btn-secondary btn-sm"><i class="fa fa-edit fa-fw"></i> Edit Pemindahan Buku</a>
+        <?php endif?>
     </div>
 </header>
 <!-- BREADCUMB,TITLE -->
@@ -47,6 +49,16 @@ $level              = check_level();
                                     <td width="200px"> Nomor Pemindahan </td>
                                     <td>
                                         <?= $book_transfer->transfer_number;?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Peminta </td>
+                                    <td><?= $book_transfer->requester?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Penerima </td>
+                                    <td><?= $book_transfer->receiver?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -129,6 +141,7 @@ $is_preparing_finished      = format_datetime($book_transfer->preparing_end_date
 $is_preparing_deadline_set  = format_datetime($book_transfer->preparing_deadline);
 $staff_gudang               = $this->book_transfer->get_staff_gudang_by_id($book_transfer->book_transfer_id);
 ?>
+<?php if($level == 'superadmin' || $level == 'admin_gudang') :?>
 <section id="preparing-progress-wrapper" class="card">
     <div id="preparing-progress">
         <header class="card-header">
@@ -307,6 +320,7 @@ $(document).ready(function() {
     })
 })
 </script>
+<?php endif?>
 <!-- PREPARING -->
 
 <!-- FINALISASI DARI ADMIN PEMASARAN -->

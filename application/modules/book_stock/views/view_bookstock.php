@@ -56,7 +56,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                 <!--stock data-->
                 <div class="tab-pane fade active show" id="stock-data">
                     <div id="reload-stock">
-                        <?php if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran') : ?>
+                        <?php if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran' || $level == 'staff_gudang') : ?>
                         <?php $i = 1; ?>
                         <div class="row">
                             <div class="col-6 text-left">
@@ -188,7 +188,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                         <?php endif; ?>
                         <!-- Log perubahan Stok -->
                         <?php else : ?>
-                        <p>Data hanya dapat dilihat oleh Superadmin, Admin Penerbitan, Admin Percetakan, Admin Gudang,
+                        <p>Data hanya dapat dilihat oleh Superadmin, Admin Gudang,
                             dan Admin Pemasaran</p>
                         <?php endif; ?>
                     </div>

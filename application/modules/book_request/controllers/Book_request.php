@@ -21,12 +21,12 @@ class Book_request extends Warehouse_Controller
         ];
 
         // custom per page
-        $this->book_request->per_page = $this->input->get('per_page', true) ?? 10;
+        $this->invoice->per_page = $this->input->get('per_page', true) ?? 10;
         $get_data = $this->invoice->filter_book_request($filters, $page);
 
         $book_request   = $get_data['book_request'];
         $total          = $get_data['total'];
-        $pagination     = $this->book_request->make_pagination(site_url('book_request'), 2, $total);
+        $pagination     = $this->invoice->make_pagination(site_url('book_request'), 2, $total);
         $pages          = $this->pages;
         $main_view      = 'book_request/index_book_request';
         $this->load->view('template', compact('pages', 'main_view', 'book_request', 'pagination','total'));

@@ -2,7 +2,7 @@
 $is_ready = $book_receive->is_handover && $book_receive->is_wrapping;
 
 if (!$is_final) :
-    if (($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang')) :
+    if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) :
 ?>
 <div id="final-progress-wrapper" class="mx-3 mx-md-0">
     <div id="final-progress" class="card-button">

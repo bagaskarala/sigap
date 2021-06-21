@@ -43,8 +43,6 @@ if ($progress == 'handover') {
                             <ul>
                                 <li>Jika <strong class="text-success">Setuju</strong>, maka tahap <?= $progress_text ?> akan
                                 diakhiri dan tanggal selesai <?= $progress_text ?> akan dicatat <br></li>
-                                <!-- <li>Jika <strong class="text-danger">Tolak</strong> maka proses penerimaan buku akan diakhiri
-                                sampai tahap ini.<br></li> -->
                                 <li>Pilih <strong class="text-primary">Reset</strong> jika ingin mengembalikan status progress.</li>
                             </ul>
                         </div>
@@ -55,7 +53,6 @@ if ($progress == 'handover') {
             </div>
             <div class="modal-footer">
                 <button id="btn-<?= $progress ?>-accept" class="btn btn-success" type="button">Setuju</button>
-                <!-- <button id="btn-<?= $progress ?>-decline" class="btn btn-danger" type="button">Tolak</button> -->
                 <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
             </div>
         </div>

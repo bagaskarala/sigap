@@ -14,7 +14,7 @@ class Book_transaction extends Warehouse_Controller
 
     public function index($page = NULL){
         //all filter
-        if($this->_is_warehouse_admin() == TRUE):
+        if($this->_is_book_transaction_user() == TRUE):
             $filters = [
                 'keyword'           => $this->input->get('keyword', true),
                 'published_year'    => $this->input->get('published_year', true),
@@ -155,12 +155,12 @@ class Book_transaction extends Warehouse_Controller
         die();
     }
 
-    private function _is_warehouse_admin()
+    private function _is_book_transaction_user()
     {
-        if ($this->level == 'superadmin' || $this->level == 'admin_gudang') {
+        if ($this->level == 'superadmin' || $this->level == 'admin_gudang' || $this->level == 'staff_gudang') {
             return true;
         } else {
-            $this->session->set_flashdata('error', 'Hanya admin gudang dan superadmin yang dapat mengakses.');
+            $this->session->set_flashdata('error', 'Hanya admin gudang, superadmin, dan staff gudang yang dapat mengakses.');
             return false;
         }
     }

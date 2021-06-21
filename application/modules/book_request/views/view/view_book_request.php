@@ -9,7 +9,7 @@ $level              = check_level();
                 <a href="<?= base_url(); ?>"><span class="fa fa-home"></span></a>
             </li>
             <li class="breadcrumb-item">
-                <a href="<?= base_url('Book_request'); ?>">Pesanan Buku</a>
+                <a href="<?= base_url('book_request'); ?>">Pesanan Buku</a>
             </li>
             <li class="breadcrumb-item">
                 <a class="text-muted"><?= $book_request->number; ?></a>
@@ -38,6 +38,7 @@ $level              = check_level();
         <div class="tab-content">
             <!-- DATA INFO -->
             <div id="book-request-data-wrapper" class="tab-pane fade active show">
+            <?php if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran' || $level == 'staff_gudang') : ?>
                 <div id="book-request">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered mb-0 nowrap">
@@ -119,6 +120,7 @@ $level              = check_level();
                         </table>
                     </div>
                 </div>
+            <?php endif?>
             </div>
             <!-- DATA INFO -->
         </div>
@@ -134,6 +136,7 @@ $is_preparing_started       = format_datetime($book_request->preparing_start_dat
 $is_preparing_finished      = format_datetime($book_request->preparing_end_date);
 $is_preparing_deadline_set  = format_datetime($book_request->preparing_deadline);
 $staff_gudang               = $this->book_request->get_staff_gudang_by_invoice($book_request->invoice_id);
+if ($level == 'superadmin'|| $level == 'admin_gudang') : 
 ?>
 <section id="preparing-progress-wrapper" class="card">
     <div id="preparing-progress">
@@ -274,5 +277,5 @@ $(document).ready(function() {
 })
 </script>
 <!-- BOOK PREPARING PROGRESS -->
-
+<?php endif?>
 <?php endif?>

@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-class Book_transfer extends MY_Controller
+class Book_transfer extends Warehouse_Sales_Controller
 {
     public function __construct()
     {
@@ -15,7 +15,7 @@ class Book_transfer extends MY_Controller
 
     public function index($page = NULL)
     {
-        if ($this->_is_warehouse_sales_admin() == TRUE) :
+        if ($this->_is_book_transfer_user() == TRUE) :
             // all filter
             $filters = [
                 'keyword'           => $this->input->get('keyword', true),
@@ -38,7 +38,7 @@ class Book_transfer extends MY_Controller
 
     public function view($book_transfer_id)
     {
-        if (!$this->_is_warehouse_admin()) {
+        if (!$this->_is_book_transfer_user()) {
             redirect($this->pages);
         }
 
@@ -77,6 +77,8 @@ class Book_transfer extends MY_Controller
             else{
                 $data_format['destination'] = 'Showroom';
             }
+            $data_format['requester']     = $book_transfer->requester ?? '';
+            $data_format['receiver']      = $book_transfer->receiver ?? '';
             $data_format['number']        = $book_transfer->transfer_number ?? '';
             $data_format['transfer_date'] = $book_transfer->transfer_date ?? '';
             $data_format['book_list']     = $book_transfer_list ?? '';
@@ -338,6 +340,8 @@ class Book_transfer extends MY_Controller
             'transfer_date' => now(),
             'destination' => $input->destination,
             'library_id' => $input->library_id,
+            'requester' => $input->requester,
+            'receiver' => $input->receiver,
         ];
         $this->db->trans_begin();
         // insert book transfer
@@ -472,6 +476,16 @@ class Book_transfer extends MY_Controller
             return true;
         } else {
             $this->session->set_flashdata('error', 'Hanya admin gudang dan superadmin yang dapat mengakses.');
+            return false;
+        }
+    }
+
+    private function _is_book_transfer_user()
+    {
+        if ($this->level == 'superadmin' || $this->level == 'admin_gudang' || $_SESSION['level'] == 'admin_pemasaran' || $this->level == 'staff_gudang') {
+            return true;
+        } else {
+            $this->session->set_flashdata('error', 'Hanya admin gudang, admin pemasaran, superadmin, dan staff gudang yang dapat mengakses.');
             return false;
         }
     }

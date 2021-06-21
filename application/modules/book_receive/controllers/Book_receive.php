@@ -28,7 +28,7 @@ class Book_receive extends Warehouse_Controller
 
         $book_receives = $get_data['book_receives'];
         $total = $get_data['total'];
-        $pagination = $this->book_receive->make_pagination(site_url('book_receives'), 2, $total);
+        $pagination = $this->book_receive->make_pagination(site_url('book_receive'), 2, $total);
 
         $pages      = $this->pages;
         $main_view  = 'book_receive/index_bookreceive';
@@ -75,7 +75,7 @@ class Book_receive extends Warehouse_Controller
     //view details of book receive
     public function view($book_receive_id = null)
     {
-        if (!$this->_is_warehouse_admin()) {
+        if (!$this->_is_book_receive_user()) {
             redirect($this->pages);
         }
 
@@ -477,6 +477,16 @@ class Book_receive extends Warehouse_Controller
     private function _is_warehouse_admin()
     {
         if ($this->level == 'superadmin' || $this->level == 'admin_gudang') {
+            return true;
+        } else {
+            $this->session->set_flashdata('error', 'Hanya admin gudang dan superadmin yang dapat mengakses.');
+            return false;
+        }
+    }
+
+    private function _is_book_receive_user()
+    {
+        if ($this->level == 'superadmin' || $this->level == 'admin_gudang' || $this->level == 'staff_gudang') {
             return true;
         } else {
             $this->session->set_flashdata('error', 'Hanya admin gudang dan superadmin yang dapat mengakses.');

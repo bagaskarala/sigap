@@ -8,7 +8,7 @@ $level              = check_level();
                 <a href="<?= base_url(); ?>"><span class="fa fa-home"></span></a>
             </li>
             <li class="breadcrumb-item">
-                <a href="<?= base_url('book_stock'); ?>">Aset Buku</a>
+                <a href="<?= base_url('book_asset'); ?>">Aset Buku</a>
             </li>
             <li class="breadcrumb-item">
                 <a class="text-muted">
@@ -38,7 +38,7 @@ $level              = check_level();
             <div class="tab-content">
                 <div class="tab-pane fade active show" id="asset-data">
                     <div id="reload-stock">
-                    <?php if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran') : ?>
+                    <?php if ($level == 'superadmin'|| $level == 'admin_gudang' || $level == 'admin_pemasaran' || $level == 'staff_gudang') : ?>
                         <?php $i = 1; ?>
                         <div class="row">
                             <div class="col-6 text-left">
@@ -146,6 +146,8 @@ $level              = check_level();
                             </table>
                         </div>
                     </div>
+                    <?php else : echo "Data hanya dapat dilihat oleh Superadmin, Admin Gudang,
+                            dan Admin Pemasaran";?>
                     <?php endif?>
                 </div>
             </div>

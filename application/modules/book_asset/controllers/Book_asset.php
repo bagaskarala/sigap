@@ -2,7 +2,7 @@
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Book_asset extends Warehouse_Sales_Controller
+class Book_asset extends Warehouse_Controller
 {
     public $per_page = 10;
 
@@ -70,16 +70,19 @@ class Book_asset extends Warehouse_Sales_Controller
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
         $filename = 'ASET BUKU UGM PRESS';
+        $hpp_percent = $this->input->get('hpp_percent');
+        $hpp = $hpp_percent/100;
 
         // Column Title
         $sheet->setCellValue('A1', 'ASET BUKU UGM PRESS');
         $sheet->getStyle('A1')
               ->getFont()
               ->setBold(true);
+        $sheet->setCellValue('A2', 'HPP : '.$hpp_percent.'%');
         $sheet->getStyle('D')
               ->getNumberFormat()
               ->setFormatCode(PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_ACCOUNTING_USD);
-        $sheet->getStyle('H:K')
+        $sheet->getStyle('H:O')
               ->getNumberFormat()
               ->setFormatCode(PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_ACCOUNTING_USD);
         $sheet->setCellValue('A3', 'No');
@@ -93,12 +96,16 @@ class Book_asset extends Warehouse_Sales_Controller
         $sheet->setCellValue('I3', 'Aset Showroom');
         $sheet->setCellValue('J3', 'Aset Perpustakaan');
         $sheet->setCellValue('K3', 'Total Aset');
-        $sheet->getStyle('A3:K3')
+        $sheet->setCellValue('L3', 'HPP Aset Gudang');
+        $sheet->setCellValue('M3', 'HPP Aset Showroom');
+        $sheet->setCellValue('N3', 'HPP Aset Perpustakaan');
+        $sheet->setCellValue('O3', 'Total HPP Aset');
+        $sheet->getStyle('A3:O3')
               ->getFill()
               ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
               ->getStartColor()
               ->setARGB('A6A6A6');
-        $sheet->getStyle('A3:K3')
+        $sheet->getStyle('A3:O3')
               ->getFont()
               ->setBold(true);
 
@@ -113,13 +120,17 @@ class Book_asset extends Warehouse_Sales_Controller
         $sheet->getColumnDimension('I')->setAutoSize(true);
         $sheet->getColumnDimension('J')->setAutoSize(true);
         $sheet->getColumnDimension('K')->setAutoSize(true);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setAutoSize(true);
+        $sheet->getColumnDimension('O')->setAutoSize(true);
 
         $get_data = $this->book_stock->filter_excel_asset($filters);
         $no = 1;
         $i = 4;
         // Column Content
         foreach ($get_data as $data) {
-            foreach (range('A', 'K') as $v) {
+            foreach (range('A', 'O') as $v) {
                 switch ($v) {
                     case 'A': {
                         $value = $no++;
@@ -167,6 +178,24 @@ class Book_asset extends Warehouse_Sales_Controller
                                  ($data->harga*$data->library_present);
                         break;
                     }
+                    case 'L': {
+                        $value = $data->harga*$data->warehouse_present*$hpp;
+                        break;
+                    }
+                    case 'M': {
+                        $value = $data->harga*$data->library_present*$hpp;
+                        break;
+                    }
+                    case 'N': {
+                        $value = $data->harga*$data->library_present*$hpp;
+                        break;
+                    }
+                    case 'O': {
+                        $value = ($data->harga*$data->warehouse_present*$hpp) + 
+                                 ($data->harga*$data->library_present*$hpp) +
+                                 ($data->harga*$data->library_present*$hpp);
+                        break;
+                    }
                 }
                 $sheet->setCellValue($v . $i, $value);
             }
@@ -193,6 +222,18 @@ class Book_asset extends Warehouse_Sales_Controller
         
         $sum_total_asset = 'K4:K'.$i;
         $sheet->setCellValue('K'.$i, '=SUM('.$sum_total_asset.')');
+        
+        $sum_warehouse_hpp_asset = 'L4:L'.$i;
+        $sheet->setCellValue('L'.$i, '=SUM('.$sum_warehouse_hpp_asset.')');
+        
+        $sum_showroom_hpp_asset = 'M4:M'.$i;
+        $sheet->setCellValue('M'.$i, '=SUM('.$sum_showroom_hpp_asset.')');
+        
+        $sum_library_hpp_asset = 'N4:N'.$i;
+        $sheet->setCellValue('N'.$i, '=SUM('.$sum_library_hpp_asset.')');
+        
+        $sum_total_hpp_asset = 'O4:O'.$i;
+        $sheet->setCellValue('O'.$i, '=SUM('.$sum_total_hpp_asset.')');
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');

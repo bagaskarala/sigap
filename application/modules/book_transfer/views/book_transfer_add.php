@@ -22,6 +22,14 @@
                         <fieldset>
                             <legend>Form Pemindahan Buku</legend>
                             <div class="form-group">
+                                <label for="requester">Peminta<abbr title="Required">*</abbr></label>
+                                <input type="text" id="requester" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiver">Penerima<abbr title="Required">*</abbr></label>
+                                <input type="text" id="receiver" class="form-control" required>
+                            </div>
+                            <div class="form-group">
                                 <label for="destination">Tujuan Pemindahan<abbr title="Required">*</abbr></label>
                                 <select name="destination" id="destination" class="form-control custom-select d-block" >
                                     <option value="showroom">Showroom</option>
@@ -156,6 +164,8 @@ $(document).ready(function() {
         data = {
             'destination': $("#destination").val(),
             'library_id': $("#library-id").val(),
+            'requester': $("#requester").val(),
+            'receiver': $("#receiver").val(),
             'book_list': []
         }
         $("#book-list-content tr").each(function(){
