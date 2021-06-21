@@ -27,6 +27,10 @@ class Book_stock_model extends MY_Model
 
         $book_stocks_max = $this->select(['book_stock.warehouse_present', 'book.published_date',])
             ->join_table('book', 'book_stock', 'book')
+            ->join_table('draft', 'book', 'draft')
+            ->join_table('category', 'draft', 'category')
+            ->join_table('draft_author', 'draft', 'draft')
+            ->join_table('author', 'draft_author', 'author')
             ->when('keyword', $filters['keyword'])
             ->when('published_year', $filters['published_year'])
             ->when('stock_moreeq', $filters['stock_moreeq'])
