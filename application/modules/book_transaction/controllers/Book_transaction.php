@@ -186,4 +186,11 @@ class Book_transaction extends Warehouse_Controller
             return false;
         }
     }
+
+    public function chart(){
+        $pages                      = 'book_transaction/chart';
+        $main_view                  = 'book_transaction/chart';
+        $this->load->view('template', compact('pages', 'main_view'));
+        return;
+    }
 }
