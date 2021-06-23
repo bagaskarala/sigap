@@ -73,20 +73,9 @@ $level              = check_level();
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td width="160px">Aset Keseluruhan</td>
-                                        <td>Rp <?= number_format(($book_asset->warehouse_present+$book_asset->library_present+$book_asset->showroom_present)*$book_asset->harga, 2, ",", "."); ?>
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td width="160px">Stok Gudang</td>
                                         <td>
                                             <?= $book_asset->warehouse_present; ?>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="160px">Aset Gudang</td>
-                                        <td>
-                                            Rp <?= number_format($book_asset->warehouse_present*$book_asset->harga, 2, ",", ".") ; ?>
                                         </td>
                                     </tr>
                                     <tr>
@@ -94,19 +83,30 @@ $level              = check_level();
                                         <td><?= $book_asset->showroom_present; ?></td>
                                     </tr>
                                     <tr>
+                                        <td width="160px">Stok Perpustakaan</td>
+                                        <td><?= $book_asset->library_present; ?></td>
+                                    </tr>
+                                    <tr>
+                                    <tr>
+                                        <td width="160px">Aset Gudang</td>
+                                        <td>
+                                            Rp <?= number_format($book_asset->warehouse_present*$book_asset->harga, 2, ",", ".") ; ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td width="160px">Aset Showroom</td>
                                         <td>
                                             Rp <?= number_format($book_asset->showroom_present*$book_asset->harga, 2, ",", ".") ; ?>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td width="160px">Stok Perpustakaan</td>
-                                        <td><?= $book_asset->library_present; ?></td>
-                                    </tr>
-                                    <tr>
                                         <td width="160px">Aset Perpustakaan</td>
                                         <td>
                                             Rp <?= number_format($book_asset->library_present*$book_asset->harga, 2, ",", ".") ; ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="160px">Aset Keseluruhan</td>
+                                        <td>Rp <?= number_format(($book_asset->warehouse_present+$book_asset->library_present+$book_asset->showroom_present)*$book_asset->harga, 2, ",", "."); ?>
                                         </td>
                                     </tr>
                                     <?php if($book_asset->warehouse_present) :?>

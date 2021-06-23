@@ -32,7 +32,7 @@ class Book_stock extends Warehouse_Sales_Controller
         $book_stocks = $get_data['book_stocks'];
         $total = $get_data['total'];
         if ($book_stocks) {
-            $max_stock = $book_stocks[count($book_stocks) - 1]->warehouse_present;
+            $max_stock = $get_data['book_stocks_max']->warehouse_present;;
         } else {
             $max_stock = 0;
         }

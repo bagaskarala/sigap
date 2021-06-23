@@ -165,7 +165,7 @@ class Book_asset extends Warehouse_Controller
                         break;
                     }
                     case 'I': {
-                        $value = $data->harga*$data->library_present;
+                        $value = $data->harga*$data->showroom_present;
                         break;
                     }
                     case 'J': {
@@ -173,9 +173,8 @@ class Book_asset extends Warehouse_Controller
                         break;
                     }
                     case 'K': {
-                        $value = ($data->harga*$data->warehouse_present) + 
-                                 ($data->harga*$data->library_present) +
-                                 ($data->harga*$data->library_present);
+                        $value = $data->harga*
+                        ($data->warehouse_present + $data->showroom_present + $data->library_present);
                         break;
                     }
                     case 'L': {
@@ -183,7 +182,7 @@ class Book_asset extends Warehouse_Controller
                         break;
                     }
                     case 'M': {
-                        $value = $data->harga*$data->library_present*$hpp;
+                        $value = $data->harga*$data->showroom_present*$hpp;
                         break;
                     }
                     case 'N': {
@@ -191,9 +190,8 @@ class Book_asset extends Warehouse_Controller
                         break;
                     }
                     case 'O': {
-                        $value = ($data->harga*$data->warehouse_present*$hpp) + 
-                                 ($data->harga*$data->library_present*$hpp) +
-                                 ($data->harga*$data->library_present*$hpp);
+                        $value = $data->harga*$hpp*
+                        ($data->warehouse_present+$data->showroom_present+$data->library_present);
                         break;
                     }
                 }

@@ -49,6 +49,12 @@ class Book_transaction_model extends MY_Model{
             ->when('end_date', $year.'-12-31')
             ->get_all();
     }
+    public function get_all_transaction_data($year){
+        return $this->select(['book_transaction.*'])
+            ->when('start_date', $year.'-01-01')
+            ->when('end_date', $year.'-12-31')
+            ->get_all();
+    }
     public function when($params, $data)
     {
         //jika data null, maka skip

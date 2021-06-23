@@ -76,12 +76,23 @@ $menu_list = [
         'level' => 'superadmin|admin_gudang|admin_pemasaran|staff_gudang'
     ],
     [
-        'name'  => 'Transaksi Buku',
-        'url'   => 'book_transaction',
-        'icon'  => 'fas fa-exchange-alt',
-        'level' => 'superadmin|admin_gudang|staff_gudang'
-
-    ],
+        'name' => 'Transaksi Buku',
+        'url'  => 'book_transaction',
+        'icon' => 'fa fa-exchange-alt',
+        'level' => 'superadmin|admin_gudang|staff_gudang',
+        'child' => [
+            [
+                'name' => 'Daftar Transaksi',
+                'url'  => 'book_transaction',
+                'level' => 'superadmin|admin_gudang|staff_gudang',
+            ],
+            [
+                'name' => 'Grafik Transaksi',
+                'url'  => 'book_transaction/chart',
+                'level' => 'superadmin|admin_gudang|staff_gudang'
+            ],
+        ]
+    ],   
     [
         'title' => 'Pemasaran',
         'level' => 'superadmin|admin_gudang|admin_pemasaran|admin_keuangan'

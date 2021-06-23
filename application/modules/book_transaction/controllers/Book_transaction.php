@@ -40,6 +40,28 @@ class Book_transaction extends Warehouse_Controller
         endif;
     }
 
+    public function api_all_chart_data($year)
+    {
+        $book_transaction = $this->book_transaction->get_all_transaction_data($year);
+        for ($i = 1; $i <= 12; $i++) {
+            $chart_data['stock_in']['month_' . $i] = 0;
+            $chart_data['stock_out']['month_' . $i] = 0;
+        }
+        foreach ($book_transaction as $data) {
+            for ($i = 1; $i <= 12; $i++) {
+                if (substr($data->date, 5, 2) == $i) {
+                    if ($data->stock_initial < $data->stock_last) {
+                        $chart_data['stock_in']['month_' . $i] += $data->stock_mutation;
+                    }
+                    if ($data->stock_initial > $data->stock_last) {
+                        $chart_data['stock_out']['month_' . $i] += $data->stock_mutation;
+                    }
+                }
+            }
+        }
+        return $this->send_json_output(true, (object) $chart_data);
+    }
+
     public function generate_excel($filters)
     {
         // $get_data = $this->book_transaction->filter_excel($filters);
@@ -163,5 +185,12 @@ class Book_transaction extends Warehouse_Controller
             $this->session->set_flashdata('error', 'Hanya admin gudang, superadmin, dan staff gudang yang dapat mengakses.');
             return false;
         }
+    }
+
+    public function chart(){
+        $pages                      = 'book_transaction/chart';
+        $main_view                  = 'book_transaction/chart';
+        $this->load->view('template', compact('pages', 'main_view'));
+        return;
     }
 }
