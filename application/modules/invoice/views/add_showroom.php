@@ -40,9 +40,12 @@
                                 />
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
-                            <label for="customer-id" class="font-weight-bold mb-0">
+                            <label
+                                for="customer-id"
+                                class="font-weight-bold mb-0"
+                            >
                                 Customer
                             </label>
                             <div class="form-group mb-4">
@@ -192,12 +195,12 @@
                             </div>
 
                         </div>
-                        
+
                         <small
                             id="error-customer-info"
                             class="d-none error-message text-danger"
                         >Data customer wajib diisi!</small>
-                        
+
                         <hr class="my-4">
                         <div class="row">
                             <div class="form-group col-md-8">
@@ -330,6 +333,15 @@
                                 <tbody id="invoice_items">
                                     <!-- Items -->
                                 </tbody>
+                                <tfoot>
+                                    <tr style="text-align:center;">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><b>Grand Total</b></td>
+                                        <td id="grand_total">Rp 0</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
 
@@ -403,6 +415,7 @@ $(document).ready(function() {
         } else {
             add_book_to_invoice(qty.max);
             reset_book();
+            updateGrandTotal()
         }
     });
 
@@ -415,7 +428,7 @@ $(document).ready(function() {
     });
 
     $('#book-id').change(function(e) {
-        if(e.target.value != '') {
+        if (e.target.value != '') {
             const bookId = e.target.value
             $.ajax({
                 type: "GET",
@@ -463,26 +476,25 @@ $(document).ready(function() {
         $('#new-customer-name').val('')
         $('#new-customer-type').val('')
 
-        if(customerId != '')
-        {
+        if (customerId != '') {
             $.ajax({
-            type: "GET",
-            url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
-            datatype: "JSON",
-            success: function(res) {
-                $('#customer-info').show()
-                $('#discount').val(res.data.discount)
-                $('#info-customer-name').html(res.data.name)
-                $('#info-address').html(res.data.address)
-                $('#info-phone-number').html(res.data.phone_number)
-                $('#info-type').html(res.data.type)
-            },
-            error: function(err) {
-                $('#customer-info').hide()
-            },
-        });
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#customer-info').show()
+                    $('#discount').val(res.data.discount)
+                    $('#info-customer-name').html(res.data.name)
+                    $('#info-address').html(res.data.address)
+                    $('#info-phone-number').html(res.data.phone_number)
+                    $('#info-type').html(res.data.type)
+                },
+                error: function(err) {
+                    $('#customer-info').hide()
+                },
+            });
         }
-        
+
     })
 
     $('#type').change(function(e) {
@@ -509,17 +521,12 @@ $(document).ready(function() {
     $("#invoice_form").submit(function(e) {
         e.preventDefault(); // avoid to execute the actual submit of the form.
         var form = $(this);
-        console.log(form.serialize())
-        if ($('#new-customer-name').val() == '') {
-            console.log("test")
-        }
         $.ajax({
             type: "POST",
             url: "<?= base_url("invoice/add"); ?>",
             data: form.serialize(), // serializes the form's elements.
             success: function(result) {
                 var response = $.parseJSON(result)
-                console.log(response)
                 //Validation Error
                 if (response.status != true) {
                     $(".error-message").addClass('d-none');
@@ -528,7 +535,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url('invoice'); ?>";
+                    location.href = "<?= base_url("invoice/showroom_pdf/"); ?>" + response.redirect
                 }
             },
             error: function(xhr, status, error) {
@@ -568,7 +575,7 @@ function add_book_to_invoice(stock) {
     html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
 
     $('#invoice_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
@@ -587,8 +594,25 @@ function updateQty(book_id) {
     var discount = $('#invoice-book-discount-' + book_id).val();
     var total_html = $('#invoice-book-total-' + book_id);
 
-    var total = Math.round(qty * price * (1 - discount/100));
+    var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
+    updateGrandTotal()
 }
 
+function updateGrandTotal() {
+    var grandTotal = 0
+    $('#invoice_items tr').each(function() {
+        $selector = $(this).find("td:first")
+        book_id = $selector.find("input").val()
+        grandTotal += Math.round($('#invoice-book-qty-' + book_id).val() * $('#invoice-book-price-' + book_id).val() * (1 - $('#invoice-book-discount-' + book_id).val() / 100))
+        $('#grand_total').html('Rp ' + grandTotal)
+    })
+}
+
+function decreaseGrandTotal(book_id) {
+    var total_html = $('#invoice-book-total-' + book_id).html()
+    var res = total_html.split(" ")
+    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
+    $('#grand_total').html('Rp ' + grandTotal)
+}
 </script>

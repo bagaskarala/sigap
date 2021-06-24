@@ -39,7 +39,7 @@ $level              = check_level();
                                 </tr>
                                 <tr>
                                     <td width="200px"> Tipe </td>
-                                    <td><?= get_invoice_type()[$invoice->type]; ?></td>
+                                    <td id="invoice_type"><?= get_invoice_type()[$invoice->type]; ?></td>
                                 </tr>
                                 <tr>
                                     <td width="200px"> Nama Customer </td>
@@ -363,61 +363,139 @@ $level              = check_level();
                         value="<?= $invoice->receipt ?>"
                     />
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    onclick="save_delivery_fee()"
-                >Save</button>
-                <button
-                    type="button"
-                    class="btn btn-light"
-                    data-dismiss="modal"
-                >Close</button>
+                <?php if ($invoice->type == 'online') : ?>
+                    <div class="form-group">
+                        <label>
+                            <b>Marketplace</b>
+                            <abbr title="Required">*</abbr><br>
+                        </label>
+                        <?php foreach (get_marketplace() as $marketplace) : ?>
+                            <div class="custom-control custom-radio">
+                                <?= form_radio('marketplace', $marketplace, isset($invoice->receipt) && ($invoice->receipt == $marketplace) ? true : false, ' class="custom-control-input" id="' . $marketplace . '"'); ?>
+                                <label
+                                    class="custom-control-label"
+                                    for="<?= $marketplace; ?>"
+                                ><?= $marketplace ?></label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                <!-- <div class="form-group">
+                    <label for="marketplace">
+                        <b>Marketplace</b>
+                        <abbr title="Required">*</abbr><br>
+                    </label>
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Tokopedia
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Shopee
+                    </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Lazada
+                    </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Bukalapak
+                    </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Website UGM Press
+                    </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Lainnya
+                    </label>
+                    </div>
+                </div> -->
+                <div class="modal-footer">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        onclick="save_delivery_fee()"
+                    >Save</button>
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-dismiss="modal"
+                    >Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-function check_delivery() {
-    var delivery_fee = "<?= $invoice->delivery_fee ?>";
-    var receipt = "<?= $invoice->receipt ?>"
-    if (delivery_fee == '' || receipt == '') {
-        $("#modal-delivery").modal()
-    } else {
-        location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
-    }
-}
-
-function save_delivery_fee() {
-    if ($("#delivery").val() == '') {
-        alert("Ongkir wajib diisi!");
-    } else if ($("#receipt").val() == '') {
-        alert("Bukti Pembayaran wajib diisi!")
-    } else {
-        var delivery_fee = $("#delivery").val()
-        var receipt = $("#receipt").val()
-        $.ajax({
-            type: "POST",
-            url: "<?= base_url('invoice/update_delivery_fee/' . $invoice->invoice_id); ?>",
-            data: {
-                delivery_fee: delivery_fee,
-                receipt: receipt
-            },
-            success: function(res) {
-                var response = $.parseJSON(res)
-                //Validation Error
-                if (response.status == true) {
-                    $("#modal-delivery").modal('toggle')
-                    location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
-                }
-            },
-            error: function(err) {
-                console.log(err)
-            },
-        })
+    <script>
+    function check_delivery() {
+        if ($('#invoice_type').html() != 'Showroom') {
+            var delivery_fee = "<?= $invoice->delivery_fee ?>";
+            var receipt = "<?= $invoice->receipt ?>"
+            if (delivery_fee == '' || receipt == '') {
+                $("#modal-delivery").modal()
+            } else {
+                location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
+            }
+        } else {
+            location.href = "<?= base_url("invoice/showroom_pdf/" . $invoice->invoice_id); ?>"
+        }
 
     }
-}
-</script>
+
+    function validate_input() {
+        var flag = false;
+        if ($("#delivery").val() == '') {
+            alert("Ongkir wajib diisi!");
+            flag = true
+        }
+        if ($("#receipt").val() == '') {
+            alert("Bukti Pembayaran wajib diisi!")
+            flag = true;
+        }
+        if ($('#invoice_type').html() == 'Online' && $("input[type='radio'][name='marketplace']:checked").val() == null) {
+            alert("Marketplace wajib diisi jika faktur online!")
+            flag = true;
+        }
+        return flag;
+    }
+
+    function save_delivery_fee() {
+        var validate_flag = validate_input()
+        if (validate_flag != true) {
+            var delivery_fee = $("#delivery").val()
+            if ($('#invoice_type').html() == 'Online') {
+                var receipt = $("input[type='radio'][name='marketplace']:checked").val() + ' - ' + $("#receipt").val()
+            } else var receipt = $("#receipt").val()
+            $.ajax({
+                type: "POST",
+                url: "<?= base_url('invoice/update_delivery_fee/' . $invoice->invoice_id); ?>",
+                data: {
+                    delivery_fee: delivery_fee,
+                    receipt: receipt
+                },
+                success: function(res) {
+                    var response = $.parseJSON(res)
+                    //Validation Error
+                    if (response.status == true) {
+                        $("#modal-delivery").modal('toggle')
+                        location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
+                    }
+                },
+                error: function(err) {
+                    console.log(err)
+                },
+            })
+        }
+    }
+    </script>

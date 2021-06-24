@@ -445,6 +445,9 @@
                                 </tbody>
                                 <tfoot>
                                     <tr style="text-align:center;">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
                                         <td><b>Grand Total</b></td>
                                         <td id="grand_total">Rp 0</td>
                                     </tr>

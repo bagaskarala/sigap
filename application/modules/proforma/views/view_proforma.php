@@ -116,7 +116,7 @@ $level              = check_level();
                                     Penulis
                                 </td>
                                 <td class="align-middle">
-                                    Rp <?= $proforma_book->price ?>
+                                    Rp <?= number_format($proforma_book->price, 0, ',', '.') ?>
                                 </td>
                                 <td class="align-middle">
                                     <?= $proforma_book->qty ?>
@@ -125,11 +125,25 @@ $level              = check_level();
                                     <?= $proforma_book->discount ?> %
                                 </td>
                                 <td class="align-middle">
-                                    Rp <?= $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100) ?>
+                                    Rp <?= number_format($proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100), 0, ',', '.'); ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+
+                        <?php
+                        $total = 0;
+                        foreach ($proforma_books as $proforma_book) {
+                            $total += $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100);
+                        }
+                        ?>
                     </tbody>
+                    <tfoot>
+                        <tr style="text-align:center;">
+                            <td colspan="4"></td>
+                            <td colspan="2"><b>Grand Total</b></td>
+                            <td>Rp <?= number_format($total, 0, ',', '.') ?></td>
+                        </tr>
+                    </tfoot>
                 </table>
                 <br>
 

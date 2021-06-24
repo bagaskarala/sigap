@@ -176,6 +176,11 @@ class Royalty extends Sales_Controller
         ];
         $royalty_details = $this->royalty->author_details($royalty->author_id, $filters);
         $current_stock = $this->royalty->stocks_info($royalty->author_id, $filters);
+        foreach ($current_stock as $stock) {
+            $stock->non_sales_now = $this->royalty->get_non_sales_book($stock->book_id, $filters, 'now')->qty_non_sales;
+            $stock->non_sales_last = $this->royalty->get_non_sales_book($stock->book_id, $filters, 'last')->qty_non_sales;
+        }
+        var_dump($current_stock);
 
         // PDF
         $this->load->library('pdf');
