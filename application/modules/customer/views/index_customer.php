@@ -67,7 +67,7 @@ $type_options =  array_merge(['' => '- Filter Jenis Customer -'], $customer_type
                             </div>
                             <div class="col-12 col-md-8 mt-2">
                                 <label for="status">Pencarian</label>
-                                <?= form_input('keyword', $keyword, ['placeholder' => 'Cari berdasarkan Nama Pelanggan', 'class' => 'form-control']); ?>
+                                <?= form_input('keyword', $keyword, ['placeholder' => 'Cari berdasarkan Nama, Alamat, No Telepon, atau Email Pelanggan', 'class' => 'form-control']); ?>
                             </div>
                             <div class="col-12 col-md-4 mt-2">
                                 <label>&nbsp;</label>
@@ -100,11 +100,26 @@ $type_options =  array_merge(['' => '- Filter Jenis Customer -'], $customer_type
                                             scope="col"
                                             class="pl-4"
                                         >No</th>
-                                        <th scope="col" style="width:20%">Nama</th>
-                                        <th scope="col" style="width:40%">Alamat</th>
-                                        <th scope="col" style="width:12%">No Telepon</th>
-                                        <th scope="col" style="width:20%">Email</th>
-                                        <th scope="col" style="width:15%">Jenis Customer</th>
+                                        <th
+                                            scope="col"
+                                            style="width:20%"
+                                        >Nama</th>
+                                        <th
+                                            scope="col"
+                                            style="width:40%"
+                                        >Alamat</th>
+                                        <th
+                                            scope="col"
+                                            style="width:12%"
+                                        >No Telepon</th>
+                                        <th
+                                            scope="col"
+                                            style="width:20%"
+                                        >Email</th>
+                                        <th
+                                            scope="col"
+                                            style="width:15%"
+                                        >Jenis Customer</th>
                                         <th style="width:100px; min-width:100px;"> &nbsp; </th>
                                     </tr>
                                 </thead>
@@ -587,6 +602,7 @@ function modalEdit(customerId) {
             $('#edit-name').val(res.name)
             $('#edit-address').val(res.address)
             $('#edit-phone-number').val(res.phone_number)
+            $('#edit-email').val(res.email)
             $("#edit-type option").removeAttr('selected');
             $("#edit-type option[value=" + res.type + "]").attr('selected', 'selected');
         },

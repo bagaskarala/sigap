@@ -48,7 +48,6 @@ class Royalty extends Sales_Controller
         $total_penjualan = 0;
         $total_royalty = 0;
         foreach ($royalty as $royalty_each) {
-            $total_penjualan += $royalty_each->total_sales;
             $total_royalty += $royalty_each->earned_royalty;
         }
 
@@ -56,7 +55,7 @@ class Royalty extends Sales_Controller
 
         $pages      = $this->pages;
         $main_view  = 'royalty/index_royalty';
-        $this->load->view('template', compact('pages', 'main_view', 'royalty', 'pagination', 'total', 'total_penjualan', 'total_royalty', 'dropdown_author'));
+        $this->load->view('template', compact('pages', 'main_view', 'royalty', 'pagination', 'total', 'total_royalty', 'dropdown_author'));
     }
 
     public function history($page = NULL)
