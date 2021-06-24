@@ -182,12 +182,11 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 <td></td>
                                 <td
                                     scope="col"
-                                    colspan="2"
                                     class="text-right align-middle"
                                 >
                                     <b>Rp <?= number_format($total_royalty, 0, ',', '.'); ?></b>
                                 </td>
-                                <td>&nbsp;</td>
+                                <td colspan="3">&nbsp;</td>
                             </tr>
                         </tbody>
                     </table>
