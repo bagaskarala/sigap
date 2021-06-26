@@ -538,12 +538,7 @@ function get_per_page_options()
 
 function get_user_levels()
 {
-    return ['superadmin', 'admin_penerbitan', 'author', 'reviewer', 'editor', 'layouter', 'author_reviewer', 'admin_percetakan', 'staff_percetakan', 'admin_gudang', 'staff_gudang', 'admin_pemasaran', 'admin_keuangan'];
-}
-
-function get_marketplace()
-{
-    return ['Tokopedia', 'Shopee', 'Lazada', 'Bukalapak', 'Website UGM Press', 'Lainnya'];
+    return ['superadmin', 'admin_penerbitan', 'author', 'reviewer', 'editor', 'layouter', 'author_reviewer', 'admin_percetakan', 'staff_percetakan', 'admin_gudang', 'staff_gudang', 'admin_pemasaran', 'admin_keuangan',];
 }
 
 function filter_boolean($data)
@@ -578,10 +573,9 @@ function get_published_date()
 
 function expand($authors)
 {
-    $authors_list = '<ul class="p-0 m-0" style="list-style-type: none;">';
+    $authors_list = '<ul class="p-0 m-0 pl-3">';
     foreach ($authors as $a) {
         $authors_list .= '<li>';
-        $authors_list .= '<i class="fa fa-user fa-fw"></i> ';
         $authors_list .= $a->author_name;
         $authors_list .= '</li>';
     }
@@ -792,34 +786,13 @@ function get_print_order_finishing()
 }
 
 function strip_disallowed_char($string)
-{
-    $bad = array_merge(
-        array_map('chr', range(0, 31)),
-        array("<", ">", ":", '"', "/", "\\", "|", "?", "*", "(", ")", "@", "&", "!", ";", ",")
-    );
-    $string = str_replace($bad, "_", $string);
-    return $string;
-}
+{ 
+    $extension = substr($string, strripos($string, ".") + 1);  
+    $filename  = substr($string, 0 ,strripos($string, "."));
 
-//coba2 gatau bener apa engga??
-// function get_bookshelf_location(){
-//     return[
-//         '' => 'Semua',
-//         'a1' => 'A1',
-//         'a2' => 'A2',
-//         'a3' => 'A3',
-//         'b1' => 'B1',
-//         'b2' => 'B2',
-//         'b3' => 'B3',
-//     ];
-// }
-
-function get_book_stock_revision_type(){
-    return [
-        ''  => '',
-        'retur' => 'Retur',
-        'revision' => 'Revisi Jumlah Stok'
-    ];
+    $bad = array("<", ">", ":", '"', "/", "\\", "|", "?", "*", "(", ")", "@", "&", "!", ";", ",",".");
+    $filename = str_replace($bad, "_", $filename);
+    return $filename.".".$extension;
 }
 
 function get_book_receive_status(){
@@ -836,23 +809,6 @@ function get_book_receive_status(){
     ];
 }
 
-function get_book_request_category(){
-    return [
-        '' => '--Pilih--',
-        'credit'      => 'Kredit',
-        'online'      => 'Online',
-        'cash'        => 'Tunai',
-        'showroom'    => 'Showroom'
-    ];
-}
-function get_book_request_source(){
-    return [
-        '' => '-',
-        'warehouse' => 'Gudang',
-        'showroom'  => 'Showroom',
-        'library'   => 'Perpustakaan'
-    ];
-}
 function get_book_request_status(){
     return [
         '' => '--Pilih--',
@@ -862,11 +818,33 @@ function get_book_request_status(){
         'finish' => 'Selesai'
     ];
 }
-function get_book_request_status_edit(){
+
+function get_book_request_category(){
     return [
-        'confirm' => 'Belum dimulai',
-        'preparing' => 'Sedang disiapkan',
-        'preparing_finish' => 'Selesai disiapkan'
+        '' => '--Pilih--',
+        'credit'      => 'Kredit',
+        'online'      => 'Online',
+        'cash'        => 'Tunai',
+    ];
+}
+
+function get_book_request_source(){
+    return [
+        '' => '-',
+        'warehouse' => 'Gudang',
+        'showroom'  => 'Showroom',
+        'library'   => 'Perpustakaan'
+    ];
+}
+
+function get_book_transaction_type(){
+    return [
+        '' => '--Pilih--',
+        'print' => 'Percetakan',
+        'invoice' => 'Pesanan',
+        'transfer' => 'Pemindahan',
+        'non_sales' => 'Non Penjualan',
+        'revision' => 'Revisi'
     ];
 }
 
@@ -901,7 +879,7 @@ function get_book_transfer_destination(){
 function get_book_non_sales_type(){
     return [
         '' => '--Pilih--',
-        'presentgift' => 'Present Gift',
+        'presentcopies' => 'Present Copies',
         'doorprize' => 'Doorprize',
         'bedahbuku' => 'Bedah Buku',
         'dll' => 'Lain-lain'
@@ -913,22 +891,5 @@ function get_book_non_sales_status(){
         '' => '--Pilih--',
         'waiting' => 'Menunggu',
         'finish' => 'Selesai'
-    ];
-}
-
-function get_book_revision_type(){
-    return [
-        'revision' => 'Revisi Stok',
-        'return' => 'Retur Buku'
-    ];
-}
-
-function get_book_transaction_type(){
-    return [
-        '' => '--Pilih--',
-        'print' => 'Percetakan',
-        'invoice' => 'Pesanan',
-        'transfer' => 'Pemindahan',
-        'non_sales' => 'Non Penjualan'
     ];
 }

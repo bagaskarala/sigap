@@ -349,7 +349,7 @@
                         <input
                             type="submit"
                             class="btn btn-primary"
-                            value="Submit"
+                            value="Submit & Print"
                         />
                     </form>
                 </div>
