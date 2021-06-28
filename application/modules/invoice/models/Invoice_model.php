@@ -198,14 +198,14 @@ class Invoice_model extends MY_Model
             ->join('author', 'draft_author.author_id = author.author_id')
             ->get()
             ->row();
-            if ($source == 'warehouse') {
-                $stock = $this->fetch_warehouse_stock($book->book_id) ?? 0;
-                $book->stock = $stock;
-            } else
+        if ($source == 'warehouse') {
+            $stock = $this->fetch_warehouse_stock($book->book_id) ?? 0;
+            $book->stock = $stock;
+        } else
             if ($source == 'library') {
-                $stock = $this->fetch_library_stock($book->book_id, $library_id) ?? 0;
-                $book->stock = $stock;
-            }
+            $stock = $this->fetch_library_stock($book->book_id, $library_id) ?? 0;
+            $book->stock = $stock;
+        }
 
         return $book;
     }
@@ -219,7 +219,7 @@ class Invoice_model extends MY_Model
     {
         return $this->select('royalty')->where('book_id', $book_id)->get('book')->royalty;
     }
-    
+
     public function get_customer($customer_id)
     {
         $this->db->select('customer_id, name, address, phone_number, email, type, discount');
@@ -255,7 +255,7 @@ class Invoice_model extends MY_Model
     public function filter_invoice($filters, $page)
     {
         $this->db->start_cache();
-        $this->db->select(['invoice_id', 'number', 'issued_date', 'due_date', 'invoice.customer_id', 'name as customer_name', 'customer.type as customer_type', 'status', 'invoice.type as invoice_type'])
+        $this->db->select(['invoice_id', 'number', 'issued_date', 'due_date', 'invoice.customer_id', 'name as customer_name', 'customer.type as customer_type', 'status', 'invoice.type as invoice_type', 'receipt'])
             ->from('invoice')
             ->join('customer', 'invoice.customer_id = customer.customer_id', 'left')
             ->group_start()
@@ -272,13 +272,19 @@ class Invoice_model extends MY_Model
         } else if ($filters['customer_type'] != '' && $filters['customer_type'] != 'general') {
             $this->db->like('customer.type', $filters['customer_type']);
         }
-        $this->db->order_by('invoice_id', 'DESC')
-            ->limit($this->per_page, $this->calculate_real_offset($page));
-
+        if ($page != -1) {
+            $this->db->order_by('invoice_id', 'DESC')
+                ->limit($this->per_page, $this->calculate_real_offset($page));
+        } else {
+            $this->db->order_by('invoice_id', 'DESC');
+        }
         $this->db->stop_cache();
+        $invoice = $this->db->get()->result();
+        $total = $this->db->count_all_results();
+        $this->db->flush_cache();
         return [
-            'invoice' => $this->db->get()->result(),
-            'total'   => $this->db->count_all_results()
+            'invoice' => $invoice,
+            'total'   => $total
         ];
     }
 

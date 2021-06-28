@@ -130,6 +130,13 @@ function generate_invoice_action($invoice_id)
                                         type="submit"
                                         value="Submit"
                                     ><i class="fa fa-filter"></i> Filter</button>
+                                    <button
+                                        class="btn btn-success"
+                                        type="submit"
+                                        id="excel"
+                                        name="excel"
+                                        value="1"
+                                    >Excel</button>
                                 </div>
                             </div>
                         </div>
@@ -313,11 +320,12 @@ function generate_invoice_action($invoice_id)
 </div>
 <script>
 $(document).ready(function() {
-    let status2 = '<?= $message_status2; ?>';
-
-    if (status2 == 'alert-confirm') {
-        toastr.success('<?= $message2; ?>');
-    }
+    <?php if (isset($message_status2)) : ?>
+        let status2 = '<?= $message_status2; ?>';
+        if (status2 == 'alert-confirm') {
+            toastr.success('<?= $message2; ?>');
+        }
+    <?php endif ?>
     $('#flashmessage').delay(2000).hide(0);
 })
 </script>

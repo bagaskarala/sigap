@@ -1,12 +1,13 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-class Customer extends MY_Controller
+class Customer extends Sales_Controller
 {
     public function __construct()
     {
         parent::__construct();
         $this->pages = 'customer';
         $this->load->model('customer_model', 'customer');
+        $this->load->helper('sales_helper');
     }
 
     public function index($page = null)
@@ -16,13 +17,7 @@ class Customer extends MY_Controller
             'type'  => $this->input->get('type', true)
         ];
 
-        $customer_type = array(
-            'distributor'   => 'Distributor',
-            'reseller'      => 'Reseller',
-            'author'        => 'Penulis',
-            'member'        => 'Member',
-            'general'       => 'Umum'
-        );
+        $customer_type = get_customer_type();
 
         // custom per page
         $this->customer->per_page = $this->input->get('per_page', true) ?? 10;
@@ -51,6 +46,7 @@ class Customer extends MY_Controller
             'name'          => $this->input->post('name'),
             'address'       => $this->input->post('address'),
             'phone_number'  => $this->input->post('phone-number'),
+            'email'         => $this->input->post('email'),
             'type'          => $this->input->post('type')
         ];
         $this->db->insert('customer', $add);
@@ -67,6 +63,7 @@ class Customer extends MY_Controller
             'name'          => $this->input->post('edit-name'),
             'address'       => $this->input->post('edit-address'),
             'phone_number'  => $this->input->post('edit-phone-number'),
+            'email'         => $this->input->post('edit-email'),
             'type'          => $this->input->post('edit-type')
         ];
         $this->db->set($update);
@@ -116,5 +113,4 @@ class Customer extends MY_Controller
 
         $this->session->set_flashdata('success', 'Diskon berhasil diupdate.');
     }
-
 }

@@ -117,7 +117,7 @@ class Customer_model extends MY_Model
 
     public function filter_data($filters, $page = null)
     {
-        $customers = $this->select(['customer_id', 'name', 'address', 'phone_number', 'type'])
+        $customers = $this->select(['customer_id', 'name', 'address', 'phone_number', 'email', 'type'])
             ->when('keyword', $filters['keyword'])
             ->when('type', $filters['type'])
             ->order_by('name')

@@ -119,7 +119,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >Nama</th>
                                 <th
                                     scope="col"
-                                    style="width:20%;"
+                                    style="width:25%;"
                                     class="pr-4"
                                 >Periode</th>
                                 <th
@@ -153,11 +153,11 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                             <?= highlight_keyword($lData->author_name, $keyword); ?>
                                         </a>
                                     </td>
-                                    <td><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
+                                    <td class="text-center align-middle"><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
                                     <td class="text-right align-middle">
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
-                                    <td><?= get_royalty_status()[$lData->status] ?></td>
+                                    <td class="text-center align-middle"><?= get_royalty_status()[$lData->status] ?></td>
                                     <td
                                         class="text-center"
                                         style="white-space:nowrap"
@@ -179,19 +179,14 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >
                                     <b>Total</b>
                                 </td>
-                                <td
-                                    scope="col"
-                                    class="text-align-middle"
-                                >
-                                    <b>Rp <?= number_format($total_penjualan, 0, ',', '.'); ?></b>
-                                </td>
+                                <td></td>
                                 <td
                                     scope="col"
                                     class="text-right align-middle"
                                 >
                                     <b>Rp <?= number_format($total_royalty, 0, ',', '.'); ?></b>
                                 </td>
-                                <td>&nbsp;</td>
+                                <td colspan="3">&nbsp;</td>
                             </tr>
                         </tbody>
                     </table>

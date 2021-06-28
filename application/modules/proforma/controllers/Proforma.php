@@ -8,7 +8,7 @@ class Proforma extends Sales_Controller
         $this->pages = 'proforma';
         $this->load->model('proforma_model', 'proforma');
         $this->load->model('book/book_model', 'book');
-        $this->load->model('book_stock/Book_stock_model', 'book_stock');
+        $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
         $this->load->helper('sales_helper');
     }

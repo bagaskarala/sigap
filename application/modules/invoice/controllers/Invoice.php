@@ -1,5 +1,8 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Invoice extends Sales_Controller
 {
     public function __construct()
@@ -19,7 +22,8 @@ class Invoice extends Sales_Controller
             'keyword'           => $this->input->get('keyword', true),
             'invoice_type'      => $this->input->get('invoice_type', true),
             'status'            => $this->input->get('status', true),
-            'customer_type'     => $this->input->get('customer_type', true)
+            'customer_type'     => $this->input->get('customer_type', true),
+            'excel'             => $this->input->get('excel', true)
         ];
 
         $this->invoice->per_page = $this->input->get('per_page', true) ?? 10;
@@ -37,6 +41,9 @@ class Invoice extends Sales_Controller
         $pages      = $this->pages;
         $main_view  = 'invoice/index_invoice';
         $this->load->view('template', compact('pages', 'main_view', 'invoice', 'pagination', 'total'));
+        if ($filters['excel'] == 1) {
+            $this->generate_excel($filters);
+        }
     }
 
     public function view($invoice_id)
@@ -247,9 +254,9 @@ class Invoice extends Sales_Controller
                     $book_stock->library_present += $invoice_book->qty;
                     $library_stock += $invoice_book->qty;
                     $this->db->set('library_stock', $library_stock)
-                    ->where('book_stock_id', $book_stock->book_stock_id)
-                    ->where('library_id', $library_id)
-                    ->update('library_stock_detail');
+                        ->where('book_stock_id', $book_stock->book_stock_id)
+                        ->where('library_id', $library_id)
+                        ->update('library_stock_detail');
                 }
                 $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
             }
@@ -419,9 +426,9 @@ class Invoice extends Sales_Controller
                                 $book_stock->library_present += $invoice_book->qty;
                                 $library_stock += $invoice_book->qty;
                                 $this->db->set('library_stock', $library_stock)
-                                ->where('book_stock_id', $book_stock->book_stock_id)
-                                ->where('library_id', $library_id)
-                                ->update('library_stock_detail');
+                                    ->where('book_stock_id', $book_stock->book_stock_id)
+                                    ->where('library_id', $library_id)
+                                    ->update('library_stock_detail');
                             }
                             $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
                         }
@@ -523,6 +530,88 @@ class Invoice extends Sales_Controller
         $this->pdf->generate_pdf_a4_portrait($html, $file_name);
     }
 
+    public function generate_excel($filters)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $filename = 'Data_Faktur';
+        $invoice_test = $this->invoice->filter_invoice($filters, -1);
+        $i = 2;
+        $no = 1;
+        // Column Content
+        foreach ($invoice_test['invoice'] as $data) {
+            foreach (range('A', 'I') as $v) {
+                switch ($v) {
+                    case 'A': {
+                            $value = $no++;
+                            break;
+                        }
+                    case 'B': {
+                            $value = $data->number;
+                            break;
+                        }
+                    case 'C': {
+                            $value = date('d F Y', strtotime($data->issued_date));
+                            break;
+                        }
+                    case 'D': {
+                            $value = get_invoice_type()[$data->invoice_type];
+                            break;
+                        }
+                    case 'E': {
+                            $value = $data->customer_name;
+                            break;
+                        }
+                    case 'F': {
+                            $value = $data->customer_type;
+                            break;
+                        }
+                    case 'G': {
+                            $value = get_invoice_status()[$data->status];
+                            break;
+                        }
+                    case 'H': {
+                            $value = $data->due_date;
+                            break;
+                        }
+                    case 'I': {
+                            $value = $data->receipt;
+                            break;
+                        }
+                }
+                $sheet->setCellValue($v . $i, $value);
+            }
+            $i++;
+        }
+        // Column Title
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nomor Faktur');
+        $sheet->setCellValue('C1', 'Tanggal Dikeluarkan');
+        $sheet->setCellValue('D1', 'Jenis Faktur');
+        $sheet->setCellValue('E1', 'Nama Customer');
+        $sheet->setCellValue('F1', 'Jenis Customer');
+        $sheet->setCellValue('G1', 'Status');
+        $sheet->setCellValue('H1', 'Jatuh Tempo');
+        $sheet->setCellValue('I1', 'Bukti Bayar');
+        // Auto width
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        die();
+    }
+
     public function api_get_book($book_id)
     {
         $book = $this->invoice->get_book($book_id);
@@ -548,9 +637,9 @@ class Invoice extends Sales_Controller
         return $this->send_json_output(true, $discount);
     }
 
-    public function api_get_book_dropdown($type, $library_id='')
+    public function api_get_book_dropdown($type, $library_id = '')
     {
         $data = $this->invoice->get_available_book_list($type, $library_id);
         return $this->send_json_output(true, $data);
-    } 
+    }
 }

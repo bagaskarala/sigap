@@ -145,7 +145,7 @@ class Royalty_model extends MY_Model
 
     public function author_details($author_id, $filters)
     {
-        $this->db->select('book.book_id, book.book_title, price, SUM(invoice_book.qty) AS count, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty')
+        $this->db->select('book.book_id, book.book_title, price, SUM(invoice_book.qty) AS count, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty, invoice_book.royalty as royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')
@@ -165,7 +165,7 @@ class Royalty_model extends MY_Model
 
     public function stocks_info($author_id, $filters)
     {
-        $this->db->select('IFNULL(warehouse_present, 0) as WP, IFNULL(showroom_present, 0) as SP, IFNULL(library_present, 0) as LP, SUM(qty) AS count')
+        $this->db->select('book.book_id, IFNULL(warehouse_present, 0) as WP, IFNULL(showroom_present, 0) as SP, IFNULL(library_present, 0) as LP, SUM(qty) AS count, invoice_book.royalty')
             ->from('book')
             ->join('book_stock', 'book_stock.book_id = book.book_id', 'left')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
@@ -176,5 +176,16 @@ class Royalty_model extends MY_Model
             ->where('issued_date BETWEEN "' . $filters['last_paid_date'] .  '" and now()')
             ->group_by('book.book_id');
         return $this->db->get()->result();
+    }
+
+    public function get_non_sales_book($book_id, $filters, $type)
+    {
+        $this->db->select('sum(qty) as qty_non_sales')
+            ->from('book_non_sales_list')
+            ->join('book_non_sales', 'book_non_sales_list.book_non_sales_id = book_non_sales.book_non_sales_id', 'left')
+            ->where('book_id', $book_id);
+        if ($type == 'now') $this->db->where('issued_date BETWEEN "' . $filters['last_paid_date'] .  '" and now()');
+        else if ($type == 'last') $this->db->where('issued_date BETWEEN "' . $filters['last_paid_date'] .  '" and "' . $filters['period_end'] . '"');
+        return $this->db->get()->row();
     }
 }

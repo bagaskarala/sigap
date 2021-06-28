@@ -114,7 +114,7 @@
                                 'name'  => "royalty",
                                 'class' => 'form-control',
                                 'id'    => "royalty",
-                                'value' => $input->royalty,
+                                'value' => isset($input->royalty) ? $input->royalty : 15,
                                 'type' => 'number',
                                 'min'   => 0,
                                 'max'   => 100,
