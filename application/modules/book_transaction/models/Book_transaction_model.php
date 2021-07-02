@@ -29,9 +29,12 @@ class Book_transaction_model extends MY_Model{
             ->paginate($page)
             ->get_all();
 
-        $total = $this->select(['book.book_title', 'book_transaction.*'])
+        $total = $this->select(['book.book_title', 
+        'book_stock_revision.book_stock_revision_id', 'book_stock_revision.revision_type', 'book_stock_revision.type',
+        'book_transaction.*'])
             ->where_not('date', NULL)
             ->join_table('book', 'book_transaction', 'book')
+            ->join_table('book_stock_revision', 'book_transaction', 'book_stock_revision')
             ->when('keyword', $filters['keyword'])
             ->when('start_date', $filters['start_date'])
             ->when('end_date', $filters['end_date'])
@@ -88,6 +91,11 @@ class Book_transaction_model extends MY_Model{
                 }
                 else if ($data == 'revision'){
                     $this->where_not('book_transaction.book_stock_revision_id', null);
+                    $this->where('book_stock_revision.type', 'revision');
+                }
+                else if ($data == 'return'){
+                    $this->where_not('book_transaction.book_stock_revision_id', null);
+                    $this->where('book_stock_revision.type', 'return');
                 }
             }
         }

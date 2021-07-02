@@ -844,7 +844,8 @@ function get_book_transaction_type(){
         'invoice' => 'Pesanan',
         'transfer' => 'Pemindahan',
         'non_sales' => 'Non Penjualan',
-        'revision' => 'Revisi'
+        'revision' => 'Revisi',
+        'return' => 'Retur'
     ];
 }
 
