@@ -7,6 +7,7 @@ class Proforma extends Sales_Controller
         parent::__construct();
         $this->pages = 'proforma';
         $this->load->model('proforma_model', 'proforma');
+        $this->load->model('invoice/invoice_model', 'invoice');
         $this->load->model('book/book_model', 'book');
         $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
@@ -99,7 +100,8 @@ class Proforma extends Sales_Controller
                         'book_id'       => $book->book_id,
                         'qty'           => $book->qty,
                         'price'         => $book->price,
-                        'discount'      => $book->discount
+                        'discount'      => $book->discount,
+                        'royalty'       => $this->invoice->get_book_royalty($book->book_id)
                     ];
                     $this->db->insert('invoice_book', $add_book);
 
