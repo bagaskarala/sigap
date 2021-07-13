@@ -381,6 +381,10 @@ class Book_transfer extends Warehouse_Sales_Controller
             $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
             redirect($this->pages);
         }
+        if ($book_transfer->status!="finish") {
+            $this->session->set_flashdata('warning', $this->lang->line('toast_error_not_authorized'));
+            redirect($this->pages);
+        }
         else{
             $pages       = $this->pages;
             $main_view   = 'book_transfer/book_transfer_edit';

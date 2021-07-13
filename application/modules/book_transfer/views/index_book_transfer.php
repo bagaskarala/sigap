@@ -101,7 +101,7 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                         <?= get_book_transfer_status()[$book_transfer->transfer_status ?? $book_transfer->status]; ?>
                                     </td>
                                     <td class="align-middle text-left">
-                                        <?php if ($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) : ?>
+                                        <?php if (($_SESSION['level'] == 'superadmin' || $_SESSION['level'] == 'admin_gudang' ) && $book_transfer->status == "finish") : ?>
                                         <a href="<?= base_url('book_transfer/edit/'.$book_transfer->book_transfer_id); ?>"
                                             class="btn btn-sm btn-secondary">
                                             <i class="fa fa-pencil-alt"></i>
