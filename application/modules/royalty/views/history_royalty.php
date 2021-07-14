@@ -167,7 +167,7 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                         </a>
                                     </td>
                                     <td class="align-middle"><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->end_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
-                                    <td class="align-middle text-right">Rp <?= number_format($lData->details->earned_royalty,  0, ',', '.'); ?></td>
+                                    <td class="align-middle text-right">Rp <?= number_format($lData->details->earned_royalty ?? 0,  0, ',', '.'); ?></td>
                                     <td class="align-middle"><?= get_royalty_status()[$lData->status] ?></td>
                                     <td class="align-middle"><?= $lData->paid_date ? date("d F Y", strtotime($lData->paid_date)) : '' ?></td>
                                     <td class="text-center">
