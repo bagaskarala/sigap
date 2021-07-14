@@ -62,7 +62,7 @@
                                                 </h5>
                                             </div>
                                             <div class="modal-body">
-                                                <p>Apakah anda yakin akan menghapus fakultas <span
+                                                <p>Apakah anda yakin akan menghapus <span
                                                         class="font-weight-bold"><?=$library->library_name;?></span>?
                                                 </p>
                                             </div>

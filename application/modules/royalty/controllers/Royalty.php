@@ -82,7 +82,9 @@ class Royalty extends Sales_Controller
                 'last_paid_date'    => $history->start_date,
                 'period_end'        => $history->end_date
             ];
-            $history->details = $this->royalty->author_details($author_id, $history_filter)[0];
+            if ($this->royalty->author_details($author_id, $history_filter) != null) {
+                $history->details = $this->royalty->author_details($author_id, $history_filter)[0];
+            }
         }
 
         $total = $get_data['total'];
@@ -257,7 +259,7 @@ class Royalty extends Sales_Controller
                 ];
                 $next_royalty = $this->royalty->author_details($each_royalty->author_id, $filters_next_royalty);
                 // Buku penulis tidak ada yg terjual selama periode ini
-                if ($next_royalty[0]->book_id == NULL) {
+                if ($next_royalty == NULL) {
                     unset($royalty[$key]);
                 }
             }

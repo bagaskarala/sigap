@@ -120,17 +120,17 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 <th
                                     scope="col"
                                     style="width:25%;"
-                                    class="pr-4"
-                                >Periode</th>
-                                <th
-                                    scope="col"
-                                    style="width:25%;"
                                 >Jumlah Royalti</th>
                                 <th
                                     scope="col"
                                     style="width:20%;"
                                     class="pr-4"
                                 >Status</th>
+                                <th
+                                    scope="col"
+                                    style="width:25%;"
+                                    class="pr-4"
+                                >Keterangan</th>
                                 <th
                                     scope="col"
                                     style="width:30%;"
@@ -152,12 +152,33 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                         >
                                             <?= highlight_keyword($lData->author_name, $keyword); ?>
                                         </a>
-                                    </td>
-                                    <td class="text-center align-middle"><?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?> - <?= $lData->start_date ? date("d F Y", strtotime($lData->end_date)) : '' ?></td>
+                                    </td>                                    
                                     <td class="text-right align-middle">
                                         Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?>
                                     </td>
-                                    <td class="text-center align-middle"><?= get_royalty_status()[$lData->status] ?></td>
+                                    <td class="text-center align-middle">
+                                        <?php if($lData->status == 'requested'): ?>
+                                            Diajukan
+                                        <?php else:?>
+                                            Belum Diajukan
+                                        <?php endif;?>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <?php if($lData->status == 'requested'): ?>
+                                            Periode Pengajuan
+                                            <br>
+                                            <?= $lData->start_date ? date("d F Y", strtotime($lData->start_date)) : '' ?>
+                                            -
+                                            <?= $lData->end_date ? date("d F Y", strtotime($lData->end_date)) : '' ?>
+                                        <?php else: if($lData->status == 'paid'):?>
+                                                Terakhir dibayar
+                                                <br>
+                                                <?= $lData->end_date ? date("d F Y", strtotime($lData->end_date)) : '' ?>
+                                            <?php else:?>
+                                                Belum diajukan
+                                            <?php endif;?>
+                                        <?php endif;?>
+                                    </td>
                                     <td
                                         class="text-center"
                                         style="white-space:nowrap"
@@ -179,14 +200,13 @@ for ($dy = intval(date('Y')); $dy >= 2015; $dy--) {
                                 >
                                     <b>Total</b>
                                 </td>
-                                <td></td>
                                 <td
                                     scope="col"
                                     class="text-right align-middle"
                                 >
                                     <b>Rp <?= number_format($total_royalty, 0, ',', '.'); ?></b>
                                 </td>
-                                <td colspan="3">&nbsp;</td>
+                                <td colspan="4">&nbsp;</td>
                             </tr>
                         </tbody>
                     </table>

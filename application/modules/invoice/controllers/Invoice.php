@@ -540,7 +540,8 @@ class Invoice extends Sales_Controller
         $no = 1;
         // Column Content
         foreach ($invoice_test['invoice'] as $data) {
-            foreach (range('A', 'I') as $v) {
+            foreach (range('A', 'J') as $v) {
+                $receipt = explode("-", $data->receipt);
                 switch ($v) {
                     case 'A': {
                             $value = $no++;
@@ -575,7 +576,11 @@ class Invoice extends Sales_Controller
                             break;
                         }
                     case 'I': {
-                            $value = $data->receipt;
+                            $value = $receipt[0];
+                            break;
+                        }
+                    case 'J': {
+                            $value = $receipt[1] ?? '';
                             break;
                         }
                 }
@@ -593,6 +598,7 @@ class Invoice extends Sales_Controller
         $sheet->setCellValue('G1', 'Status');
         $sheet->setCellValue('H1', 'Jatuh Tempo');
         $sheet->setCellValue('I1', 'Bukti Bayar');
+        $sheet->setCellValue('J1', 'Marketplace');
         // Auto width
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -603,6 +609,7 @@ class Invoice extends Sales_Controller
         $sheet->getColumnDimension('G')->setAutoSize(true);
         $sheet->getColumnDimension('H')->setAutoSize(true);
         $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');
