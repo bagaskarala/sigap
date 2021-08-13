@@ -2,7 +2,7 @@
     <hr>
     <ul class="list-inline">
         <li class="list-inline-item">
-            <span class="text-muted">Version 2.0.0-beta</span>
+            <span class="text-muted">Version 3.0.0-beta</span>
         </li>
         <li class="list-inline-item">
             <a
@@ -17,6 +17,6 @@
             >UGM Press</a>
         </li>
     </ul>
-    <div class="copyright"> Copyright © SIGAP 2020. </div>
+    <div class="copyright"> Copyright © SIGAP 2021. </div>
     <!-- <small class="text-muted">Server process time: {elapsed_time} seconds</small> -->
 </footer>

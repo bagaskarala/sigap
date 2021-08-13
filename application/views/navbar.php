@@ -11,8 +11,8 @@ $level_native  = $this->session->userdata('level_native');
             <a href="<?php echo base_url(); ?>">
                 <span
                     class="badge badge-warning"
-                    style="font-size: 0.8em"
-                >SIGAP <small>v2</small></span>
+                    style="font-size: 0.8em; background-color: violet;"
+                >SIGAP <small>v3</small></span>
             </a>
         </div>
 
