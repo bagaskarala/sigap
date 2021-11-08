@@ -92,7 +92,7 @@ $menu_list = [
                 'level' => 'superadmin|admin_gudang|staff_gudang'
             ],
         ]
-    ],   
+    ],
     [
         'title' => 'Pemasaran',
         'level' => 'superadmin|admin_gudang|admin_pemasaran|admin_keuangan'
@@ -367,12 +367,5 @@ $menu_list = [
                 </ul>
             </nav>
         </div>
-
-        <footer class="aside-footer border-top p-3">
-            <button
-                class="btn btn-light btn-block text-primary"
-                data-toggle="skin"
-            >Night mode <i class="fas fa-moon ml-1"></i></button>
-        </footer>
     </div>
 </aside>

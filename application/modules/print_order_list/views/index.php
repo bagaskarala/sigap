@@ -70,22 +70,8 @@
     >
     <link
         rel="stylesheet"
-        href="<?= base_url('assets/stylesheets/theme-dark.css'); ?>"
-        data-skin="dark"
-    >
-    <link
-        rel="stylesheet"
         href="<?= base_url('assets/stylesheets/custom.css'); ?>"
     >
-    <!-- Disable unused skin immediately -->
-
-    <script>
-    var skin = localStorage.getItem('skin') || 'default';
-    var unusedLink = document.querySelector('link[data-skin]:not([data-skin="' + skin + '"])');
-
-    unusedLink.setAttribute('rel', '');
-    unusedLink.setAttribute('disabled', true);
-    </script>
     <!-- END THEME STYLES -->
 
     <!-- BEGIN PLUGINS STYLES -->

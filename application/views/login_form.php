@@ -65,22 +65,8 @@
     >
     <link
         rel="stylesheet"
-        href="<?= base_url('assets/stylesheets/theme-dark.min.css'); ?>"
-        data-skin="dark"
-    >
-    <link
-        rel="stylesheet"
         href="<?= base_url('assets/stylesheets/custom.css'); ?>"
     >
-    <!-- Disable unused skin immediately -->
-
-    <script>
-    var skin = localStorage.getItem('skin') || 'default';
-    var unusedLink = document.querySelector('link[data-skin]:not([data-skin="' + skin + '"])');
-
-    unusedLink.setAttribute('rel', '');
-    unusedLink.setAttribute('disabled', true);
-    </script>
     <!-- END THEME STYLES -->
 </head>
 
@@ -158,7 +144,8 @@
                                                     <img
                                                         src="assets/images/avatars/profile.jpg"
                                                         alt="User Avatar"
-                                                    > </div>
+                                                    >
+                                                </div>
                                                 <h2 class="card-title"> I Wayan Mustika </h2>
                                                 <h6 class="card-subtitle text-muted"> Supervisor<br>Administrator </h6>
                                             </div>
@@ -173,7 +160,8 @@
                                                     <img
                                                         src="assets/images/avatars/profile.jpg"
                                                         alt="User Avatar"
-                                                    > </div>
+                                                    >
+                                                </div>
                                                 <h2 class="card-title"> Bagaskara LA </h2>
                                                 <h6 class="card-subtitle text-muted"> Fullstack Developer and UX Researcher </h6>
                                             </div>
@@ -188,7 +176,8 @@
                                                     <img
                                                         src="assets/images/avatars/profile.jpg"
                                                         alt="User Avatar"
-                                                    > </div>
+                                                    >
+                                                </div>
                                                 <h2 class="card-title"> Edward </h2>
                                                 <h6 class="card-subtitle text-muted"> Back End and Database Developer </h6>
                                             </div>
@@ -203,7 +192,8 @@
                                                     <img
                                                         src="assets/images/avatars/profile.jpg"
                                                         alt="User Avatar"
-                                                    > </div>
+                                                    >
+                                                </div>
                                                 <h2 class="card-title"> Syuhada Sipayung </h2>
                                                 <h6 class="card-subtitle text-muted"> Business Reporting and API Developer </h6>
                                             </div>
