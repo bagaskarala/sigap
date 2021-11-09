@@ -204,7 +204,9 @@ $invoice_type_options = [
 <script src="<?= base_url('assets/vendor/chart.js/new/Chart.bundle.min.js'); ?>"></script>
 
 <script>
+const invoiceType = '<?= $invoice_type ?>'
 <?php if ($filter_invoice_type == false) : ?>
+    var type = ['cash', 'showroom', 'credit', 'online']
     var total_earning_cash = [];
     var total_earning_showroom = [];
     var total_earning_credit = [];
@@ -274,7 +276,6 @@ $invoice_type_options = [
                         } else {
                             return data.labels[tooltipItems.index] + ' - Rp ' + value;
                         }
-                        // return data.labels[tooltipItems.index] + 'asdadk' + data.datasets[0].data[tooltipItems.index].toLocaleString();
                     }
                 }
             },
@@ -296,7 +297,7 @@ $invoice_type_options = [
                 } else {
                     var index = bar._index //bulan
                     var datasetIndex = bar._datasetIndex //jenis faktur
-                    appendTable('<?= $year ?>', index, datasetIndex)
+                    appendTable('<?= $year ?>', index, type[datasetIndex])
                 }
             }
         }
@@ -350,7 +351,6 @@ $invoice_type_options = [
                         } else {
                             return data.labels[tooltipItems.index] + ' - Rp ' + value;
                         }
-                        // return data.labels[tooltipItems.index] + 'asdadk' + data.datasets[0].data[tooltipItems.index].toLocaleString();
                     }
                 }
             },
@@ -370,9 +370,11 @@ $invoice_type_options = [
                 if (bar == null) {
                     $('#table_laporan').hide()
                 } else {
+                    console.log({
+                        bar
+                    });
                     var index = bar._index //bulan
-                    var datasetIndex = bar._datasetIndex //jenis faktur
-                    appendTable('<?= $year ?>', index, datasetIndex)
+                    appendTable('<?= $year ?>', index, invoiceType)
                 }
             }
         }
@@ -380,14 +382,15 @@ $invoice_type_options = [
 <?php endif ?>
 
 function appendTable(year, month, invoice_type) {
-    var type = ['cash', 'showroom', 'credit', 'online']
+    console.log({
+        invoice_type
+    });
     $.ajax({
         type: "GET",
-        url: "<?= base_url('earning/api_get_invoice/'); ?>" + year + '/' + month + '/' + type[invoice_type],
+        url: "<?= base_url('earning/api_get_invoice/'); ?>" + year + '/' + month + '/' + invoice_type,
         datatype: "JSON",
         success: function(res) {
-            $('#print_month').attr("onclick", "generateExcel(" + year + ',' + month + ",'" + type[invoice_type] + "')")
-            // $('#print_month').attr("onclick", "generateExcel(" + year + "," + month + ", '" + type[invoice_type] + "')")
+            $('#print_month').attr("onclick", "generateExcel(" + year + ',' + month + ",'" + invoice_type + "')")
             populateTable(res.data)
             $('#table_laporan').show()
         },
