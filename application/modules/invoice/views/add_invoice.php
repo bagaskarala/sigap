@@ -259,7 +259,10 @@
 
                         <hr class="my-4">
                         <div class="row">
-                            <div id="book-dropdown" class="form-group col-md-8">
+                            <div
+                                id="book-dropdown"
+                                class="form-group col-md-8"
+                            >
                                 <label
                                     for="book_id"
                                     class="font-weight-bold"
@@ -397,6 +400,22 @@
                                         <td><b>Grand Total</b></td>
                                         <td id="grand_total">Rp 0</td>
                                     </tr>
+                                    <tr style="text-align:center;">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="align-middle"><b>Ongkir</b></td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                name="delivery-fee"
+                                                id="delivery-fee"
+                                                value="0"
+                                                class="form-control"
+                                            />
+                                        </td>
+                                    </tr>
                                 </tfoot>
                             </table>
                         </div>
@@ -496,10 +515,10 @@ $(document).ready(function() {
     $('#book-id').change(function(e) {
         if (e.target.value != '') {
             var bookId = e.target.value
-            var source =  $("#source").val()
+            var source = $("#source").val()
             var libraryId = 0
             if ($("#source-library-id").val() != '') {
-                libraryId =  $("#source-library-id").val()
+                libraryId = $("#source-library-id").val()
             }
             $.ajax({
                 type: "GET",
@@ -708,21 +727,21 @@ function decreaseGrandTotal(book_id) {
 
 function updateDropdown(type, library_id) {
     $.ajax({
-		type: "GET",
-		url: "<?= base_url('invoice/api_get_book_dropdown/'); ?>" + type + '/' + library_id,
-		dataType: "JSON",
-		success: function(res) {
+        type: "GET",
+        url: "<?= base_url('invoice/api_get_book_dropdown/'); ?>" + type + '/' + library_id,
+        dataType: "JSON",
+        success: function(res) {
             $('#book-id').empty();
-            for( i=0; i < Object.keys(res.data).length; i++) {
-                $('#book-id').append('<option value="'+ Object.keys(res.data)[i] +'">'+ Object.values(res.data)[i] +'</option>');
+            for (i = 0; i < Object.keys(res.data).length; i++) {
+                $('#book-id').append('<option value="' + Object.keys(res.data)[i] + '">' + Object.values(res.data)[i] + '</option>');
             }
-		},
+        },
         error: function(err) {
             console.log(err)
         },
-		complete: function() {
+        complete: function() {
             $('#book-id').val('').trigger('change')
         }
-    }); 
+    });
 }
 </script>
