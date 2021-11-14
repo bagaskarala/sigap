@@ -236,6 +236,7 @@ class Book_transfer extends Warehouse_Sales_Controller
         $book_transfer = $this->book_transfer->where('book_transfer_id', $book_transfer_id)->get();
         if (!$book_transfer) {
             $this->session->set_flashdata('error', $this->lang->line('toast_data_not_available'));
+            redirect($this->pages);
         }
 
         // update book stock tapi tabel list buku yg dipindahin blm ada
@@ -283,9 +284,9 @@ class Book_transfer extends Warehouse_Sales_Controller
                 'book_id' => $book_transfer_list->book_id,
                 'book_stock_id' => $book_stock->book_stock_id,
                 'book_transfer_id' => $book_transfer_list->book_transfer_id,
-                'stock_initial' => $book_stock->warehouse_present + $book_transfer_list->qty,
+                'stock_initial' => $book_stock->warehouse_present,
                 'stock_mutation' => $book_transfer_list->qty,
-                'stock_last' => $book_stock->warehouse_present,
+                'stock_last' => $book_stock->warehouse_present - $book_transfer_list->qty,
                 'date' => now()
             ]);
         }
@@ -316,7 +317,6 @@ class Book_transfer extends Warehouse_Sales_Controller
         if (!$_POST) {
             $input = (object) $this->book_transfer->get_default_values();
             if (!$this->book_transfer->validate() || $this->form_validation->error_array()) {
-
                 $pages       = $this->pages;
                 $main_view   = 'book_transfer/book_transfer_add';
                 $form_action = 'book_transfer/add';
