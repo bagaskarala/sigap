@@ -65,6 +65,8 @@ class Invoice extends Sales_Controller
             $this->invoice->validate_invoice();
             $date_created       = date('Y-m-d H:i:s');
 
+            $this->db->trans_begin();
+
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
                 $customer_id = $this->input->post('customer-id');
@@ -166,9 +168,15 @@ class Invoice extends Sales_Controller
                 }
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
-            if ($type != 'showroom') echo json_encode(['status' => TRUE]);
-            else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_add_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
+                if ($type != 'showroom') echo json_encode(['status' => TRUE]);
+                else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
+            }
         }
 
         //View add invoice
@@ -211,6 +219,9 @@ class Invoice extends Sales_Controller
         if ($_POST) {
             //validasi input edit
             $this->invoice->validate_invoice();
+
+            $this->db->trans_begin();
+
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
                 $customer_id = $this->input->post('customer-id');
@@ -331,8 +342,15 @@ class Invoice extends Sales_Controller
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
 
-            echo json_encode(['status' => TRUE]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+                echo json_encode(['status' => TRUE]);
+            }
         }
         //view edit invoice
         else {
