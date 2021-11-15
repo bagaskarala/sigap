@@ -141,16 +141,17 @@ class Proforma extends Sales_Controller
             $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_convert_empty'));
             $this->session->set_flashdata('empty_books', $empty_books);
-            redirect('proforma/edit/' . $id);
-        } else {
-            if ($this->db->trans_status() === false) {
-                $this->db->trans_rollback();
-                $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
-            } else {
-                $this->db->trans_commit();
-                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
-            }
+            return redirect('proforma/edit/' . $id);
         }
+
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
+        } else {
+            $this->db->trans_commit();
+            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+        }
+
 
         if ($redirect) redirect('invoice/view/' . $invoice_id);
         else redirect($this->pages);
