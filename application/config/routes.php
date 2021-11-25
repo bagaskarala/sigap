@@ -83,6 +83,8 @@ $route['proforma/(:num)']         = 'proforma/index/$1';
 $route['royalty/(:num)']         = 'royalty/index/$1';
 $route['royalty/history/(:num)'] = 'royalty/history/$1';
 
+$route['book_stock_log']          = 'book_stock_log/index';
+
 $route['draftauthor/add']           = 'draft_author/add';
 $route['draftauthor/edit/(:num)']   = 'draft_author/edit/$1';
 $route['draftauthor/delete/(:num)'] = 'draft_author/delete/$1';
