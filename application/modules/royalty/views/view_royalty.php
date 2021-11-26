@@ -261,7 +261,7 @@ if ($latest_royalty == NULL) {
                                         <tr>
                                             <td class="text-center"><?= $index + 1; ?></td>
                                             <td class="text-left"><?= $royalty->book_title; ?></td>
-                                            <td class="text-center"><?= $royalty->count; ?></td>
+                                            <td class="text-center"><?= $royalty->sold_books; ?></td>
                                             <td class="text-right pr-5">Rp <?= number_format($royalty->total_sales, 0, ',', '.'); ?></td>
                                             <td class="text-right pr-5">Rp <?= number_format($royalty->earned_royalty, 0, ',', '.'); ?></td>
                                         </tr>

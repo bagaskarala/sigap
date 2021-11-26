@@ -119,8 +119,8 @@
             $total_earning = 0;
             $total_royalty = 0; ?>
             <?php foreach ($royalty_details as $royalty) :
-                $stock = $current_stock[$index]->WP + $current_stock[$index]->LP + $current_stock[$index]->SP;
-                $prev_stock =  $stock + $current_stock[$index]->count + $current_stock[$index]->non_sales_now; ?>
+                $prev_stock = $book_details[$index]->warehouse_start + $book_details[$index]->library_start + $book_details[$index]->showroom_start;
+            ?>
                 <tr class="royalty-table">
                     <td
                         class="royalty-table"
@@ -146,12 +146,12 @@
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= $royalty->count ?></td>
+                    ><?= $royalty->sold_books ?></td>
                     <td
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= isset($current_stock[$index]->non_sales_last) ? $current_stock[$index]->non_sales_last : 0 ?></td>
+                    ><?= isset($book_details[$index]->non_sales_last) ? $book_details[$index]->non_sales_last : 0 ?></td>
                     <td
                         class="royalty-table"
                         style="text-align: center;"
@@ -166,7 +166,7 @@
                         class="royalty-table"
                         style="text-align: center;"
                         width="10%"
-                    ><?= $prev_stock - $royalty->count - $current_stock[$index]->non_sales_last ?></td>
+                    ><?= $prev_stock - $royalty->sold_books - $book_details[$index]->non_sales_last ?></td>
                 </tr>
                 <?php $index++;
                 $total_royalty += $royalty->earned_royalty; ?>

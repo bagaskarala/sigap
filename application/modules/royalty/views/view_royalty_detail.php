@@ -74,7 +74,7 @@ $endDate        = $this->input->get('end_date');
                             <tr>
                                 <td class="text-center"><?= $index + 1; ?></td>
                                 <td class="text-left"><?= $lData->book_title; ?></td>
-                                <td class="text-center"><?= $lData->count; ?></td>
+                                <td class="text-center"><?= $lData->sold_books; ?></td>
                                 <td class="text-right pr-5">Rp <?= number_format($lData->total_sales, 0, ',', '.'); ?></td>
                                 <td class="text-right pr-5">Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?> (<?= $lData->royalty ?>%)</td>
                             </tr>

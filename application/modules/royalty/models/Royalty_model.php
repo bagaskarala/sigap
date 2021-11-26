@@ -145,7 +145,7 @@ class Royalty_model extends MY_Model
 
     public function author_details($author_id, $filters)
     {
-        $this->db->select('book.book_id, book.book_title, price, SUM(invoice_book.qty) AS count, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty, invoice_book.royalty as royalty')
+        $this->db->select('book.book_id, book.book_title, price, SUM(invoice_book.qty) AS sold_books, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty, invoice_book.royalty as royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')
@@ -163,11 +163,10 @@ class Royalty_model extends MY_Model
         return $this->db->get()->result();
     }
 
-    public function stocks_info($author_id, $filters)
+    public function get_sold_books($author_id, $filters)
     {
-        $this->db->select('book.book_id, IFNULL(warehouse_present, 0) as WP, IFNULL(showroom_present, 0) as SP, IFNULL(library_present, 0) as LP, SUM(qty) AS count, invoice_book.royalty')
+        $this->db->select('book.book_id, SUM(qty) AS sold_books, invoice_book.royalty')
             ->from('book')
-            ->join('book_stock', 'book_stock.book_id = book.book_id', 'left')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('invoice_book', 'book.book_id = invoice_book.book_id')
             ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')

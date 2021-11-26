@@ -176,13 +176,19 @@ class Royalty extends Sales_Controller
             'period_end'        => $royalty->end_date,
         ];
         $royalty_details = $this->royalty->author_details($royalty->author_id, $filters);
-        $current_stock = $this->royalty->stocks_info($royalty->author_id, $filters);
-        foreach ($current_stock as $stock) {
-            $stock->non_sales_now = $this->royalty->get_non_sales_book($stock->book_id, $filters, 'now')->qty_non_sales;
-            $stock->non_sales_last = $this->royalty->get_non_sales_book($stock->book_id, $filters, 'last')->qty_non_sales;
+        $book_details = $this->royalty->get_sold_books($royalty->author_id, $filters);
+        foreach ($book_details as $book_detail) {
+            $start_stock =  $this->db->select('*')
+                                ->from('book_stock_log')
+                                ->where('book_id', $book_detail->book_id)
+                                ->where('date BETWEEN "' . $filters['last_paid_date'] . '" AND "'. $filters['period_end'] .'"')
+                                ->order_by('date', 'ASC')
+                                ->get()->row();
+            $book_detail->warehouse_start = $start_stock->warehouse_stock;
+            $book_detail->showroom_start = $start_stock->showroom_stock;
+            $book_detail->library_start = $start_stock->library_stock;
+            $book_detail->non_sales_last = $this->royalty->get_non_sales_book($book_detail->book_id, $filters, 'last')->qty_non_sales;
         }
-        var_dump($current_stock);
-
         // PDF
         $this->load->library('pdf');
 
@@ -191,7 +197,7 @@ class Royalty extends Sales_Controller
             'royalty_details' => $royalty_details,
             'start_date' => $royalty->start_date,
             'period_end' => $royalty->end_date,
-            'current_stock' => $current_stock
+            'book_details' => $book_details
         );
 
         $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
