@@ -18,7 +18,7 @@ class Book_stock_log extends MY_Controller
                 $add = [
                     'date' => now(),
                     'book_id' => $stock->book_id,
-                    'warehose_stock' => $stock->warehouse_present ? $stock->warehouse_present : 0,
+                    'warehouse_stock' => $stock->warehouse_present ? $stock->warehouse_present : 0,
                     'showroom_stock' => $stock->showroom_present ? $stock->showroom_present : 0,
                     'library_stock' => $stock->library_present ? $stock->library_present : 0,
                     'retur_stock' => $stock->retur_stock ? $stock->retur_stock : 0,

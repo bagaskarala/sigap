@@ -17,7 +17,7 @@
                         'type' => 'VARCHAR',
                         'constraint' => 20,
                     ],
-                    'warehose_stock' => [
+                    'warehouse_stock' => [
                         'type' => 'INT',
                         'constraint' => 20,
                         'null' => TRUE
