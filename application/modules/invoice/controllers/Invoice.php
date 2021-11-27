@@ -65,6 +65,8 @@ class Invoice extends Sales_Controller
             $this->invoice->validate_invoice();
             $date_created       = date('Y-m-d H:i:s');
 
+            $this->db->trans_begin();
+
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
                 $customer_id = $this->input->post('customer-id');
@@ -103,8 +105,8 @@ class Invoice extends Sales_Controller
                 'source'            => $source,
                 'source_library_id' => $library_id,
                 'status'            => $status,
-                'issued_date'       => $date_created
-                // 'user_created'      => $user_created
+                'issued_date'       => $date_created,
+                'delivery_fee'       => $this->input->post('delivery-fee')
             ];
             $this->db->insert('invoice', $add);
             // ID faktur terbaru untuk diisi buku
@@ -134,7 +136,7 @@ class Invoice extends Sales_Controller
                 $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
                 if ($type == 'showroom') {
                     $book_stock->showroom_present -= $book['qty'];
-                } else 
+                } else
                 if ($source == 'warehouse') {
                     $book_stock->warehouse_present -= $book['qty'];
                 } else
@@ -166,9 +168,15 @@ class Invoice extends Sales_Controller
                 }
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
-            if ($type != 'showroom') echo json_encode(['status' => TRUE]);
-            else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_add_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
+                if ($type != 'showroom') echo json_encode(['status' => TRUE]);
+                else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
+            }
         }
 
         //View add invoice
@@ -211,6 +219,9 @@ class Invoice extends Sales_Controller
         if ($_POST) {
             //validasi input edit
             $this->invoice->validate_invoice();
+
+            $this->db->trans_begin();
+
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
                 $customer_id = $this->input->post('customer-id');
@@ -246,7 +257,7 @@ class Invoice extends Sales_Controller
                     $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
                     $book_stock->warehouse_present += $invoice_book->qty;
                     $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-                } else 
+                } else
                 if ($invoice->source == 'library') {
                     $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
                     $library_id = $invoice->source_library_id;
@@ -261,7 +272,7 @@ class Invoice extends Sales_Controller
                 $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
             }
 
-            // Hapus invoice_book yang sudah ada 
+            // Hapus invoice_book yang sudah ada
             $this->db->where('invoice_id', $invoice_id)->delete('invoice_book');
 
             // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
@@ -331,8 +342,15 @@ class Invoice extends Sales_Controller
             }
             $this->db->set('total_weight', $total_weight)->where('invoice_id', $invoice_id)->update('invoice');
 
-            echo json_encode(['status' => TRUE]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+                echo json_encode(['status' => TRUE]);
+            }
         }
         //view edit invoice
         else {
@@ -418,7 +436,7 @@ class Invoice extends Sales_Controller
                                 $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
                                 $book_stock->warehouse_present += $invoice_book->qty;
                                 $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-                            } else 
+                            } else
                             if ($invoice->source == 'library') {
                                 $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
                                 $library_id = $invoice->source_library_id;

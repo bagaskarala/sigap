@@ -118,7 +118,7 @@ class Proforma extends Sales_Controller
                         'book_id'            => $book->book_id,
                         'invoice_id'         => $invoice_id,
                         'book_stock_id'      => $book_stock->book_stock_id,
-                        'stock_initial'      => $book_stock->warehouse_present+$book->qty,
+                        'stock_initial'      => $book_stock->warehouse_present + $book->qty,
                         'stock_mutation'     => $book->qty,
                         'stock_last'         => $book_stock->warehouse_present,
                         'date'               => $date_created
@@ -130,7 +130,6 @@ class Proforma extends Sales_Controller
                 $this->db->where('proforma_id', $id)->delete('proforma_book');
                 $redirect = true;
             }
-
         } else if ($proforma_status == 'cancel') {
             //delete data proforma
             $this->db->where('proforma_id', $id)->delete('proforma');
@@ -142,16 +141,17 @@ class Proforma extends Sales_Controller
             $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_convert_empty'));
             $this->session->set_flashdata('empty_books', $empty_books);
-            redirect('proforma/edit/' . $id);
-        } else {
-            if ($this->db->trans_status() === false) {
-                $this->db->trans_rollback();
-                $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
-            } else {
-                $this->db->trans_commit();
-                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
-            }
+            return redirect('proforma/edit/' . $id);
         }
+
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
+        } else {
+            $this->db->trans_commit();
+            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+        }
+
 
         if ($redirect) redirect('invoice/view/' . $invoice_id);
         else redirect($this->pages);
@@ -164,6 +164,8 @@ class Proforma extends Sales_Controller
             //validasi input
             $this->proforma->validate_proforma();
             $date_created       = date('Y-m-d H:i:s');
+
+            $this->db->trans_begin();
 
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
@@ -207,8 +209,14 @@ class Proforma extends Sales_Controller
                 ];
                 $this->db->insert('proforma_book', $book);
             }
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+            }
             echo json_encode(['status' => TRUE]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
         }
 
         //View add proforma
@@ -259,7 +267,7 @@ class Proforma extends Sales_Controller
             // Jumlah Buku di Proforma
             $countsize = count($this->input->post('proforma_book_id'));
 
-            //hapus proforma_book yang sudah ada 
+            //hapus proforma_book yang sudah ada
             $this->db->where('proforma_id', $proforma_id)->delete('proforma_book');
 
             // Masukkan buku di form proforma ke database
@@ -335,5 +343,4 @@ class Proforma extends Sales_Controller
         $discount = $this->proforma->get_discount($customerType);
         return $this->send_json_output(true, $discount);
     }
-
 }

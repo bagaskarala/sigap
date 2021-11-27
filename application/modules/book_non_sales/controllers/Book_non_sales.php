@@ -35,7 +35,8 @@ class Book_non_sales extends Warehouse_Sales_Controller
         endif;
     }
 
-    public function add(){
+    public function add()
+    {
         if (!$this->_is_sales_admin()) {
             redirect($this->pages);
         }
@@ -58,16 +59,15 @@ class Book_non_sales extends Warehouse_Sales_Controller
         $year_now = date('Y');
         // apakah ada permintaan non jual tahun ini
         $non_sales_now = $this->book_non_sales->get_book_non_sales_year($year_now);
-        if($non_sales_now){
+        if ($non_sales_now) {
             // ambil nomor terbaru
             $latest = $this->book_non_sales->get_latest_number();
             $latest_number = (int) substr(++$latest->number, 5);
             $latest_number = str_pad((string) $latest_number, 5, '0', STR_PAD_LEFT);
-            $input->number = $year_now.'-'.$latest_number;
-        }
-        // permintaan pertama di tahun ini
-        else{
-            $input->number = $year_now.'-00001';
+            $input->number = $year_now . '-' . $latest_number;
+        } else {
+            // permintaan pertama di tahun ini
+            $input->number = $year_now . '-00001';
         }
         $book_non_sales = (object) [
             'issued_date' => now(),
@@ -80,23 +80,26 @@ class Book_non_sales extends Warehouse_Sales_Controller
             'requester' => $input->requester,
             'receiver' => $input->receiver,
         ];
+        $this->db->trans_begin();
         // insert book non sales
-        $book_non_sales_success = $this->book_non_sales->insert($book_non_sales);
+        $this->book_non_sales->insert($book_non_sales);
         $book_non_sales_id = $this->db->insert_id();
         // insert book non sales list
-        foreach ($input->book_list as $books){
+        foreach ($input->book_list as $books) {
             $book_non_sales_list = (object)[
                 'book_non_sales_id' => $book_non_sales_id,
                 'book_id' => $books['book_id'],
                 'qty' => $books['qty']
             ];
-            $book_non_sales_list_success = $this->db->insert('book_non_sales_list',$book_non_sales_list);
+            $this->db->insert('book_non_sales_list', $book_non_sales_list);
         }
 
-        if ($book_non_sales_success && $book_non_sales_list_success) {
-            $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
-        } else {
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
             $this->session->set_flashdata('error', $this->lang->line('toast_add_fail'));
+        } else {
+            $this->db->trans_commit();
+            $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
         }
 
         redirect('book_non_sales');
@@ -114,7 +117,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
             redirect($this->pages);
         }
 
-        if($book_non_sales->status=="finish"){
+        if ($book_non_sales->status == "finish") {
             $this->session->set_flashdata('warning', "Permintaan buku non penjualan telah selesai, tidak dapat menghapus data pemindahan.");
             redirect($this->pages);
         }
@@ -125,7 +128,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
         $this->book_non_sales->where('book_non_sales_id', $book_non_sales_id)->delete();
 
         // hapus book non sales list
-        $this->db->where('book_non_sales_id',$book_non_sales_id)->delete('book_non_sales_list');
+        $this->db->where('book_non_sales_id', $book_non_sales_id)->delete('book_non_sales_list');
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
@@ -139,7 +142,7 @@ class Book_non_sales extends Warehouse_Sales_Controller
 
     public function view($book_non_sales_id)
     {
-        if(!$this->_is_book_non_sales_user()){
+        if (!$this->_is_book_non_sales_user()) {
             redirect($this->pages);
         }
         $book_non_sales = $this->book_non_sales->fetch_book_non_sales($book_non_sales_id);
@@ -150,19 +153,18 @@ class Book_non_sales extends Warehouse_Sales_Controller
         $book_non_sales_list = $this->book_non_sales->fetch_book_non_sales_list($book_non_sales_id);
         $pages                      = $this->pages;
         $main_view                  = 'book_non_sales/view_book_non_sales';
-        $this->load->view('template', compact('pages', 'main_view', 'book_non_sales','book_non_sales_list'));
+        $this->load->view('template', compact('pages', 'main_view', 'book_non_sales', 'book_non_sales_list'));
         return;
     }
 
     public function generate_pdf_bon($book_non_sales_id)
     {
-        if(!$this->_is_warehouse_sales_admin()){
+        if (!$this->_is_warehouse_sales_admin()) {
             redirect($_SERVER['HTTP_REFERER']);
-        }
-        else{
+        } else {
             $book_non_sales        = $this->book_non_sales->fetch_book_non_sales($book_non_sales_id);
             $book_non_sales_list   = $this->book_non_sales->fetch_book_non_sales_list($book_non_sales_id);
-    
+
             // PDF
             $this->load->library('pdf');
             // FORMAT DATA
@@ -175,8 +177,9 @@ class Book_non_sales extends Warehouse_Sales_Controller
             $data_format['book_list']     = $book_non_sales_list ?? '';
             $data_format['requester']     = $book_non_sales->requester ?? '';
             $data_format['receiver']      = $book_non_sales->receiver ?? '';
-            $html = $this->load->view('book_non_sales/format_pdf_non_sales', $data_format, true);        $file_name = $data_format['number'].'_Pemindahan Buku';
-            $file_name = $data_format['number'].'_Pemindahan Buku';
+            $html = $this->load->view('book_non_sales/format_pdf_non_sales', $data_format, true);
+            $file_name = $data_format['number'] . '_Pemindahan Buku';
+            $file_name = $data_format['number'] . '_Pemindahan Buku';
             $this->pdf->generate_pdf_a4_landscape($html, $file_name);
         }
     }
@@ -203,23 +206,25 @@ class Book_non_sales extends Warehouse_Sales_Controller
 
         // update stok
         $book_non_sales_lists  = $this->book_non_sales->fetch_book_non_sales_list($book_non_sales_id);
-        foreach($book_non_sales_lists as $book_non_sales_list){
+        foreach ($book_non_sales_lists as $book_non_sales_list) {
             $book_stock = $this->book_stock->where('book_id', $book_non_sales_list->book_id)->get();
-            $book_stock->warehouse_present -= $book_non_sales_list->qty;
-            $this->book_stock->where('book_id', $book_non_sales_list->book_id)->update($book_stock);
+            // $book_stock->warehouse_present -= $book_non_sales_list->qty;
+            $this->book_stock->where('book_id', $book_non_sales_list->book_id)->update([
+                'warehouse_present' => $book_stock->warehouse_present - $book_non_sales_list->qty
+            ]);
             $this->book_transaction->insert([
                 'book_id' => $book_non_sales_list->book_id,
                 'book_stock_id' => $book_stock->book_stock_id,
                 'book_non_sales_id' => $book_non_sales_id,
-                'stock_initial'=> $book_stock->warehouse_present+$book_non_sales_list->qty,
+                'stock_initial' => $book_stock->warehouse_present,
                 'stock_mutation' => $book_non_sales_list->qty,
-                'stock_last'=> $book_stock->warehouse_present,
+                'stock_last' => $book_stock->warehouse_present - $book_non_sales_list->qty,
                 'date' => now()
             ]);
         }
-        
+
         // update data book_non_sales
-        $this->db->set('status','finish')->where('book_non_sales_id', $book_non_sales_id)->update('book_non_sales');
+        $this->db->set('status', 'finish')->where('book_non_sales_id', $book_non_sales_id)->update('book_non_sales');
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
@@ -230,7 +235,6 @@ class Book_non_sales extends Warehouse_Sales_Controller
         }
 
         redirect($this->pages . "/view/$book_non_sales_id");
-
     }
 
     private function _is_warehouse_sales_admin()
@@ -243,7 +247,8 @@ class Book_non_sales extends Warehouse_Sales_Controller
         }
     }
 
-    private function _is_warehouse_admin(){
+    private function _is_warehouse_admin()
+    {
         if ($this->level == 'superadmin' || $this->level == 'admin_gudang') {
             return true;
         } else {
@@ -252,7 +257,8 @@ class Book_non_sales extends Warehouse_Sales_Controller
         }
     }
 
-    private function _is_sales_admin(){
+    private function _is_sales_admin()
+    {
         if ($this->level == 'superadmin' || $this->level == 'admin_pemasaran') {
             return true;
         } else {
@@ -270,5 +276,4 @@ class Book_non_sales extends Warehouse_Sales_Controller
             return false;
         }
     }
-
 }

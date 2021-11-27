@@ -123,7 +123,7 @@ class Proforma_model extends MY_Model
             ->join('book_stock', 'book.book_id = book_stock.book_id', 'left')
             ->get()
             ->row();
-        
+
         if ($book->warehouse_present == NULL) {
             $book->warehouse_present = 0;
         }
@@ -154,12 +154,17 @@ class Proforma_model extends MY_Model
         } else {
             $initial = 'P';
             $last_id = $this->db
-            ->select('proforma_id')
-            ->from('proforma')
-            ->order_by('proforma_id', 'DESC')
-            ->get()
-            ->row();
-            $data = $last_id->proforma_id + 1;
+                ->select('proforma_id, number')
+                ->from('proforma')
+                ->order_by('proforma_id', 'DESC')
+                ->get()
+                ->row();
+            if (!$last_id) {
+                $data = 1;
+            } else {
+                [, $number] = explode("-", $last_id->number);
+                $data = $number + 1;
+            }
         }
         $number = $initial . $date_created . '-' . str_pad($data, 6, 0, STR_PAD_LEFT);
         return $number;
