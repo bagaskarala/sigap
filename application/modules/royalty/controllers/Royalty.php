@@ -217,14 +217,21 @@ class Royalty extends Sales_Controller
             $this->royalty->validate_royalty();
             $end_date = $this->input->post('end_date');
             $start_date = $this->input->post('start_date');
-            //tambahkan data royalti author
-            $data = [
-                'author_id' => $author_id,
-                'start_date' => $start_date . ' 00:00:00',
-                'end_date' =>  $end_date . ' 23:59:59',
-                'status' => 'requested'
-            ];
-            $this->db->insert('royalty', $data);
+            $unfinished_invoice = $this->royalty->get_unfinished_invoice($author_id, $start_date, $end_date);
+            // ada invoice yang tidak finish / cancel
+            if ($unfinished_invoice != NULL) {
+                $this->session->set_flashdata('error', $this->lang->line('toast_royalty_unfinished_invoice'));
+            }
+            else {
+                //tambahkan data royalti author
+                $data = [
+                    'author_id' => $author_id,
+                    'start_date' => $start_date . ' 00:00:00',
+                    'end_date' =>  $end_date . ' 23:59:59',
+                    'status' => 'requested'
+                ];
+                $this->db->insert('royalty', $data);
+            }
         } else {
             //jika sudah ada dan sedang diajukan
             if ($latest_royalty->status == 'requested') {
@@ -237,21 +244,30 @@ class Royalty extends Sales_Controller
             }
             //jika sudah ada dan belum diajukan
             else if ($latest_royalty->status == 'paid') {
+
                 $this->royalty->validate_royalty();
                 $last_paid_date = strtotime($latest_royalty->end_date) + 1;
                 $start_date = date('Y-m-d H:i:s', $last_paid_date);
                 $end_date = $this->input->post('end_date');
-
-                $data = [
-                    'author_id' => $author_id,
-                    'start_date' => $start_date,
-                    'end_date' => $end_date . ' 23:59:59',
-                    'status' => 'requested'
-                ];
-                $this->db->insert('royalty', $data);
+                $unfinished_invoice = $this->royalty->get_unfinished_invoice($author_id, $start_date, $end_date);
+                // ada invoice yang tidak finish / cancel
+                if ($unfinished_invoice != NULL) {
+                    $this->session->set_flashdata('error', $this->lang->line('toast_royalty_unfinished_invoice'));
+                }
+                else {
+                    $data = [
+                        'author_id' => $author_id,
+                        'start_date' => $start_date,
+                        'end_date' => $end_date . ' 23:59:59',
+                        'status' => 'requested'
+                    ];
+                    $this->db->insert('royalty', $data);
+                }
             }
         }
-        $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+        if ($unfinished_invoice == NULL) {
+            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+        }
         echo json_encode(['status' => TRUE]);
     }
 

@@ -163,6 +163,28 @@ class Royalty_model extends MY_Model
         return $this->db->get()->result();
     }
 
+    public function get_unfinished_invoice($author_id, $start_date, $end_date)
+    {
+        $this->db->select('book.book_id, book.book_title, price, SUM(invoice_book.qty) AS sold_books, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*invoice_book.royalty/100) as earned_royalty, invoice_book.royalty as royalty')
+            ->from('book')
+            ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
+            ->join('invoice_book', 'book.book_id = invoice_book.book_id')
+            ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
+            ->group_by('book.book_id')
+            ->where('invoice.status !=', 'finish')
+            ->where('invoice.status !=', 'cancel')
+            ->where('draft_author.author_id', $author_id);
+        if ($end_date != null) {
+            //if author.last_paid_date == null
+            $this->db->where('issued_date BETWEEN "' . $start_date .  '" and "' . $end_date . ' 23:59:59"');
+        } else {
+            $this->db->where('issued_date BETWEEN "' . $start_date .  '" and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
+        }
+
+        return $this->db->get()->result();
+    }
+    
+
     public function get_sold_books($author_id, $filters)
     {
         $this->db->select('book.book_id, SUM(qty) AS sold_books, invoice_book.royalty')
