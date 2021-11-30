@@ -40,24 +40,6 @@ class Royalty_model extends MY_Model
         return $options;
     }
 
-    public function get_authors()
-    {
-        return $this->db->select('author_name')
-            ->from('author')
-            ->get()
-            ->result();
-    }
-
-    public function get_book($author_id)
-    {
-        return $this->db->select('book_id, book_title, book.draft_id')
-            ->from('book')
-            ->join('draft_author', 'draft_author.draft_id = book.draft_id')
-            ->where('author_id', $author_id)
-            ->get()
-            ->result();
-    }
-
     public function fetch_royalty_history($author_id)
     {
         return $this->db->select('*')

@@ -31,3 +31,4 @@ $lang['toast_convert_empty']    = 'Stok buku tidak mencukupi.';
 
 //royalty
 $lang['toast_royalty_unfinished_invoice']    = 'Terdapat faktur yang belum diselesaikan';
+$lang['toast_royalty_cancel_success'] = 'Pengajuan royalti berhasil dibatalkan';

@@ -7,8 +7,6 @@ class Royalty extends Sales_Controller
         parent::__construct();
         $this->pages = 'royalty';
         $this->load->model('royalty_model', 'royalty');
-        // $this->load->model('invoice/invoice_model', 'invoice');
-        $this->load->model('book/book_model', 'book');
         $this->load->helper('sales_helper');
     }
 
@@ -277,7 +275,7 @@ class Royalty extends Sales_Controller
     {
         $royalty = $this->db->select('*')->from('royalty')->where('royalty_id', $royalty_id)->get()->row();
         if ($royalty->status == 'requested') {
-            $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
+            $this->session->set_flashdata('success', $this->lang->line('toast_royalty_cancel_success'));
             $this->db->where('royalty_id', $royalty_id);
             $this->db->delete('royalty');
         }
