@@ -107,6 +107,12 @@ $endDate        = $this->input->get('end_date');
                             data-toggle="modal"
                             data-target="#modal-confirm"
                         >Bayar</button>
+                        <button
+                            type="button"
+                            class="btn btn-danger text-right mr-3"
+                            data-toggle="modal"
+                            data-target="#modal-cancel"
+                        >Batalkan</button>
                         <div
                             class="modal modal-warning fade"
                             id="modal-confirm"
@@ -162,6 +168,46 @@ $endDate        = $this->input->get('end_date');
                                             >Close</button>
                                         </div>
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="modal modal-warning fade"
+                            id="modal-cancel"
+                            tabindex="-1"
+                            role="dialog"
+                            aria-labelledby="modal-cancel"
+                            aria-hidden="true"
+                        >
+                            <div
+                                class="modal-dialog"
+                                role="document"
+                            >
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Konfirmasi Pembatalan</h5>
+                                    </div>
+                                    <p class="mt-3 mx-3">
+                                        Apakah Anda yakin akan membatalkan pengajuan royalty periode
+                                        <br>
+                                        <b><?= date("d F Y", strtotime($royalty->start_date)) ?></b>
+                                        hingga
+                                        <b><?= date("d F Y", strtotime($royalty->end_date)) ?></b>
+                                        atas nama 
+                                        <b><?= $author->author_name ?></b>?
+                                    </p>
+                                    <div class="modal-footer">
+                                        <a
+                                            href="<?= base_url('royalty/cancel/' . $royalty->royalty_id) ?>"
+                                            type="submit"
+                                            class="btn btn-primary"
+                                        >Confirm</a>
+                                        <button
+                                            type="button"
+                                            class="btn btn-light"
+                                            data-dismiss="modal"
+                                        >Close</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

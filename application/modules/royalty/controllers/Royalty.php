@@ -273,6 +273,17 @@ class Royalty extends Sales_Controller
         return;
     }
 
+    public function cancel($royalty_id)
+    {
+        $royalty = $this->db->select('*')->from('royalty')->where('royalty_id', $royalty_id)->get()->row();
+        if ($royalty->status == 'requested') {
+            $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
+            $this->db->where('royalty_id', $royalty_id);
+            $this->db->delete('royalty');
+        }
+        redirect('royalty/');
+    }
+
     public function filter_author($royalty, $filters)
     {
         foreach ($royalty as $key => $each_royalty) {
