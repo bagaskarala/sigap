@@ -287,8 +287,16 @@ $level              = check_level();
                             })
                             </script>
                         <?php endif ?>
+                        <?php if ($invoice->type != 'showroom') : ?>
+                            <button
+                                onclick="show_modal_edit()"
+                                class="btn btn-outline-primary mr-2"
+                            >
+                                Edit Data <i class="fas fa-edit fa-fw"></i>
+                            </button>
+                        <?php endif ?>
                         <button
-                            onclick="check_delivery()"
+                            onclick="generate_pdf()"
                             class="btn btn-outline-danger"
                         >
                             Generate PDF<i class="fas fa-file-pdf fa-fw"></i>
@@ -382,36 +390,39 @@ $level              = check_level();
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-                <div class="modal-footer">
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        onclick="save_delivery_fee()"
-                    >Save</button>
-                    <button
-                        type="button"
-                        class="btn btn-light"
-                        data-dismiss="modal"
-                    >Close</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    onclick="save_data()"
+                >Save</button>
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    data-dismiss="modal"
+                >Close</button>
             </div>
         </div>
     </div>
 </div>
 <script>
-function check_delivery() {
+function show_modal_edit() {
     if ($('#invoice_type').html() != 'Showroom') {
         var delivery_fee = "<?= $invoice->delivery_fee ?>";
         var receipt = "<?= $invoice->receipt ?>"
-        if (delivery_fee == '' || receipt == '') {
-            $("#modal-delivery").modal()
-        } else {
-            location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
-        }
+        $("#delivery").val(delivery_fee)
+        $("#receipt").val(receipt)
+        $("#modal-delivery").modal()
+    }
+}
+
+function generate_pdf() {
+    if ($('#invoice_type').html() != 'Showroom') {
+        location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
     } else {
         location.href = "<?= base_url("invoice/showroom_pdf/" . $invoice->invoice_id); ?>"
     }
-
 }
 
 function validate_input() {
@@ -431,7 +442,7 @@ function validate_input() {
     return flag;
 }
 
-function save_delivery_fee() {
+function save_data() {
     var validate_flag = validate_input()
     if (validate_flag != true) {
         var delivery_fee = $("#delivery").val()
@@ -449,8 +460,7 @@ function save_delivery_fee() {
                 var response = $.parseJSON(res)
                 //Validation Error
                 if (response.status == true) {
-                    $("#modal-delivery").modal('toggle')
-                    location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
+                    window.location.reload()
                 }
             },
             error: function(err) {
