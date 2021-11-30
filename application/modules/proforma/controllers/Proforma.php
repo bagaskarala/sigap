@@ -83,7 +83,8 @@ class Proforma extends Sales_Controller
                     'type'              => 'cash',
                     'source'            => 'warehouse',
                     'status'            => 'waiting',
-                    'issued_date'       => $date_created
+                    'issued_date'       => $date_created,
+                    'delivery_fee'      => $proforma->delivery_fee
                     // 'user_created'      => $user_created
                 ];
                 $this->db->insert('invoice', $add);
@@ -184,10 +185,11 @@ class Proforma extends Sales_Controller
             }
 
             $add = [
-                'number'            => $this->proforma->get_last_proforma_number(),
-                'customer_id'       => $customer_id,
-                'due_date'          => $this->input->post('due-date'),
-                'issued_date'       => $date_created
+                'number'       => $this->proforma->get_last_proforma_number(),
+                'customer_id'  => $customer_id,
+                'due_date'     => $this->input->post('due-date'),
+                'issued_date'  => $date_created,
+                'delivery_fee' => $this->input->post('delivery-fee')
                 // 'user_created'      => $user_created
             ];
             $this->db->insert('proforma', $add);
@@ -256,8 +258,9 @@ class Proforma extends Sales_Controller
             }
 
             $edit = [
-                'customer_id'       => $customer_id,
-                'due_date'          => $this->input->post('due-date'),
+                'customer_id'  => $customer_id,
+                'due_date'     => $this->input->post('due-date'),
+                'delivery_fee' => $this->input->post('delivery-fee')
                 // 'date_edited'   => date('Y-m-d H:i:s'),
                 // 'user_edited'   => $_SESSION['username']
             ];

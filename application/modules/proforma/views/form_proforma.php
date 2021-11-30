@@ -323,7 +323,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                                         <thead>
                                             <tr>
                                                 <th>Judul Buku</th>
-                                                <th>Stock Tersedia</th>    
+                                                <th>Stock Tersedia</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -438,6 +438,22 @@ $empty_books        = $this->session->flashdata('empty_books');
                                         <td><b>Grand Total</b></td>
                                         <td id="grand_total">Rp 0</td>
                                     </tr>
+                                    <tr style="text-align:center;">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="align-middle"><b>Ongkir</b></td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                name="delivery-fee"
+                                                id="delivery-fee"
+                                                value="<?= isset($proforma) ? $proforma->delivery_fee : 0; ?>"
+                                                class="form-control"
+                                            />
+                                        </td>
+                                    </tr>
                                 </tfoot>
                             </table>
                         </div>
@@ -503,8 +519,8 @@ $(document).ready(function() {
                 datatype: "JSON",
                 success: function(res) {
                     $('#proforma-book-qty-' + <?= $books->book_id ?>).attr({
-                        "max" : res.data.stock,
-                        "min" : 1
+                        "max": res.data.stock,
+                        "min": 1
                     });
                 },
                 error: function(err) {
