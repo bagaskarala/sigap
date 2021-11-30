@@ -270,7 +270,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                             <br>
 
                             <div class="row">
-                                <div class="form-group col-4 col-md-2">
+                                <div class="form-group col-4 col-md-3">
                                     <label
                                         for="qty"
                                         class="font-weight-bold"
@@ -284,7 +284,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                                         class="form-control"
                                     />
                                 </div>
-                                <div class="form-group col-4 col-md-2">
+                                <div class="form-group col-4 col-md-3">
                                     <label
                                         for="discount"
                                         class="font-weight-bold"
@@ -299,7 +299,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                                         class="form-control"
                                     />
                                 </div>
-                                <div class="form-group col-4 col-md-2">
+                                <div class="form-group col-4 col-md-3">
                                     <label
                                         for="add-item"
                                         class="font-weight-bold"
@@ -341,7 +341,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
-                                    <tr class="text-center">
+                                    <tr>
                                         <th
                                             scope="col"
                                             style="width:40%;"
@@ -372,7 +372,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                                     <!-- Items -->
                                     <?php if ($form_type == 'edit') : ?>
                                         <?php foreach ($proforma_book as $books) : ?>
-                                            <tr class="text-center">
+                                            <tr>
                                                 <td class="align-middle text-left font-weight-bold"><?= $books->book_title ?>
                                                     <input
                                                         type="text"
@@ -413,7 +413,10 @@ $empty_books        = $this->session->flashdata('empty_books');
                                                         value="<?= $books->discount ?>"
                                                     />
                                                 </td>
-                                                <td class="align-middle">
+                                                <td
+                                                    align="left"
+                                                    class="align-middle"
+                                                >
                                                     <span id="proforma-book-total-<?= $books->book_id ?>">
                                                         Rp
                                                         <?php
@@ -431,19 +434,22 @@ $empty_books        = $this->session->flashdata('empty_books');
                                     <?php endif ?>
                                 </tbody>
                                 <tfoot>
-                                    <tr style="text-align:center;">
+                                    <tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td><b>Grand Total</b></td>
-                                        <td id="grand_total">Rp 0</td>
+                                        <td
+                                            id="grand_total"
+                                            colspan="2"
+                                        >Rp 0</td>
                                     </tr>
-                                    <tr style="text-align:center;">
+                                    <tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
-                                        <td>
+                                        <td colspan="2">
                                             <input
                                                 type="number"
                                                 min="0"
@@ -672,7 +678,7 @@ $(document).ready(function() {
 function add_book_to_invoice(stock) {
     var bookId = document.getElementById('book-id');
 
-    html = '<tr class="text-center">';
+    html = '<tr>';
 
     // Judul option yang di select
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;

@@ -362,7 +362,7 @@
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
-                                    <tr class="text-center">
+                                    <tr>
                                         <th
                                             scope="col"
                                             style="width:40%;"
@@ -393,19 +393,22 @@
                                     <!-- Items -->
                                 </tbody>
                                 <tfoot>
-                                    <tr style="text-align:center;">
+                                    <tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td><b>Grand Total</b></td>
-                                        <td id="grand_total">Rp 0</td>
+                                        <td
+                                            id="grand_total"
+                                            colspan="2"
+                                        >Rp 0</td>
                                     </tr>
-                                    <tr style="text-align:center;">
+                                    <tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
-                                        <td>
+                                        <td colspan="2">
                                             <input
                                                 type="number"
                                                 min="0"
@@ -658,7 +661,7 @@ $(document).ready(function() {
 function add_book_to_invoice(stock) {
     var bookId = document.getElementById('book-id');
 
-    html = '<tr class="text-center">';
+    html = '<tr>';
 
     // Judul option yang di select
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;

@@ -25,8 +25,6 @@ $level              = check_level();
         class="card"
     >
         <div class="card-body">
-            <?php //=isset($input->draft_id) ? form_hidden('draft_id', $input->draft_id) : ''; 
-            ?>
             <div>
                 <!-- book-data -->
                 <div>
@@ -315,21 +313,25 @@ $level              = check_level();
     >
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Masukkan Ongkos Kirim</h5>
+                <h5 class="modal-title">Edit Data</h5>
             </div>
             <div class="modal-body">
                 <div class="my-2">
-                    Silakan masukkan ongkir dan bukti bayar terlebih dahulu!
-                </div>
-                <div class="my-2">
                     Total Berat: <b><?= $invoice->total_weight / 1000 ?></b> kg
                 </div>
-                <div class="my-2">
-                    Alamat Customer:
+                <hr>
+                <div class="form-group">
+                    <label
+                        for="customer-address"
+                        class="font-weight-bold"
+                    >
+                        Alamat Customer
+                    </label>
+                    <div class="mb-2">
+                        <?= $invoice->customer->address ? $invoice->customer->address : '<em>Data alamat kosong</em>' ?>
+                    </div>
                 </div>
-                <div class="mb-2">
-                    <?= $invoice->customer->address ?? '-' ?>
-                </div>
+                <hr>
                 <div class="form-group">
                     <label
                         for="delivery_fee"
@@ -395,65 +397,66 @@ $level              = check_level();
             </div>
         </div>
     </div>
-    <script>
-    function check_delivery() {
-        if ($('#invoice_type').html() != 'Showroom') {
-            var delivery_fee = "<?= $invoice->delivery_fee ?>";
-            var receipt = "<?= $invoice->receipt ?>"
-            if (delivery_fee == '' || receipt == '') {
-                $("#modal-delivery").modal()
-            } else {
-                location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
-            }
+</div>
+<script>
+function check_delivery() {
+    if ($('#invoice_type').html() != 'Showroom') {
+        var delivery_fee = "<?= $invoice->delivery_fee ?>";
+        var receipt = "<?= $invoice->receipt ?>"
+        if (delivery_fee == '' || receipt == '') {
+            $("#modal-delivery").modal()
         } else {
-            location.href = "<?= base_url("invoice/showroom_pdf/" . $invoice->invoice_id); ?>"
+            location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
         }
-
+    } else {
+        location.href = "<?= base_url("invoice/showroom_pdf/" . $invoice->invoice_id); ?>"
     }
 
-    function validate_input() {
-        var flag = false;
-        if ($("#delivery").val() == '') {
-            alert("Ongkir wajib diisi!");
-            flag = true
-        }
-        if ($("#receipt").val() == '') {
-            alert("Bukti Pembayaran wajib diisi!")
-            flag = true;
-        }
-        if ($('#invoice_type').html() == 'Online' && $("input[type='radio'][name='marketplace']:checked").val() == null) {
-            alert("Marketplace wajib diisi jika faktur online!")
-            flag = true;
-        }
-        return flag;
-    }
+}
 
-    function save_delivery_fee() {
-        var validate_flag = validate_input()
-        if (validate_flag != true) {
-            var delivery_fee = $("#delivery").val()
-            if ($('#invoice_type').html() == 'Online') {
-                var receipt = $("input[type='radio'][name='marketplace']:checked").val() + ' - ' + $("#receipt").val()
-            } else var receipt = $("#receipt").val()
-            $.ajax({
-                type: "POST",
-                url: "<?= base_url('invoice/update_delivery_fee/' . $invoice->invoice_id); ?>",
-                data: {
-                    delivery_fee: delivery_fee,
-                    receipt: receipt
-                },
-                success: function(res) {
-                    var response = $.parseJSON(res)
-                    //Validation Error
-                    if (response.status == true) {
-                        $("#modal-delivery").modal('toggle')
-                        location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
-                    }
-                },
-                error: function(err) {
-                    console.log(err)
-                },
-            })
-        }
+function validate_input() {
+    var flag = false;
+    if ($("#delivery").val() == '') {
+        alert("Ongkir wajib diisi!");
+        flag = true
     }
-    </script>
+    if ($("#receipt").val() == '') {
+        alert("Bukti Pembayaran wajib diisi!")
+        flag = true;
+    }
+    if ($('#invoice_type').html() == 'Online' && $("input[type='radio'][name='marketplace']:checked").val() == null) {
+        alert("Marketplace wajib diisi jika faktur online!")
+        flag = true;
+    }
+    return flag;
+}
+
+function save_delivery_fee() {
+    var validate_flag = validate_input()
+    if (validate_flag != true) {
+        var delivery_fee = $("#delivery").val()
+        if ($('#invoice_type').html() == 'Online') {
+            var receipt = $("input[type='radio'][name='marketplace']:checked").val() + ' - ' + $("#receipt").val()
+        } else var receipt = $("#receipt").val()
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url('invoice/update_delivery_fee/' . $invoice->invoice_id); ?>",
+            data: {
+                delivery_fee: delivery_fee,
+                receipt: receipt
+            },
+            success: function(res) {
+                var response = $.parseJSON(res)
+                //Validation Error
+                if (response.status == true) {
+                    $("#modal-delivery").modal('toggle')
+                    location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
+                }
+            },
+            error: function(err) {
+                console.log(err)
+            },
+        })
+    }
+}
+</script>
