@@ -210,6 +210,7 @@ class Royalty extends Sales_Controller
 
     public function pay()
     {
+        $unfinished_invoice = NULL;
         $author_id = $this->input->post('author_id');
         $latest_royalty = $this->royalty->fetch_latest_royalty($author_id);
         //jika belum ada data royalti
@@ -269,6 +270,7 @@ class Royalty extends Sales_Controller
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         }
         echo json_encode(['status' => TRUE]);
+        return;
     }
 
     public function filter_author($royalty, $filters)
