@@ -10,9 +10,23 @@
     <title>Faktur UGM Press</title>
 
     <style>
+    @page { margin: 10px; }
     body {
-        font-size: 12px;
-        line-height: 24px;
+        margin: 0px;
+        font-size: 7px;
+        line-height: 9px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #333;
+    }
+    .receipt-header {
+        font-size: 6px;
+        line-height: 10px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #333;
+    }
+    .receipt-footer {
+        font-size: 6px;
+        line-height: 10px;
         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
         color: #333;
     }
@@ -23,7 +37,7 @@
 <body>
     <table style="width: 100%;">
         <tr>
-            <td style="text-align:center;">
+            <td class="receipt-header" style="text-align:center;">
                 GADJAH MADA UNIVERSITY PRESS<br>
                 Jl. Sendok, Karanggayam CT VIII<br>
                 Caturtunggal Depok, Sleman, D.I. Yogyakarta 55281<br>
@@ -35,7 +49,7 @@
     <table>
         <tr>
             <td style="vertical-align: top; width: 15%">
-                <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
+                <?php $month = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
                 Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)))] . " " . date("Y", strtotime($invoice->issued_date)) ?>
             </td>
             <td>
@@ -92,7 +106,7 @@
     <hr style="border-style: dotted;"/>
     <table style="width: 100%;">
         <tr>
-            <td style="text-align: center;">TERIMA KASIH</td>
+            <td class="receipt-footer" style="text-align: center;">TERIMA KASIH</td>
         </tr>
     </table>
 </body>

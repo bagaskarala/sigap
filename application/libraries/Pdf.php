@@ -39,4 +39,17 @@ class Pdf extends Dompdf
         $dompdf->stream($file_name.'.pdf',array("Attachment"=>0));
     }
 
+    public function generate_showroom_receipt($html, $file_name) {
+        $dompdf = new Dompdf();
+
+        $options = new Options();
+        $options->setIsRemoteEnabled(true);
+
+        $dompdf->setOptions($options);
+
+        $dompdf->setPaper('A7', 'potrait');
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        $dompdf->stream($file_name.'.pdf',array("Attachment"=>0));
+    }
 }
