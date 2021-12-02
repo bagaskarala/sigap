@@ -27,7 +27,8 @@
                 GADJAH MADA UNIVERSITY PRESS<br>
                 Jl. Sendok, Karanggayam CT VIII<br>
                 Caturtunggal Depok, Sleman, D.I. Yogyakarta 55281<br>
-                Telp/Fax (0274)-561037<hr style="border-style: dotted;"/>
+                Telp/Fax (0274)-561037
+                <hr style="border-style: dotted;" />
             </td>
         </tr>
     </table>
@@ -36,14 +37,14 @@
         <tr>
             <td style="vertical-align: top; width: 15%">
                 <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
-                Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)))] . " " . date("Y", strtotime($invoice->issued_date)) ?>
+                Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)) - 1)] . " " . date("Y", strtotime($invoice->issued_date)) ?>
             </td>
             <td>
                 <?= date('H:i:s', strtotime($invoice->issued_date)) ?><br>
             </td>
-        </tr>   
+        </tr>
     </table>
-    <hr style="border-style: dotted;"/>
+    <hr style="border-style: dotted;" />
     <table style="width:100%">
         <tbody>
             <tr style="text-align:center;">
@@ -89,7 +90,7 @@
             <td style="width:25%; text-align:right;">0</td>
         </tr>
     </table>
-    <hr style="border-style: dotted;"/>
+    <hr style="border-style: dotted;" />
     <table style="width: 100%;">
         <tr>
             <td style="text-align: center;">TERIMA KASIH</td>

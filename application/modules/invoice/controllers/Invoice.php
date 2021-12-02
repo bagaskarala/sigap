@@ -242,7 +242,8 @@ class Invoice extends Sales_Controller
             $edit = [
                 'customer_id'       => $customer_id,
                 'due_date'          => $this->input->post('due-date'),
-                'status'            => 'waiting'
+                'status'            => 'waiting',
+                'delivery_fee'      => $this->input->post('delivery-fee')
                 // 'date_edited'   => date('Y-m-d H:i:s'),
                 // 'user_edited'   => $_SESSION['username']
             ];

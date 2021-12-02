@@ -143,10 +143,10 @@
             </td>
             <td style="width:30%; vertical-align: top;">
                 <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
-                Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)))] . " " . date("Y", strtotime($invoice->issued_date)) ?><br>
-                Jatuh Tempo : <?= date("d", strtotime($invoice->due_date)) . " " . $month[intval(date("m", strtotime($invoice->due_date)))] . " " . date("Y", strtotime($invoice->due_date)) ?>
+                Yogyakarta, <?= date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)) - 1)] . " " . date("Y", strtotime($invoice->issued_date)) ?><br>
+                Jatuh Tempo : <?= date("d", strtotime($invoice->due_date)) . " " . $month[intval(date("m", strtotime($invoice->due_date)) - 1)] . " " . date("Y", strtotime($invoice->due_date)) ?>
             </td>
-        </tr>   
+        </tr>
     </table>
 
     <table
@@ -210,7 +210,10 @@
                         style="height: 33px; padding-left:5px;"
                     ><?= $i++ ?></td>
                     <td class="invoice-table"></td>
-                    <td class="invoice-table" style="padding-left:5px;"><?= $invoice_book->book_title ?></td>
+                    <td
+                        class="invoice-table"
+                        style="padding-left:5px;"
+                    ><?= $invoice_book->book_title ?></td>
                     <td
                         class="invoice-table"
                         style="text-align: right; padding-right:5px;"

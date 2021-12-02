@@ -349,7 +349,7 @@
                         <input
                             type="submit"
                             class="btn btn-primary"
-                            value="Submit & Print"
+                            value="Submit"
                         />
                     </form>
                 </div>
@@ -535,7 +535,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url("invoice/showroom_pdf/"); ?>" + response.redirect
+                    location.href = "<?= base_url("invoice/view/"); ?>" + response.redirect
                 }
             },
             error: function(xhr, status, error) {

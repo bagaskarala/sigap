@@ -141,8 +141,8 @@
             </td>
             <td style="width:30%; vertical-align: top;">
                 <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
-                Yogyakarta, <?= date("d", strtotime($proforma->issued_date)) . " " . $month[intval(date("m", strtotime($proforma->issued_date)))] . " " . date("Y", strtotime($proforma->issued_date)) ?><br>
-                Jatuh Tempo : <?= date("d", strtotime($proforma->due_date)) . " " . $month[intval(date("m", strtotime($proforma->due_date)))] . " " . date("Y", strtotime($proforma->due_date)) ?>
+                Yogyakarta, <?= date("d", strtotime($proforma->issued_date)) . " " . $month[intval(date("m", strtotime($proforma->issued_date)) - 1)] . " " . date("Y", strtotime($proforma->issued_date)) ?><br>
+                Jatuh Tempo : <?= date("d", strtotime($proforma->due_date)) . " " . $month[intval(date("m", strtotime($proforma->due_date)) - 1)] . " " . date("Y", strtotime($proforma->due_date)) ?>
             </td>
         </tr>
     </table>
@@ -201,47 +201,53 @@
         </thead>
         <tbody>
             <?php $i = 0; ?>
-            <?php if(is_array($proforma_books) || is_object($proforma_books)): ?>
-            <?php foreach ($proforma_books as $proforma_book) : ?>
-                <?php $i++; ?>
-                <tr class="proforma-table">
-                    <td class="proforma-table" style="height: 33px;"><?= $i ?></td>
-                    <td class="proforma-table"></td>
-                    <td class="proforma-table"><?= $proforma_book->book_title ?></td>
-                    <td
-                        class="proforma-table"
-                        style="text-align: right;"
-                    ><?= $proforma_book->qty ?></td>
-                    <td
-                        class="proforma-table"
-                        style="text-align: right;"
-                    ><?= $proforma_book->discount ?></td>
-                    <td
-                        class="proforma-table"
-                        style="text-align: right;"
-                    ><?= $proforma_book->price ?></td>
-                    <td
-                        class="proforma-table"
-                        style="text-align: right;"
-                    ><?= $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100) ?></td>
-                </tr>
-            <?php endforeach; ?>
+            <?php if (is_array($proforma_books) || is_object($proforma_books)) : ?>
+                <?php foreach ($proforma_books as $proforma_book) : ?>
+                    <?php $i++; ?>
+                    <tr class="proforma-table">
+                        <td
+                            class="proforma-table"
+                            style="height: 33px;"
+                        ><?= $i ?></td>
+                        <td class="proforma-table"></td>
+                        <td class="proforma-table"><?= $proforma_book->book_title ?></td>
+                        <td
+                            class="proforma-table"
+                            style="text-align: right;"
+                        ><?= $proforma_book->qty ?></td>
+                        <td
+                            class="proforma-table"
+                            style="text-align: right;"
+                        ><?= $proforma_book->discount ?></td>
+                        <td
+                            class="proforma-table"
+                            style="text-align: right;"
+                        ><?= $proforma_book->price ?></td>
+                        <td
+                            class="proforma-table"
+                            style="text-align: right;"
+                        ><?= $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100) ?></td>
+                    </tr>
+                <?php endforeach; ?>
             <?php endif; ?>
 
-            <?php if(is_array($proforma_books) || is_object($proforma_books)): ?>
-            <?php
-            $total = 0;
-            foreach ($proforma_books as $proforma_book) {
-                $total += $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100);
-            }
-            ?>
+            <?php if (is_array($proforma_books) || is_object($proforma_books)) : ?>
+                <?php
+                $total = 0;
+                foreach ($proforma_books as $proforma_book) {
+                    $total += $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100);
+                }
+                ?>
             <?php endif; ?>
         </tbody>
     </table>
 
     <table style="width: 100%;">
         <tr>
-            <td scope="col" style="height: 33px;"></td>
+            <td
+                scope="col"
+                style="height: 33px;"
+            ></td>
             <td scope="col"><b>Jumlah</b></td>
             <td
                 scope="col"
@@ -259,30 +265,36 @@
                 style="text-align: right; height: 33px;"
             ><b><?= ucfirst(view_price_to_text($total)) ?> rupiah</b></td>
         </tr>
-            <tr>
-                <td scope="col" style="height: 33px;"></td>
-                <td scope="col">Bayar</td>
-                <td
-                    scope="col"
-                    style="text-align: right;"
-                ></td>
-                <td
-                    scope="col"
-                    style="text-align: right;"
-                >0</td>
-            </tr>
-            <tr>
-                <td scope="col" style="height: 33px;"></td>
-                <td scope="col">Kurang</td>
-                <td
-                    scope="col"
-                    style="text-align: right;"
-                ></td>
-                <td
-                    scope="col"
-                    style="text-align: right;"
-                ><?= $total ?></td>
-            </tr>
+        <tr>
+            <td
+                scope="col"
+                style="height: 33px;"
+            ></td>
+            <td scope="col">Bayar</td>
+            <td
+                scope="col"
+                style="text-align: right;"
+            ></td>
+            <td
+                scope="col"
+                style="text-align: right;"
+            >0</td>
+        </tr>
+        <tr>
+            <td
+                scope="col"
+                style="height: 33px;"
+            ></td>
+            <td scope="col">Kurang</td>
+            <td
+                scope="col"
+                style="text-align: right;"
+            ></td>
+            <td
+                scope="col"
+                style="text-align: right;"
+            ><?= $total ?></td>
+        </tr>
     </table>
 
     <table style="width: 100%;">
@@ -292,14 +304,14 @@
         </tr>
         <tr class="information">
             <td>
-                    <b>Keterangan :</b><br>
-                    Bukti pembayaran mohon dikirimkan melalui email: ugmpress@ugm.ac.id<br>
-                    atau whatsapp: 081228478888<br>
-                    Pembayaran dapat dilakukan melalui :<br>
-                    1. Mandiri Cab. UGM Yogyakarta 137-00-0455085-7<br>
-                    <a style="padding-left: 14px;">a/n Gadjah Mada University Press</a><br>
-                    2. BNI Cab. UGM Yogyakarta : 0039226571<br>
-                    <a style="padding-left: 14px;">a/n GAMA PRESS</a>
+                <b>Keterangan :</b><br>
+                Bukti pembayaran mohon dikirimkan melalui email: ugmpress@ugm.ac.id<br>
+                atau whatsapp: 081228478888<br>
+                Pembayaran dapat dilakukan melalui :<br>
+                1. Mandiri Cab. UGM Yogyakarta 137-00-0455085-7<br>
+                <a style="padding-left: 14px;">a/n Gadjah Mada University Press</a><br>
+                2. BNI Cab. UGM Yogyakarta : 0039226571<br>
+                <a style="padding-left: 14px;">a/n GAMA PRESS</a>
             </td>
             <td style="text-align: center;">
                 a.n. Ka. Pemasaran<br><br><br><br><br><br><br>
