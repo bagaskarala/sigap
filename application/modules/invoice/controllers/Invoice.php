@@ -10,6 +10,7 @@ class Invoice extends Sales_Controller
         parent::__construct();
         $this->pages = 'invoice';
         $this->load->model('invoice_model', 'invoice');
+        $this->load->model('customer/customer_model', 'customer');
         $this->load->model('book/book_model', 'book');
         $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
@@ -52,7 +53,7 @@ class Invoice extends Sales_Controller
         $main_view      = 'invoice/view_invoice';
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
         $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
-        $invoice->customer = $this->invoice->get_customer($invoice->customer_id);
+        $invoice->customer = $this->customer->get_customer($invoice->customer_id);
 
         $this->load->view('template', compact('pages', 'main_view', 'invoice', 'invoice_books'));
     }
@@ -129,7 +130,7 @@ class Invoice extends Sales_Controller
                 ];
                 $this->db->insert('invoice_book', $book);
                 // Hitung berat buku
-                $book_weight = $this->invoice->get_book($book['book_id'])->weight;
+                $book_weight = $this->book->get_book($book['book_id'])->weight;
                 $total_weight +=  $book_weight * $book['qty'];
 
                 // Kurangi Stock Buku
@@ -309,7 +310,7 @@ class Invoice extends Sales_Controller
                     'royalty'       => $this->invoice->get_book_royalty($book_id)
                 ];
                 $this->db->insert('invoice_book', $book);
-                $book_weight = $this->invoice->get_book($book['book_id'])->weight;
+                $book_weight = $this->book->get_book($book['book_id'])->weight;
                 $total_weight +=  $book_weight * $book['qty'];
 
                 $book_stock = $this->book_stock->where('book_id', $book['book_id'])->get();
@@ -512,7 +513,7 @@ class Invoice extends Sales_Controller
         if ($invoice->status != 'waiting' && $invoice->status != 'cancel') {
             $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
             $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
-            $customer       = $this->invoice->get_customer($invoice->customer_id);
+            $customer       = $this->customer->get_customer($invoice->customer_id);
 
             // PDF
             $this->load->library('pdf');
@@ -533,7 +534,7 @@ class Invoice extends Sales_Controller
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
         $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
-        $customer       = $this->invoice->get_customer($invoice->customer_id);
+        $customer       = $this->customer->get_customer($invoice->customer_id);
 
         // PDF
         $this->load->library('pdf');
@@ -639,7 +640,7 @@ class Invoice extends Sales_Controller
 
     public function api_get_book($book_id)
     {
-        $book = $this->invoice->get_book($book_id);
+        $book = $this->book->get_book($book_id);
         return $this->send_json_output(true, $book);
     }
 
@@ -651,14 +652,14 @@ class Invoice extends Sales_Controller
 
     public function api_get_customer($customer_id)
     {
-        $customer =  $this->invoice->get_customer($customer_id);
+        $customer =  $this->customer->get_customer($customer_id);
         return $this->send_json_output(true, $customer);
     }
 
     // Auto fill diskon berdasar jenis customer
     public function api_get_discount($customerType)
     {
-        $discount = $this->invoice->get_discount($customerType);
+        $discount = $this->customer->get_discount($customerType);
         return $this->send_json_output(true, $discount);
     }
 

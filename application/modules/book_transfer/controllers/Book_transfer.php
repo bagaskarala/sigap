@@ -320,7 +320,7 @@ class Book_transfer extends Warehouse_Sales_Controller
                 $pages       = $this->pages;
                 $main_view   = 'book_transfer/book_transfer_add';
                 $form_action = 'book_transfer/add';
-                $book_transfer_available = $this->book_transfer->get_ready_book_list();
+                $book_transfer_available = $this->book_stock->get_ready_book_list();
                 $this->load->view('template', compact('pages', 'main_view', 'form_action', 'book_transfer_available', 'input'));
                 return;
             }

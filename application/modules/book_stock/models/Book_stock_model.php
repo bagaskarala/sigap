@@ -263,6 +263,16 @@ class Book_stock_model extends MY_Model
         ->get()
         ->row();
     }
+    
+    public function fetch_warehouse_stock($book_id)
+    {
+        $stock = $this->db->select('warehouse_present')
+            ->from('book_stock')
+            ->where('book_id', $book_id)
+            ->get()
+            ->row();
+        return $stock;
+    }
 
     public function retur_stock()
     {
@@ -300,5 +310,38 @@ class Book_stock_model extends MY_Model
             ->order_by('book_stock_revision_id', 'DESC')
             ->get()
             ->result();
+    }
+
+    public function get_ready_book_list()
+    {
+        $books = $this->db
+            ->select('book_id, book_title')
+            ->order_by('book_title', 'ASC')
+            ->from('book')
+            ->get()
+            ->result();
+        foreach ($books as $book) {
+            // Tambahkan data stock ke buku
+            $stock = $this->fetch_warehouse_stock($book->book_id);
+            if ($stock == NULL)
+                $book->stock = 0;
+            else
+                $book->stock = $stock->warehouse_present;
+        }
+
+        // Buku stock 0 tidak ditampilkan
+        foreach ($books as $key => $book) {
+            if ($book->stock == 0) {
+                unset($books[$key]);
+            }
+        }
+
+        // Input buku ke array untuk dropdown
+        $options = ['' => '-- Pilih --'];
+        foreach ($books as $book) {
+            $options += [$book->book_id => $book->book_title];
+        }
+
+        return $options;
     }
 }

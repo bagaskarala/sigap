@@ -110,9 +110,23 @@ class Customer_model extends MY_Model
         }
     }
 
-    public function get_discount()
+    public function get_customer($customer_id)
     {
-        return $this->db->select('*')->from('discount')->get()->result();
+        $this->db->select('customer_id, name, address, phone_number, email, type, discount');
+        $this->db->from('customer');
+        $this->db->join('discount', 'customer.type = discount.membership', 'left');
+        $this->db->where('customer.customer_id', $customer_id);
+        return $this->db->get()->row();
+    }
+
+    public function get_discount($type)
+    {
+        if ($type == NULL) {
+            return $this->db->select('*')->from('discount')->get()->result();
+        }
+        else {
+            return $this->select('discount')->where('membership', $type)->get('discount');
+        }
     }
 
     public function filter_data($filters, $page = null)

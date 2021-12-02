@@ -167,28 +167,6 @@ class Invoice_model extends MY_Model
         return $options;
     }
 
-    public function get_book($book_id)
-    {
-        $book = $this->db->select('*')
-            ->from('book')
-            ->where('book.book_id', $book_id)
-            ->join('draft_author', 'draft_author.draft_id = book.draft_id')
-            ->join('author', 'draft_author.author_id = author.author_id')
-            ->join('book_stock', 'book.book_id = book_stock.book_id', 'left')
-            ->get()
-            ->row();
-
-        if ($book->warehouse_present == NULL) {
-            $book->warehouse_present = 0;
-        }
-
-        if ($book->showroom_present == NULL) {
-            $book->showroom_present = 0;
-        }
-
-        return $book;
-    }
-
     public function get_book_dynamic_stock($book_id, $source, $library_id)
     {
         $book = $this->db->select('*')
@@ -210,23 +188,9 @@ class Invoice_model extends MY_Model
         return $book;
     }
 
-    public function get_discount($type)
-    {
-        return $this->select('discount')->where('membership', $type)->get('discount');
-    }
-
     public function get_book_royalty($book_id)
     {
         return $this->select('royalty')->where('book_id', $book_id)->get('book')->royalty;
-    }
-
-    public function get_customer($customer_id)
-    {
-        $this->db->select('customer_id, name, address, phone_number, email, type, discount');
-        $this->db->from('customer');
-        $this->db->join('discount', 'customer.type = discount.membership', 'left');
-        $this->db->where('customer.customer_id', $customer_id);
-        return $this->db->get()->row();
     }
 
     public function get_last_invoice_number($type)

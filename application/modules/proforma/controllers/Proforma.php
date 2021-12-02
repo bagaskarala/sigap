@@ -8,6 +8,7 @@ class Proforma extends Sales_Controller
         $this->pages = 'proforma';
         $this->load->model('proforma_model', 'proforma');
         $this->load->model('invoice/invoice_model', 'invoice');
+        $this->load->model('customer/customer_model', 'customer');
         $this->load->model('book/book_model', 'book');
         $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
@@ -41,7 +42,7 @@ class Proforma extends Sales_Controller
         $main_view      = 'proforma/view_proforma';
         $proforma       = $this->proforma->fetch_proforma_id($proforma_id);
         $proforma_books  = $this->proforma->fetch_proforma_book($proforma_id);
-        $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
+        $proforma->customer = $this->customer->get_customer($proforma->customer_id);
 
         $this->load->view('template', compact('pages', 'main_view', 'proforma', 'proforma_books'));
     }
@@ -105,7 +106,7 @@ class Proforma extends Sales_Controller
                     ];
                     $this->db->insert('invoice_book', $add_book);
 
-                    $book_weight = $this->proforma->get_book($book->book_id)->weight;
+                    $book_weight = $this->book->get_book($book->book_id)->weight;
                     $total_weight +=  $book_weight * $book->qty;
 
                     // Kurangi Stock Buku
@@ -223,7 +224,7 @@ class Proforma extends Sales_Controller
         else {
             $customer_type = get_customer_type();
 
-            $dropdown_book_options = $this->proforma->get_ready_book_list();
+            $dropdown_book_options = $this->book_stock->get_ready_book_list();
 
             $form_action = "proforma/add";
             $form_type = "add";
@@ -297,7 +298,7 @@ class Proforma extends Sales_Controller
 
             $proforma_book = $this->proforma->fetch_proforma_book($proforma->proforma_id);
 
-            $dropdown_book_options = $this->proforma->get_ready_book_list();
+            $dropdown_book_options = $this->book_stock->get_ready_book_list();
 
             $form_action = "proforma/edit/$proforma_id";
             $form_type = "edit";
@@ -311,7 +312,7 @@ class Proforma extends Sales_Controller
     {
         $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
         $proforma_books = $this->proforma->fetch_proforma_book($proforma->proforma_id);
-        $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
+        $proforma->customer = $this->customer->get_customer($proforma->customer_id);
 
         // PDF
         $this->load->library('pdf');
@@ -327,20 +328,20 @@ class Proforma extends Sales_Controller
 
     public function api_get_book($book_id)
     {
-        $book = $this->proforma->get_book($book_id);
+        $book = $this->book->get_book($book_id);
         return $this->send_json_output(true, $book);
     }
 
     public function api_get_customer($customer_id)
     {
-        $customer =  $this->proforma->get_customer($customer_id);
+        $customer =  $this->customer->get_customer($customer_id);
         return $this->send_json_output(true, $customer);
     }
 
     // Auto fill diskon berdasar jenis customer
     public function api_get_discount($customerType)
     {
-        $discount = $this->proforma->get_discount($customerType);
+        $discount = $this->customer->get_discount($customerType);
         return $this->send_json_output(true, $discount);
     }
 }
