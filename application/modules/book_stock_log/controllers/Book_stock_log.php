@@ -45,10 +45,12 @@ class Book_stock_log extends MY_Controller
             if ($logs != NULL) {
                 $this->db->insert_batch('book_stock_log', $logs);
             }
-            echo json_encode([
-                'added' => $logs, 
-                'existing' => $existing, 
-            ]);
+            header('Content-Type: application/json');
+            echo "added:";
+            echo json_encode($logs, JSON_PRETTY_PRINT);
+            echo "\r\n";
+            echo "existing:";
+            echo json_encode($existing, JSON_PRETTY_PRINT);
         }
         else {
             echo('Outside Logging Time!');

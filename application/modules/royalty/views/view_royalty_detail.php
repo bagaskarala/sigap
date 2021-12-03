@@ -243,6 +243,12 @@ $endDate        = $this->input->get('end_date');
                         title="Generate PDF"
                     >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
                     <a
+                        href="<?= base_url('royalty/generate_pdf_author/' . $royalty->royalty_id); ?>"
+                        class="btn btn-outline-danger mr-3"
+                        id="btn-generate-pdf-author"
+                        title="Generate PDF Author"
+                    >Generate PDF Penulis<i class="fas fa-file-pdf fa-fw"></i></a>
+                    <a
                         type="button"
                         class="btn btn-secondary"
                         href="<?= base_url('royalty/view/' . $author->author_id) ?>"
