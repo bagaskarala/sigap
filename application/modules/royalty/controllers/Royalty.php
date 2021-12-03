@@ -165,7 +165,7 @@ class Royalty extends Sales_Controller
         $this->load->view('template', compact('pages', 'main_view', 'author', 'royalty', 'royalty_details'));
     }
 
-    public function generate_pdf($royalty_id)
+    public function generate_pdf($royalty_id, $type = '')
     {
         $royalty = $this->db->select('*')->from('royalty')->where('royalty_id', $royalty_id)->get()->row();
         $author = $this->db->select('author_id, author_name')->from('author')->where('author_id', $royalty->author_id)->get()->row();
@@ -197,51 +197,15 @@ class Royalty extends Sales_Controller
             'period_end' => $royalty->end_date,
             'book_details' => $book_details
         );
-
-        $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
-
-        $file_name = 'Royalti_' . $data['author']->author_name;
-
-        ob_end_clean();
-        $this->pdf->generate_pdf_a4_landscape($html, $file_name);
-    }
-
-    public function generate_pdf_author($royalty_id)
-    {
-        $royalty = $this->db->select('*')->from('royalty')->where('royalty_id', $royalty_id)->get()->row();
-        $author = $this->db->select('author_id, author_name')->from('author')->where('author_id', $royalty->author_id)->get()->row();
-        $filters = [
-            'last_paid_date'    => $royalty->start_date,
-            'period_end'        => $royalty->end_date,
-        ];
-        $royalty_details = $this->royalty->author_details($royalty->author_id, $filters);
-        $book_details = $this->royalty->get_sold_books($royalty->author_id, $filters);
-        foreach ($book_details as $book_detail) {
-            $start_stock =  $this->db->select('*')
-                                ->from('book_stock_log')
-                                ->where('book_id', $book_detail->book_id)
-                                ->where('date BETWEEN "' . $filters['last_paid_date'] . '" AND "'. $filters['period_end'] .'"')
-                                ->order_by('date', 'ASC')
-                                ->get()->row();
-            $book_detail->warehouse_start = $start_stock->warehouse_stock;
-            $book_detail->showroom_start = $start_stock->showroom_stock;
-            $book_detail->library_start = $start_stock->library_stock;
-            $book_detail->non_sales_last = $this->royalty->get_non_sales_book($book_detail->book_id, $filters, 'last')->qty_non_sales;
+        if ($type == 'author') {
+            $html = $this->load->view('royalty/view_royalty_pdf_author', $data, true);
+            $file_name = 'Royalti_Penulis_' . $data['author']->author_name;
         }
-        // PDF
-        $this->load->library('pdf');
+        else {
+            $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
+            $file_name = 'Royalti_' . $data['author']->author_name;
+        }
 
-        $data = array(
-            'author' => $author,
-            'royalty_details' => $royalty_details,
-            'start_date' => $royalty->start_date,
-            'period_end' => $royalty->end_date,
-            'book_details' => $book_details
-        );
-
-        $html = $this->load->view('royalty/view_royalty_pdf_author', $data, true);
-
-        $file_name = 'Royalti_' . $data['author']->author_name;
 
         ob_end_clean();
         $this->pdf->generate_pdf_a4_landscape($html, $file_name);
