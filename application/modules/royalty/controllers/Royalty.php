@@ -279,7 +279,7 @@ class Royalty extends Sales_Controller
             $this->db->where('royalty_id', $royalty_id);
             $this->db->delete('royalty');
         }
-        redirect('royalty/');
+        redirect('royalty');
     }
 
     public function filter_author($royalty, $filters)
