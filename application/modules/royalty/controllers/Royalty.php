@@ -176,16 +176,63 @@ class Royalty extends Sales_Controller
         $royalty_details = $this->royalty->author_details($royalty->author_id, $filters);
         $book_details = $this->royalty->get_sold_books($royalty->author_id, $filters);
         foreach ($book_details as $book_detail) {
+            // log pada hari mulai royalti
             $start_stock =  $this->db->select('*')
                                 ->from('book_stock_log')
                                 ->where('book_id', $book_detail->book_id)
-                                ->where('date BETWEEN "' . $filters['last_paid_date'] . '" AND "'. $filters['period_end'] .'"')
-                                ->order_by('date', 'ASC')
+                                ->where('date BETWEEN "' . $royalty->start_date . '" AND ADDTIME("'. $royalty->start_date .'", "23:59:59")')
+                                ->order_by('date', 'DESC')
                                 ->get()->row();
-            $book_detail->warehouse_start = $start_stock->warehouse_stock;
-            $book_detail->showroom_start = $start_stock->showroom_stock;
-            $book_detail->library_start = $start_stock->library_stock;
-            $book_detail->non_sales_last = $this->royalty->get_non_sales_book($book_detail->book_id, $filters, 'last')->qty_non_sales;
+            if ($start_stock != NULL) {
+                $book_detail->warehouse_start = $start_stock->warehouse_stock;
+                $book_detail->showroom_start = $start_stock->showroom_stock;
+                $book_detail->library_start = $start_stock->library_stock;
+            }
+            // Backup jika pada hari mulai royalti data stock tidak ada
+            // Ambil data stock 1 hari sebelumnya
+            else {
+                // stock 1 hari sebelum
+                $start_stock =  $this->db->select('*')
+                                ->from('book_stock_log')
+                                ->where('book_id', $book_detail->book_id)
+                                ->where('date BETWEEN SUBTIME("'. $royalty->start_date .'", "1 00:00:00") AND "' . $royalty->start_date . '"')
+                                ->order_by('date', 'DESC')
+                                ->get()->row();
+                if ($start_stock != NULL) {
+                    // buku non penjualan 1 hari sebelum
+                    $non_sales_one_day_ago =  $this->db->select('sum(qty) as qty_non_sales')
+                            ->from('book_non_sales_list')
+                            ->join('book_non_sales', 'book_non_sales_list.book_non_sales_id = book_non_sales.book_non_sales_id', 'left')
+                            ->where('book_id', $book_detail->book_id)
+                            ->where('issued_date BETWEEN SUBTIME("'. $royalty->start_date .'", "1 00:00:00") AND "' . $royalty->start_date . '"')
+                            ->get()->row();
+                    // buku terjual 1 hari sebelum
+                    $sold_one_day_ago = $this->db->select('SUM(qty) AS sold_books')
+                            ->from('invoice_book')
+                            ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
+                            ->where('invoice.status', 'finish')
+                            ->where('invoice_book.book_id', $book_detail->book_id)
+                            ->where('issued_date BETWEEN SUBTIME("'. $royalty->start_date .'", "1 00:00:00") AND "' . $royalty->start_date . '"')
+                            ->group_by('invoice_book.book_id')
+                            ->get()->row();
+                    // echo $this->db->last_query();
+                    // var_dump($sold_one_day_ago);
+
+                    // stock 1 hari sebelum - buku terjual 1 hari sebelum - non penjualan 1 hari sebelum
+                    $backup_stock = $start_stock->warehouse_stock - ($non_sales_one_day_ago ? $non_sales_one_day_ago->qty_non_sales : 0) - ($sold_one_day_ago ? $sold_one_day_ago->sold_books : 0);
+                    $book_detail->warehouse_start = $backup_stock;
+                    $book_detail->showroom_start = $start_stock->showroom_stock;
+                    $book_detail->library_start = $start_stock->library_stock;
+                }
+                // fallback jika 2 hari data log tidak tercatat
+                else {
+                    $book_detail->warehouse_start = 0;
+                    $book_detail->showroom_start = 0;
+                    $book_detail->library_start = 0;
+                }
+            }
+
+            $book_detail->non_sales_last = $this->royalty->get_non_sales_book($book_detail->book_id, $filters, 'last')->qty_non_sales;            
         }
         // PDF
         $this->load->library('pdf');
