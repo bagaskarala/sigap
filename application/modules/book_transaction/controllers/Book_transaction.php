@@ -77,10 +77,12 @@ class Book_transaction extends Warehouse_Controller
                     ->setBold(true);
         $sheet->setCellValue('A3', 'No');
         $sheet->setCellValue('B3', 'Judul Buku');
-        $sheet->setCellValue('C3', 'Perubahan');
-        $sheet->setCellValue('D3', 'Jenis Transaksi');
-        $sheet->setCellValue('E3', 'Tanggal Transaksi');
-        $sheet->setCellValue('F3', 'Keterangan');
+        $sheet->setCellValue('C3', 'Stok Awal');
+        $sheet->setCellValue('D3', 'Perubahan');
+        $sheet->setCellValue('E3', 'Stok Akhir');
+        $sheet->setCellValue('F3', 'Jenis Transaksi');
+        $sheet->setCellValue('G3', 'Tanggal Transaksi');
+        $sheet->setCellValue('H3', 'Keterangan');
         $spreadsheet->getActiveSheet()
                     ->getStyle('A3:F3')
                     ->getFill()
@@ -88,7 +90,7 @@ class Book_transaction extends Warehouse_Controller
                     ->getStartColor()
                     ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-                    ->getStyle('A3:F3')
+                    ->getStyle('A3:H3')
                     ->getFont()
                     ->setBold(true);
 
@@ -99,6 +101,8 @@ class Book_transaction extends Warehouse_Controller
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
         $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
 
         // $get_data = $this->book_transaction->filter_excel($filters);
         $get_data = $this->book_transaction->filter_excel($filters);
@@ -106,7 +110,7 @@ class Book_transaction extends Warehouse_Controller
         $i = 4;
         // Column Content
         foreach ($get_data as $data) {
-            foreach (range('A', 'F') as $v) {
+            foreach (range('A', 'H') as $v) {
                 switch ($v) {
                     case 'A': {
                             $value = $no++;
@@ -117,10 +121,18 @@ class Book_transaction extends Warehouse_Controller
                             break;
                         }
                     case 'C': {
-                            $value = $data->stock_mutation;
+                            $value = $data->stock_initial;
                             break;
                     }
                     case 'D': {
+                            $value = $data->stock_mutation;
+                            break;
+                    }
+                    case 'E': {
+                            $value = $data->stock_last;
+                            break;
+                    }
+                    case 'F': {
                             if($data->book_receive_id){
                                 $value = 'Masuk';
                             }
@@ -137,11 +149,11 @@ class Book_transaction extends Warehouse_Controller
                             }
                             break;
                     }
-                    case 'E': {
+                    case 'G': {
                             $value = $data->date;
                         break;
                     }
-                    case 'F':{
+                    case 'H':{
                         if($data->book_receive_id){
                             $value = "Penerimaan Buku";
                         }
