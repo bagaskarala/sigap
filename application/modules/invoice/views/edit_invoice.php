@@ -356,7 +356,7 @@
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
-                                    <tr class="text-center">
+                                    <tr>
                                         <th
                                             scope="col"
                                             style="width:40%;"
@@ -386,7 +386,7 @@
                                 <tbody id="invoice_items">
                                     <!-- Items -->
                                     <?php foreach ($invoice_book as $books) : ?>
-                                        <tr class="text-center">
+                                        <tr>
                                             <td class="align-middle text-left font-weight-bold"><?= $books->book_title ?>
                                                 <input
                                                     type="text"
@@ -444,12 +444,31 @@
                                     <?php endforeach; ?>
                                 </tbody>
                                 <tfoot>
-                                    <tr style="text-align:center;">
+                                    <tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td><b>Grand Total</b></td>
-                                        <td id="grand_total">Rp 0</td>
+                                        <td
+                                            colspan="2"
+                                            id="grand_total"
+                                        >Rp 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="align-middle"><b>Ongkir</b></td>
+                                        <td colspan="2">
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                name="delivery-fee"
+                                                id="delivery-fee"
+                                                value="<?= $invoice->delivery_fee ?>"
+                                                class="form-control"
+                                            />
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -459,7 +478,7 @@
                         <input
                             type="submit"
                             class="btn btn-primary"
-                            value="Edit"
+                            value="Save"
                         />
                         <a
                             class="btn btn-secondary"
@@ -475,6 +494,8 @@
 
 <script>
 $(document).ready(function() {
+    updateGrandTotal()
+
     var source = $('#source').val()
     var libraryId = $('#source-library-id').val()
 
@@ -573,10 +594,10 @@ $(document).ready(function() {
     $('#book-id').change(function(e) {
         if (e.target.value != '') {
             var bookId = e.target.value
-            var source =  $("#source").val()
+            var source = $("#source").val()
             var libraryId = 0
             if ($("#source-library-id").val() != '') {
-                libraryId =  $("#source-library-id").val()
+                libraryId = $("#source-library-id").val()
             }
             $.ajax({
                 type: "GET",
@@ -677,7 +698,7 @@ $(document).ready(function() {
 function add_book_to_invoice(stock) {
     var bookId = document.getElementById('book-id');
 
-    html = '<tr class="text-center">';
+    html = '<tr>';
 
     // Judul option yang di select
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;
@@ -747,21 +768,21 @@ function decreaseGrandTotal(book_id) {
 
 function updateDropdown(type, library_id) {
     $.ajax({
-		type: "GET",
-		url: "<?= base_url('invoice/api_get_book_dropdown/'); ?>" + type + '/' + library_id,
-		dataType: "JSON",
-		success: function(res) {
+        type: "GET",
+        url: "<?= base_url('invoice/api_get_book_dropdown/'); ?>" + type + '/' + library_id,
+        dataType: "JSON",
+        success: function(res) {
             $('#book-id').empty();
-            for( i=0; i < Object.keys(res.data).length; i++) {
-                $('#book-id').append('<option value="'+ Object.keys(res.data)[i] +'">'+ Object.values(res.data)[i] +'</option>');
+            for (i = 0; i < Object.keys(res.data).length; i++) {
+                $('#book-id').append('<option value="' + Object.keys(res.data)[i] + '">' + Object.values(res.data)[i] + '</option>');
             }
-		},
+        },
         error: function(err) {
             console.log(err)
         },
-		complete: function() {
+        complete: function() {
             $('#book-id').val('').trigger('change')
         }
-    }); 
+    });
 }
 </script>
