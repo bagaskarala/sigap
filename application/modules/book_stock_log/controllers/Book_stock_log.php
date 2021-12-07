@@ -7,7 +7,7 @@ class Book_stock_log extends MY_Controller
         parent::__construct();
     }
 
-    public function index() 
+    public function index()
     {
         $book_stock_logs = $this->db->select('*')->from('book_stock_log')->group_by('date')->get()->result();
         header('Content-Type: application/json');
@@ -24,8 +24,8 @@ class Book_stock_log extends MY_Controller
             $book_stocks = $this->db->select('*')->from('book_stock')->get()->result();
             $logs = [];
             $existing = [];
-            foreach ($book_stocks as $stock) {        
-                $today_log = $this->db->select('*')->from('book_stock_log')->where('book_id', $stock->book_id)->where('date BETWEEN 
+            foreach ($book_stocks as $stock) {
+                $today_log = $this->db->select('*')->from('book_stock_log')->where('book_id', $stock->book_id)->where('date BETWEEN
                 addtime(CURDATE(), "00:00:00") AND addtime(CURDATE(), "23:59:59")')->order_by('date', 'DESC')->get()->row();
                 if (!$today_log) {
                     $data = [
@@ -37,8 +37,7 @@ class Book_stock_log extends MY_Controller
                         'retur_stock' => $stock->retur_stock ? $stock->retur_stock : 0,
                     ];
                     array_push($logs, $data);
-                }
-                else {
+                } else {
                     array_push($existing, $today_log);
                 }
             }
@@ -46,15 +45,14 @@ class Book_stock_log extends MY_Controller
                 $this->db->insert_batch('book_stock_log', $logs);
             }
             header('Content-Type: application/json');
-            echo "added:";
-            echo json_encode($logs, JSON_PRETTY_PRINT);
-            echo "\r\n";
-            echo "existing:";
-            echo json_encode($existing, JSON_PRETTY_PRINT);
+            echo json_encode([
+                'added' => $logs,
+                'existing' => $existing,
+            ], JSON_PRETTY_PRINT);
+        } else {
+            echo json_encode([
+                'message' => 'Outside Logging Time!'
+            ]);
         }
-        else {
-            echo('Outside Logging Time!');
-        }
-        return ;
     }
 }
