@@ -279,8 +279,13 @@ class Invoice_model extends MY_Model
             $this->db->order_by('invoice_id', 'DESC');
         }
         if ($filters['receipt'] != NULL) {
-            $this->db->where('invoice.receipt ' .$filters['receipt']. '')
-                ->where('invoice.type NOT LIKE "showroom"');
+            if ($filters['receipt'] == 1) {
+                $this->db->where('invoice.receipt IS NOT NULL');
+            }
+            else {
+                $this->db->where('invoice.receipt IS NULL');
+            }
+            $this->db->where('invoice.type NOT LIKE "showroom"');
         }
         $this->db->stop_cache();
         $invoice = $this->db->get()->result();

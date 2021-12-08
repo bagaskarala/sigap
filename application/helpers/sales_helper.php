@@ -36,8 +36,8 @@ function get_invoice_status()
 function get_invoice_receipt()
 {
     return [
-        'IS NULL'           => 'Belum Ada Bukti Bayar',
-        'IS NOT NULL'       => 'Sudah Ada Bukti Bayar'
+        '0'           => 'Belum Ada Bukti Bayar',
+        '1'           => 'Sudah Ada Bukti Bayar'
     ];
 }
 
