@@ -242,14 +242,14 @@ class Royalty extends Sales_Controller
             'royalty_details' => $royalty_details,
             'start_date' => $royalty->start_date,
             'period_end' => $royalty->end_date,
-            'book_details' => $book_details
+            'book_details' => $book_details,
+            'pdf_type' => $type
         );
+        $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
         if ($type == 'author') {
-            $html = $this->load->view('royalty/view_royalty_pdf_author', $data, true);
             $file_name = 'Royalti_Penulis_' . $data['author']->author_name;
         }
         else {
-            $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
             $file_name = 'Royalti_' . $data['author']->author_name;
         }
 

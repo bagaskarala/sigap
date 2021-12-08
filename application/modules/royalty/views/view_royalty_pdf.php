@@ -51,11 +51,11 @@
     <div style="text-align: center;">
         <h2>Daftar Penerima Royalti</h2>
         <h3><b><?= $author->author_name ?></b></h3>
-        <?php if ($period_end == NULL) { ?>
+        <?php if ($period_end == NULL) : ?>
             <h4><?= date("d F Y") ?></h4>
-        <?php } else { ?>
+        <?php else : ?>
             <h4><?= date("d F Y", strtotime($start_date)) ?> - <?= date("d F Y", strtotime($period_end)) ?></h4>
-        <?php } ?>
+        <?php endif ?>
     </div>
     <br>
     <table
@@ -174,24 +174,33 @@
         </tbody>
     </table>
     <table style="width: 100%;">
-        <tr>
-            <td style="width:55%; height: 33px;"></td>
-            <td style="width:20%">Jumlah</td>
-            <td style="width:15%">Rp <?= number_format($total_royalty, 0, ',', '.'); ?></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td style="height: 33px;"></td>
-            <td>PPh 15%</td>
-            <td style="border-bottom: 1px solid black;">Rp <?= number_format((0.15 *  $total_royalty), 0, ',', '.'); ?></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td style="height: 33px;"></td>
-            <td><b>Netto</b></td>
-            <td style="border-bottom: 4px double black;"><b>Rp <?= number_format((0.85 *  $total_royalty), 0, ',', '.'); ?></b></td>
-            <td></td>
-        </tr>
+        <?php if ($pdf_type == 'author') : ?>
+            <tr>
+                <td style="width:55%; height: 33px;"></td>
+                <td style="width:20%">Jumlah</td>
+                <td style="width:15%">Rp <?= number_format($total_royalty, 0, ',', '.'); ?></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="height: 33px;"></td>
+                <td>PPh 15%</td>
+                <td style="border-bottom: 1px solid black;">Rp <?= number_format((0.15 *  $total_royalty), 0, ',', '.'); ?></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="height: 33px;"></td>
+                <td><b>Netto</b></td>
+                <td style="border-bottom: 4px double black;"><b>Rp <?= number_format((0.85 *  $total_royalty), 0, ',', '.'); ?></b></td>
+                <td></td>
+            </tr>
+        <?php else : ?>
+            <tr>
+                <td style="width:55%; height: 33px;"></td>
+                <td style="width:20%"><b>Jumlah</b></td>
+                <td style="width:15%;border-bottom: 4px double black;">Rp <?= number_format($total_royalty, 0, ',', '.'); ?></td>
+                <td></td>
+            </tr>            
+        <?php endif ?>
     </table>
 </body>
 
