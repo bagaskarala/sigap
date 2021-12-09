@@ -193,7 +193,7 @@ $endDate        = $this->input->get('end_date');
                                         <b><?= date("d F Y", strtotime($royalty->start_date)) ?></b>
                                         hingga
                                         <b><?= date("d F Y", strtotime($royalty->end_date)) ?></b>
-                                        atas nama 
+                                        atas nama
                                         <b><?= $author->author_name ?></b>?
                                     </p>
                                     <div class="modal-footer">
@@ -212,7 +212,8 @@ $endDate        = $this->input->get('end_date');
                             </div>
                         </div>
                         <script>
-                        $('#confirm-royalty').on("submit", function() {
+                        $('#confirm-royalty').on("submit", function(e) {
+                            e.preventDefault();
                             var paid_date = new Date()
                             paid_date.setDate(paid_date.getDate() - 1)
                             paid_date = paid_date.toISOString().slice(0, 10)
