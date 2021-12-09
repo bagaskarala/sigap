@@ -33,6 +33,14 @@ function get_invoice_status()
     ];
 }
 
+function get_invoice_receipt()
+{
+    return [
+        '0'           => 'Belum Ada Bukti Bayar',
+        '1'           => 'Sudah Ada Bukti Bayar'
+    ];
+}
+
 function get_customer_type()
 {
     return [

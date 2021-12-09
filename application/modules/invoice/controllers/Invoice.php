@@ -22,6 +22,7 @@ class Invoice extends Sales_Controller
             'keyword'           => $this->input->get('keyword', true),
             'invoice_type'      => $this->input->get('invoice_type', true),
             'status'            => $this->input->get('status', true),
+            'receipt'           => $this->input->get('receipt', true),
             'customer_type'     => $this->input->get('customer_type', true),
             'excel'             => $this->input->get('excel', true)
         ];

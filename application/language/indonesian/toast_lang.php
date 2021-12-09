@@ -28,3 +28,7 @@ $lang['toast_mail_send_fail'] = 'Gagal mengirim email.';
 
 //proforma to invoice
 $lang['toast_convert_empty']    = 'Stok buku tidak mencukupi.';
+
+//royalty
+$lang['toast_royalty_unfinished_invoice']    = 'Terdapat faktur yang belum diselesaikan';
+$lang['toast_royalty_cancel_success'] = 'Pengajuan royalti berhasil dibatalkan';

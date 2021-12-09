@@ -74,7 +74,7 @@ $endDate        = $this->input->get('end_date');
                             <tr>
                                 <td class="text-center"><?= $index + 1; ?></td>
                                 <td class="text-left"><?= $lData->book_title; ?></td>
-                                <td class="text-center"><?= $lData->count; ?></td>
+                                <td class="text-center"><?= $lData->sold_books; ?></td>
                                 <td class="text-right pr-5">Rp <?= number_format($lData->total_sales, 0, ',', '.'); ?></td>
                                 <td class="text-right pr-5">Rp <?= number_format($lData->earned_royalty, 0, ',', '.'); ?> (<?= $lData->royalty ?>%)</td>
                             </tr>
@@ -107,6 +107,12 @@ $endDate        = $this->input->get('end_date');
                             data-toggle="modal"
                             data-target="#modal-confirm"
                         >Bayar</button>
+                        <button
+                            type="button"
+                            class="btn btn-danger text-right mr-3"
+                            data-toggle="modal"
+                            data-target="#modal-cancel"
+                        >Batalkan</button>
                         <div
                             class="modal modal-warning fade"
                             id="modal-confirm"
@@ -165,8 +171,49 @@ $endDate        = $this->input->get('end_date');
                                 </div>
                             </div>
                         </div>
+                        <div
+                            class="modal modal-warning fade"
+                            id="modal-cancel"
+                            tabindex="-1"
+                            role="dialog"
+                            aria-labelledby="modal-cancel"
+                            aria-hidden="true"
+                        >
+                            <div
+                                class="modal-dialog"
+                                role="document"
+                            >
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Konfirmasi Pembatalan</h5>
+                                    </div>
+                                    <p class="mt-3 mx-3">
+                                        Apakah Anda yakin akan membatalkan pengajuan royalty periode
+                                        <br>
+                                        <b><?= date("d F Y", strtotime($royalty->start_date)) ?></b>
+                                        hingga
+                                        <b><?= date("d F Y", strtotime($royalty->end_date)) ?></b>
+                                        atas nama
+                                        <b><?= $author->author_name ?></b>?
+                                    </p>
+                                    <div class="modal-footer">
+                                        <a
+                                            href="<?= base_url('royalty/cancel/' . $royalty->royalty_id) ?>"
+                                            type="submit"
+                                            class="btn btn-primary"
+                                        >Confirm</a>
+                                        <button
+                                            type="button"
+                                            class="btn btn-light"
+                                            data-dismiss="modal"
+                                        >Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <script>
-                        $('#confirm-royalty').on("submit", function() {
+                        $('#confirm-royalty').on("submit", function(e) {
+                            e.preventDefault();
                             var paid_date = new Date()
                             paid_date.setDate(paid_date.getDate() - 1)
                             paid_date = paid_date.toISOString().slice(0, 10)
@@ -196,6 +243,12 @@ $endDate        = $this->input->get('end_date');
                         id="btn-generate-pdf"
                         title="Generate PDF"
                     >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
+                    <a
+                        href="<?= base_url('royalty/generate_pdf/' . $royalty->royalty_id . '/author'); ?>"
+                        class="btn btn-outline-danger mr-3"
+                        id="btn-generate-pdf-author"
+                        title="Generate PDF Author"
+                    >Generate PDF Penulis<i class="fas fa-file-pdf fa-fw"></i></a>
                     <a
                         type="button"
                         class="btn btn-secondary"

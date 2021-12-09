@@ -82,6 +82,10 @@ if ($latest_royalty == NULL) {
                                             scope="col"
                                             style="width:15%;"
                                         >Bayar</th>
+                                        <th
+                                            scope="col"
+                                            style="width:15%;"
+                                        >Batalkan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,6 +106,13 @@ if ($latest_royalty == NULL) {
                                                 class="btn btn-primary text-center"
                                                 id="pay-royalty"
                                             >Bayar</button>
+                                        </td>
+                                        <td class="text-center">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger text-center"
+                                                id="cancel-royalty"
+                                            >Batalkan</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -261,7 +272,7 @@ if ($latest_royalty == NULL) {
                                         <tr>
                                             <td class="text-center"><?= $index + 1; ?></td>
                                             <td class="text-left"><?= $royalty->book_title; ?></td>
-                                            <td class="text-center"><?= $royalty->count; ?></td>
+                                            <td class="text-center"><?= $royalty->sold_books; ?></td>
                                             <td class="text-right pr-5">Rp <?= number_format($royalty->total_sales, 0, ',', '.'); ?></td>
                                             <td class="text-right pr-5">Rp <?= number_format($royalty->earned_royalty, 0, ',', '.'); ?></td>
                                         </tr>
@@ -347,8 +358,6 @@ if ($latest_royalty == NULL) {
                                             Apakah Anda yakin akan mengajukan royalty periode ini?
                                         </p>
                                     <?php endif ?>
-
-
                                     <div class="modal-footer">
                                         <button
                                             type="submit"
@@ -361,6 +370,46 @@ if ($latest_royalty == NULL) {
                                         >Close</button>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="modal modal-warning fade"
+                        id="modal-cancel"
+                        tabindex="-1"
+                        role="dialog"
+                        aria-labelledby="modal-cancel"
+                        aria-hidden="true"
+                    >
+                        <div
+                            class="modal-dialog"
+                            role="document"
+                        >
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Konfirmasi Pembatalan</h5>
+                                </div>
+                                <p class="mt-3 mx-3">
+                                    Apakah Anda yakin akan membatalkan pengajuan royalty periode
+                                    <br>
+                                    <b><?= date("d F Y", strtotime($latest_royalty->start_date)) ?></b>
+                                    hingga
+                                    <b><?= date("d F Y", strtotime($latest_royalty->end_date)) ?></b>
+                                    atas nama 
+                                    <b><?= $author->author_name ?></b>?
+                                </p>
+                                <div class="modal-footer">
+                                    <a
+                                        href="<?= base_url('royalty/cancel/' . $latest_royalty->royalty_id) ?>"
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >Confirm</a>
+                                    <button
+                                        type="button"
+                                        class="btn btn-light"
+                                        data-dismiss="modal"
+                                    >Close</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -390,6 +439,10 @@ $(document).ready(function() {
 
     $('#pay-royalty').on("click", function() {
         $('#modal-confirm').modal('toggle')
+    })
+
+    $('#cancel-royalty').on("click", function() {
+        $('#modal-cancel').modal('toggle')
     })
 
     $('#confirm-royalty').on("submit", function(e) {
