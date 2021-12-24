@@ -121,7 +121,7 @@ $lang['form_worksheet_deadline']   = 'Deadline Desk Screening';
 $lang['form_worksheet_end_date']   = 'Tanggal Selesai Desk Screening';
 
 // Book
-$lang['form_book_title']       = 'Judul Buku';
+$lang['form_book_title'] = 'Judul Buku';
 
 
 // Print order
@@ -140,12 +140,19 @@ $lang['form_print_order_start_date']    = 'Tanggal Masuk Produksi';
 $lang['form_print_order_finish_date']   = 'Tanggal Selesai Produksi';
 $lang['form_print_order_input_by']      = 'Diinput Oleh';
 $lang['form_print_order_status']        = 'Status Order Cetak';
-$lang['form_print_order_notes']        = 'Catatan Order Cetak';
-$lang['form_print_order_name']        = 'Nama Pesanan';
-$lang['form_print_order_preprint_file']          = 'File Approval';
+$lang['form_print_order_notes']         = 'Catatan Order Cetak';
+$lang['form_print_order_name']          = 'Nama Pesanan';
+$lang['form_print_order_preprint_file'] = 'File Approval';
 
 // Book Receive
-$lang['form_book_receive_entry_date'] = 'Tanggal Mulai Penerimaan Buku';
+$lang['form_book_receive_entry_date']  = 'Tanggal Mulai Penerimaan Buku';
 $lang['form_book_receive_finish_date'] = 'Tanggal Selesai Penerimaan Buku';
-$lang['form_book_receive_deadline'] = 'Deadline Penerimaan Buku';
-$lang['form_book_receive_status'] = 'Status';
+$lang['form_book_receive_deadline']    = 'Deadline Penerimaan Buku';
+$lang['form_book_receive_status']      = 'Status';
+
+// Book Stock
+$lang['form_book_stock_warehouse_present'] = 'Stok Gudang';
+$lang['form_book_stock_library_present']   = 'Stok Perpustakaan';
+$lang['form_book_stock_showroom_present']  = 'Stok Showroom';
+$lang['form_book_stock_book_location']     = 'Lokasi Rak';
+$lang['form_book_stock_retur_stock']       = 'Stok Retur';
