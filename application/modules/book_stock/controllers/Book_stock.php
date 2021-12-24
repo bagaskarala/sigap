@@ -47,6 +47,39 @@ class Book_stock extends Warehouse_Sales_Controller
         }
     }
 
+    public function add()
+    {
+        if (!$_POST) {
+            $input = (object) $this->book_stock->get_default_values();
+        } else {
+            $input = (object) $this->input->post(null, true);
+        }
+
+        if (!$this->book_stock->validate()) {
+            $pages       = $this->pages;
+            $main_view   = 'book_stock/form_bookstock';
+            $form_action = 'book_stock/add';
+
+            $this->load->view('template', compact('pages', 'main_view', 'form_action', 'input'));
+            return;
+        }
+
+        // apakah book id sudah tersedia
+        $book_stock = $this->book_stock->where('book_id', $input->book_id)->get();
+        if ($book_stock) {
+            $this->session->set_flashdata('error', $this->lang->line('toast_data_duplicate'));
+            redirect("{$this->pages}/view/{$book_stock->book_stock_id}");
+        }
+
+        if ($this->book_stock->insert($input)) {
+            $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
+        } else {
+            $this->session->set_flashdata('error', $this->lang->line('toast_add_fail'));
+        }
+
+        redirect($this->pages);
+    }
+
     public function view($book_stock_id)
     {
         $book_stock = $this->book_stock->get_book_stock($book_stock_id);
