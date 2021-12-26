@@ -685,6 +685,11 @@ class Draft extends Operator_Controller
             redirect($this->pages);
         }
 
+        if ($draft->draft_status == 14) {
+            $this->session->set_flashdata('warning', 'Draft final tidak dapat dihapus');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+
         // memastikan konsistensi data
         $this->db->trans_begin();
 
@@ -707,7 +712,7 @@ class Draft extends Operator_Controller
             $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
         }
 
-        redirect($this->pages);
+        redirect($_SERVER['HTTP_REFERER']);
     }
 
     public function finish_draft($draft_id)

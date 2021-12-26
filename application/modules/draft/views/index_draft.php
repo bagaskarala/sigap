@@ -74,7 +74,8 @@ $status_options = [
                                 <p class="m-0">Lakukan penyesuaian draft berikut agar tidak terjadi error progress, dengan cara
                                     masuk ke menu edit manual lalu sesuaikan progress dan tanggalnya. Selain itu dapat juga direset
                                     dengan mengosongi isian pada <em>halaman edit</em>, lalu memulai progress dengan benar di
-                                    <em>halaman view</em>.</p>
+                                    <em>halaman view</em>.
+                                </p>
                                 <button
                                     type="button"
                                     class="close"
@@ -178,7 +179,7 @@ $status_options = [
                                             <th scope="col">Sisa Waktu</th>
                                         <?php endif; ?> -->
                                         <?php if (is_admin()) : ?>
-                                            <th style="min-width:170px;"> &nbsp; </th>
+                                            <th> &nbsp; </th>
                                         <?php endif; ?>
                                     </tr>
                                 </thead>
@@ -284,56 +285,59 @@ $status_options = [
                                                         <i class="fa fa-pencil-alt"></i>
                                                         <span class="sr-only">Edit</span>
                                                     </a>
-                                                    <button
-                                                        title="Delete"
-                                                        type="button"
-                                                        class="btn btn-sm btn-danger"
-                                                        data-toggle="modal"
-                                                        data-target="#modal-hapus-<?= $draft->draft_id; ?>"
-                                                    >
-                                                        <i class="fa fa-trash-alt"></i>
-                                                        <span class="sr-only">Delete</span>
-                                                    </button>
-                                                    <div class="text-left">
-                                                        <div
-                                                            class="modal modal-alert fade"
-                                                            id="modal-hapus-<?= $draft->draft_id; ?>"
-                                                            tabindex="-1"
-                                                            role="dialog"
-                                                            aria-labelledby="modal-hapus"
-                                                            aria-hidden="true"
+                                                    <?php if ($draft->draft_status != 14) : ?>
+                                                        <button
+                                                            title="Delete"
+                                                            type="button"
+                                                            class="btn btn-sm btn-danger"
+                                                            data-toggle="modal"
+                                                            data-target="#modal-hapus-<?= $draft->draft_id; ?>"
                                                         >
+                                                            <i class="fa fa-trash-alt"></i>
+                                                            <span class="sr-only">Delete</span>
+                                                        </button>
+                                                        <div class="text-left">
                                                             <div
-                                                                class="modal-dialog"
-                                                                role="document"
+                                                                class="modal modal-alert fade"
+                                                                id="modal-hapus-<?= $draft->draft_id; ?>"
+                                                                tabindex="-1"
+                                                                role="dialog"
+                                                                aria-labelledby="modal-hapus"
+                                                                aria-hidden="true"
                                                             >
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">
-                                                                            <i class="fa fa-exclamation-triangle text-red mr-1"></i> Konfirmasi
-                                                                            Hapus</h5>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <p>Apakah anda yakin akan menghapus draft <span class="font-weight-bold">
-                                                                                <?= $draft->draft_title; ?></span>?</p>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-danger"
-                                                                            onclick="location.href='<?= base_url('draft/delete/' . $draft->draft_id . ''); ?>'"
-                                                                            data-dismiss="modal"
-                                                                        >Hapus</button>
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-light"
-                                                                            data-dismiss="modal"
-                                                                        >Close</button>
+                                                                <div
+                                                                    class="modal-dialog"
+                                                                    role="document"
+                                                                >
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title">
+                                                                                <i class="fa fa-exclamation-triangle text-red mr-1"></i> Konfirmasi
+                                                                                Hapus
+                                                                            </h5>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <p>Apakah anda yakin akan menghapus draft <span class="font-weight-bold">
+                                                                                    <?= $draft->draft_title; ?></span>?</p>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button
+                                                                                type="button"
+                                                                                class="btn btn-danger"
+                                                                                onclick="location.href='<?= base_url('draft/delete/' . $draft->draft_id . ''); ?>'"
+                                                                                data-dismiss="modal"
+                                                                            >Hapus</button>
+                                                                            <button
+                                                                                type="button"
+                                                                                class="btn btn-light"
+                                                                                data-dismiss="modal"
+                                                                            >Close</button>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    <?php endif ?>
                                                 </td>
                                             <?php endif; ?>
                                         </tr>

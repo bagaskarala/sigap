@@ -198,6 +198,12 @@
 </div>
 <script>
 $(document).ready(function() {
+    $("#draft_id").select2({
+        placeholder: '-- Pilih --',
+        allowClear: true,
+        dropdownParent: $('#app-main')
+    });
+
     // populate judul ketika pilih draft
     $('#draft_id').on('change', function() {
         const data = $("#draft_id option:selected").text();
@@ -256,11 +262,6 @@ $(document).ready(function() {
         },
         validateSelect2()
     );
-
-    $("#draft_id").select2({
-        placeholder: '-- Pilih --',
-        allowClear: true
-    });
 
     $('#book_notes').summernote(summernoteConfig)
 

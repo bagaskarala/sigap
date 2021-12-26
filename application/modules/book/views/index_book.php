@@ -141,7 +141,7 @@ $reprint_options = [
                                         <th scope="col">Status</th>
                                         <th scope="col">Hak Cipta</th>
                                         <?php if (is_admin()) : ?>
-                                            <th style="min-width:170px;"> &nbsp; </th>
+                                            <th> &nbsp; </th>
                                         <?php endif; ?>
                                     </tr>
                                 </thead>
@@ -201,50 +201,6 @@ $reprint_options = [
                                                     >
                                                         <i class="fa fa-pencil-alt"></i>
                                                     </a>
-                                                    <button
-                                                        title="Delete"
-                                                        type="button"
-                                                        class="btn btn-sm btn-danger"
-                                                        data-toggle="modal"
-                                                        data-target="#modal-hapus-<?= $book->book_id; ?>"
-                                                    ><i class="fa fa-trash-alt"></i><span class="sr-only">Delete</span></button>
-                                                    <div class="text-left">
-                                                        <div
-                                                            class="modal modal-alert fade"
-                                                            id="modal-hapus-<?= $book->book_id; ?>"
-                                                            tabindex="-1"
-                                                            role="dialog"
-                                                            aria-labelledby="modal-hapus"
-                                                            aria-hidden="true"
-                                                        >
-                                                            <div
-                                                                class="modal-dialog"
-                                                                role="document"
-                                                            >
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title"><i class="fa fa-exclamation-triangle text-red mr-1"></i> Konfirmasi Hapus</h5>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <p>Apakah anda yakin akan menghapus buku <span class="font-weight-bold"><?= $book->book_title; ?></span>?</p>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-danger"
-                                                                            onclick="location.href='<?= base_url('book/delete/' . $book->book_id . ''); ?>'"
-                                                                            data-dismiss="modal"
-                                                                        >Hapus</button>
-                                                                        <button
-                                                                            type="button"
-                                                                            class="btn btn-light"
-                                                                            data-dismiss="modal"
-                                                                        >Close</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </td>
                                             <?php endif; ?>
                                         </tr>

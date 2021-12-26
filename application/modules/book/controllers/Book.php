@@ -141,7 +141,6 @@ class Book extends Admin_Controller
         $main_view   = 'book/view_book';
         $this->load->view('template', compact('authors', 'pages', 'main_view', 'input'));
         return;
-
     }
 
     public function edit($book_id)
@@ -281,36 +280,6 @@ class Book extends Admin_Controller
         }
 
         redirect("$this->pages/view/$book_id");
-    }
-
-    public function delete($book_id)
-    {
-        $book = $this->book->where('book_id', $book_id)->get();
-        if (!$book) {
-            $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
-            redirect($this->pages);
-        }
-        $book_stock = $this->book_stock->where('book_id', $book_id)->get();
-
-
-        if ($this->book->where('book_id', $book_id)->delete()) {
-            // Delete book stock
-            if ($book_stock) {
-                $this->book_stock->where('book_id', $book_id)->delete();
-            }
-            // Delete book file
-            $this->book->delete_book_file($book->book_file);
-            // Delete hak cipta file
-            $this->book->delete_hak_cipta_file($book->file_hak_cipta);
-            // kembalikan status draft menjadi sebelum final
-            $this->draft->where('draft_id', $book->draft_id)->update(['draft_status' => 13]);
-
-            $this->session->set_flashdata('success', $this->lang->line('toast_delete_success'));
-        } else {
-            $this->session->set_flashdata('success', $this->lang->line('toast_delete_fail'));
-        }
-
-        redirect($this->pages);
     }
 
     private function _generate_book_name($file_name, $book_name, $type = 'book')
