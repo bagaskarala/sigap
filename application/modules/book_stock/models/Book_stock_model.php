@@ -9,7 +9,7 @@ class Book_stock_model extends MY_Model
         $validation_rules = [
             [
                 'field' => 'book_id',
-                'label' => 'Book ID',
+                'label' => $this->lang->line('form_book_title'),
                 'rules' => 'trim|required',
             ],
             [
