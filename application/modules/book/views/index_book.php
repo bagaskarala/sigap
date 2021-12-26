@@ -141,7 +141,7 @@ $reprint_options = [
                                         <th scope="col">Status</th>
                                         <th scope="col">Hak Cipta</th>
                                         <?php if (is_admin()) : ?>
-                                            <th> &nbsp; </th>
+                                            <th style="min-width: 100px"> &nbsp; </th>
                                         <?php endif; ?>
                                     </tr>
                                 </thead>
@@ -183,10 +183,7 @@ $reprint_options = [
                                                 <?= $book->status_hak_cipta == '1' ? '<span class="badge badge-warning">Dalam Proses</span>' : ''; ?>
                                             </td>
                                             <?php if (is_admin()) : ?>
-                                                <td
-                                                    style="min-width: 130px"
-                                                    class="align-middle text-right"
-                                                >
+                                                <td class="align-middle text-right">
                                                     <a
                                                         title="Edit Hak Cipta"
                                                         href="<?= base_url('book/edit_hakcipta/' . $book->book_id . ''); ?>"

@@ -179,7 +179,7 @@ $status_options = [
                                             <th scope="col">Sisa Waktu</th>
                                         <?php endif; ?> -->
                                         <?php if (is_admin()) : ?>
-                                            <th> &nbsp; </th>
+                                            <th style="min-width:100px"> &nbsp; </th>
                                         <?php endif; ?>
                                     </tr>
                                 </thead>
