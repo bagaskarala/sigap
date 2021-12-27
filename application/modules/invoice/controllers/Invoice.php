@@ -547,7 +547,7 @@ class Invoice extends Sales_Controller
 
         $file_name = $invoice->number . '_Invoice';
 
-        $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+        $this->pdf->generate_pdf_pos_printer($html, $file_name);
     }
 
     public function generate_excel($filters)

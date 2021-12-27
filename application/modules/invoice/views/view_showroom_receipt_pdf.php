@@ -11,17 +11,21 @@
 
     <style>
     body {
-        margin: 0;
+        margin: 3px;
         padding: 0;
-        font-size: 10px;
+        font-size: 8px;
         line-height: 14px;
         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
         color: #333;
     }
 
+    @page {
+        margin: 0px;
+    }
+
     #printContainer {
         height: 200mm;
-        width: 60mm;
+        width: 48mm;
         page-break-after: always;
     }
 
