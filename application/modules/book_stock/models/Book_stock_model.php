@@ -15,7 +15,7 @@ class Book_stock_model extends MY_Model
             [
                 'field' => 'warehouse_present',
                 'label' => $this->lang->line('form_book_stock_warehouse_present'),
-                'rules' => 'trim|greater_than[0]',
+                'rules' => 'trim|greater_than_equal_to[0]',
             ],
         ];
 
