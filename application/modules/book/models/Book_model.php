@@ -287,6 +287,27 @@ class Book_model extends MY_Model
         }
     }
 
+    public function filter_excel_book($filters)
+    {
+        return $this->select('draft.draft_id,book.*,author_name')
+            ->when('keyword', $filters['keyword'])
+            ->join('draft')
+            ->join_table('category', 'draft', 'category')
+            ->join_table('draft_author', 'draft', 'draft')
+            ->join_table('author', 'draft_author', 'author')
+            ->join_table('work_unit', 'author', 'work_unit')
+            ->when('category', $filters['category'])
+            ->when('status', $filters['status'])
+            ->when('reprint', $filters['reprint'])
+            ->when('published_year', $filters['published_year'])
+            ->when('from_outside', $filters['from_outside'])
+            ->order_by('status_hak_cipta')
+            ->order_by('published_date')
+            ->order_by('book_title')
+            ->group_by('draft.draft_id')
+            ->get_all();
+    }
+
     //     public function uploadCover($coverfieldname, $coverFileName)
     //    {
     //        $config = [

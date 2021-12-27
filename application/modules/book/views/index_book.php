@@ -95,6 +95,16 @@ $reprint_options = [
                                         onclick="location.href = '<?= base_url($pages); ?>'"
                                     > Reset</button>
                                     <button
+                                        class="btn btn-success col-4"
+                                        type="submit"
+                                        id="excel"
+                                        name="excel"
+                                        value="1"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="Download excel buku"
+                                    ><i class="fas fa-file-excel mr-2"></i>Export</button>
+                                    <button
                                         class="btn btn-primary"
                                         type="submit"
                                         value="Submit"

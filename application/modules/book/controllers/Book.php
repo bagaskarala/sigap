@@ -1,4 +1,8 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Book extends Admin_Controller
 {
 
@@ -30,6 +34,7 @@ class Book extends Admin_Controller
             'reprint'  => $this->input->get('reprint', true),
             'published_year'  => $this->input->get('published_year', true),
             'from_outside'  => intval($this->input->get('from_outside', true)),
+            'excel'             => $this->input->get('excel', true)
         ];
 
         // custom per page
@@ -56,6 +61,10 @@ class Book extends Admin_Controller
         $pages      = $this->pages;
         $main_view  = 'book/index_book';
         $this->load->view('template', compact('pages', 'main_view', 'books', 'pagination', 'total'));
+
+        if ($filters['excel'] == 1) {
+            $this->generate_excel($filters);
+        }
     }
 
     public function add()
@@ -378,6 +387,89 @@ class Book extends Admin_Controller
                 redirect($_SERVER['HTTP_REFERER'], 'refresh');
             }
         endif;
+    }
+
+    public function generate_excel($filters)
+    {
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $filename = 'DATA BUKU';
+
+        // Column Title
+        $sheet->setCellValue('A1', 'DATA BUKU');
+        $spreadsheet->getActiveSheet()
+            ->getStyle('A1')
+            ->getFont()
+            ->setBold(true);
+        $sheet->setCellValue('A3', 'No');
+        $sheet->setCellValue('B3', 'Judul');
+        $sheet->setCellValue('C3', 'Penulis');
+        $sheet->setCellValue('D3', 'ISBN');
+        $sheet->setCellValue('E3', 'Royalti');
+        $sheet->setCellValue('F3', 'Berat (gram)');
+        $sheet->setCellValue('G3', 'Harga');
+        $sheet->setCellValue('H3', 'Tanggal Terbit');
+        $spreadsheet->getActiveSheet()
+            ->getStyle('A3:H3')
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setARGB('A6A6A6');
+        $spreadsheet->getActiveSheet()
+            ->getStyle('A3:H3')
+            ->getFont()
+            ->setBold(true);
+
+        $get_data = $this->book->filter_excel_book($filters);
+        $no = 1;
+        $i = 4;
+        // Column Content
+        foreach ($get_data as $data) {
+            foreach (range('A', 'H') as $v) {
+                switch ($v) {
+                    case 'A': {
+                            $value = $no++;
+                            break;
+                        }
+                    case 'B': {
+                            $value = $data->book_title;
+                            break;
+                        }
+                    case 'C': {
+                            $value = $data->author_name;
+                            break;
+                        }
+                    case 'D': {
+                            $value = $data->isbn;
+                            break;
+                        }
+                    case 'E': {
+                            $value = $data->royalty;
+                            break;
+                        }
+                    case 'F': {
+                            $value = $data->weight;
+                            break;
+                        }
+                    case 'G': {
+                            $value = $data->harga;
+                            break;
+                        }
+                    case 'H': {
+                            $value = $data->published_date;
+                            break;
+                        }
+                }
+                $sheet->setCellValue($v . $i, $value);
+            }
+            $i++;
+        }
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        die();
     }
 
     public function check_level_gudang()
