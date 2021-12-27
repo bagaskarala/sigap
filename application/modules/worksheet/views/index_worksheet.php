@@ -194,18 +194,20 @@ function generate_worksheet_action($worksheet_id)
                                             <!-- <td class="align-middle"> <?= format_datetime($worksheet->worksheet_deadline); ?></td> -->
                                             <!-- <td class="align-middle"> <?= format_datetime($worksheet->worksheet_end_date); ?></td> -->
                                             <td class="align-middle text-right">
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-secondary"
-                                                    data-container="body"
-                                                    data-toggle="popover"
-                                                    data-placement="left"
-                                                    data-html="true"
-                                                    data-content="<?= generate_worksheet_action($worksheet->worksheet_id); ?>"
-                                                    data-trigger="focus"
-                                                >
-                                                    <i class="fa fa-thumbs-up"></i> Aksi
-                                                </button>
+                                                <?php if ($worksheet->worksheet_status == 0) : ?>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-secondary"
+                                                        data-container="body"
+                                                        data-toggle="popover"
+                                                        data-placement="left"
+                                                        data-html="true"
+                                                        data-content="<?= generate_worksheet_action($worksheet->worksheet_id); ?>"
+                                                        data-trigger="focus"
+                                                    >
+                                                        <i class="fa fa-thumbs-up"></i> Aksi
+                                                    </button>
+                                                <?php endif ?>
                                                 <a
                                                     title="Edit"
                                                     href="<?= base_url('worksheet/edit/' . $worksheet->worksheet_id . ''); ?>"
