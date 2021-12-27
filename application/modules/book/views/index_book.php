@@ -78,11 +78,11 @@ $reprint_options = [
                                 <label for="from_outside">Asal Buku</label>
                                 <?= form_dropdown('from_outside', ['' => '-- Pilih --', 0 => 'Buku UGM Press', 1 => 'Buku dari Luar'], $from_outside, 'id="from_outside" class="form-control custom-select d-block" title="List per page"'); ?>
                             </div>
-                            <div class="col-12 col-lg-7 mb-3">
+                            <div class="col-12 col-lg-5 mb-3">
                                 <label>&nbsp;</label>
                                 <?= form_input('keyword', $keyword, 'id="keyword" placeholder="Cari berdasarkan Judul Buku, Kode Buku, Penulis, atau ISBN" class="form-control"'); ?>
                             </div>
-                            <div class="col-12 col-lg-3">
+                            <div class="col-12 col-lg-5">
                                 <label>&nbsp;</label>
                                 <div
                                     class="btn-group btn-block"
@@ -95,6 +95,11 @@ $reprint_options = [
                                         onclick="location.href = '<?= base_url($pages); ?>'"
                                     > Reset</button>
                                     <button
+                                        class="btn btn-primary"
+                                        type="submit"
+                                        value="Submit"
+                                    ><i class="fa fa-filter"></i> Filter</button>
+                                    <button
                                         class="btn btn-success col-4"
                                         type="submit"
                                         id="excel"
@@ -104,11 +109,6 @@ $reprint_options = [
                                         data-placement="top"
                                         title="Download excel buku"
                                     ><i class="fas fa-file-excel mr-2"></i>Export</button>
-                                    <button
-                                        class="btn btn-primary"
-                                        type="submit"
-                                        value="Submit"
-                                    ><i class="fa fa-filter"></i> Filter</button>
                                 </div>
                             </div>
                         </div>

@@ -102,19 +102,19 @@ $print_order_status_options = [
                                 <label for="print_order_status">Status</label>
                                 <?= form_dropdown('print_order_status', $print_order_status_options, $print_order_status, 'id="print_order_status" class="form-control custom-select d-block" title="Filter Status Cetak"'); ?>
                             </div>
-                            <div class="col-12 col-md-3">
+                            <div class="col-12 col-md-3 col-lg-2">
                                 <label for="date_year">Tahun</label>
                                 <?= form_dropdown('date_year', $date_year_options, $date_year, 'id="date_year" class="form-control custom-select d-block" title="Filter Tahun Cetak"'); ?>
                             </div>
-                            <div class="col-12 col-md-3">
+                            <div class="col-12 col-md-3 col-lg-2">
                                 <label for="date_month">Bulan</label>
                                 <?= form_dropdown('date_month', $date_month_options, $date_month, 'id="date_month" class="form-control custom-select d-block" title="Filter Bulan Cetak"'); ?>
                             </div>
-                            <div class="col-12 col-md-3">
+                            <div class="col-12 col-md-6 col-lg-4">
                                 <label for="status">Pencarian</label>
                                 <?= form_input('keyword', $keyword, 'placeholder="Cari berdasarkan Judul, Nomor, Kode, Nama Pesanan" class="form-control"'); ?>
                             </div>
-                            <div class="col-12 col-lg-3">
+                            <div class="col-12 col-lg-4">
                                 <label>&nbsp;</label>
                                 <div
                                     class="btn-group btn-block"
@@ -134,11 +134,11 @@ $print_order_status_options = [
                                     <?php if ($level == "superadmin" || $level == "admin_percetakan") : ?>
                                         <button
                                             class="btn btn-success"
-                                            type="submit"
+                                            type="button"
                                             id="excel"
                                             name="excel"
                                             value="1"
-                                        >Excel</button>
+                                        ><i class="fas fa-file-excel mr-2"></i>Export</button>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -260,7 +260,8 @@ $print_order_status_options = [
                                                                 <div class="modal-header">
                                                                     <h5 class="modal-title">
                                                                         <i class="fa fa-exclamation-triangle text-red mr-1"></i> Konfirmasi
-                                                                        Hapus</h5>
+                                                                        Hapus
+                                                                    </h5>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <p>Apakah anda yakin akan menghapus print_order <span class="font-weight-bold"><?= $print_order->title; ?></span>?</p>

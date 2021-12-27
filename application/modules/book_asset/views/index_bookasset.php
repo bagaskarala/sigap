@@ -33,7 +33,7 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
         <div class="col-12">
             <section class="card card-fluid">
                 <div class="card-body p-0">
-                <h5 class="mb-0 mt-3 ml-3">Info Total Aset</h5>
+                    <h5 class="mb-0 mt-3 ml-3">Info Total Aset</h5>
                     <div class="row px-3 mb-2">
                         <div class="col-12">
                             <div class="metric-row metric-flush ">
@@ -124,7 +124,7 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                             </div>
                             <div class="col-12 col-md-2">
                                 <label for="status">HPP (%)</label>
-                                <?= form_input('hpp_percent', $hpp_percent*100, 'placeholder="Input persentase HPP" class="form-control"'); ?>
+                                <?= form_input('hpp_percent', $hpp_percent * 100, 'placeholder="Input persentase HPP" class="form-control"'); ?>
                             </div>
                             <div class="col-12 col-md-4">
                                 <label>&nbsp;</label>
@@ -153,7 +153,7 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                                             data-toggle="tooltip"
                                             data-placement="top"
                                             title="Download excel aset buku"
-                                        ><i class="fas fa-file-excel mr-2"></i>Excel</button>
+                                        ><i class="fas fa-file-excel mr-2"></i>Export</button>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -275,9 +275,11 @@ $hpp_percent        = ($this->input->get('hpp_percent') ?? 25) / 100;
                                         <tr>
                                             <td class="align-middle text-center"><?= ++$i; ?></td>
                                             <td class="align-middle font-weight-bold">
-                                                <a href="<?= base_url('book_asset/view/' . $book_asset->book_id . ''); ?>"
-                                                class="font-weight-bold">
-                                                <?= highlight_keyword($book_asset->book_title, $keyword); ?>
+                                                <a
+                                                    href="<?= base_url('book_asset/view/' . $book_asset->book_id . ''); ?>"
+                                                    class="font-weight-bold"
+                                                >
+                                                    <?= highlight_keyword($book_asset->book_title, $keyword); ?>
                                             </td>
                                             <td class="align-middle text-center">
                                                 <?= isset($book_asset->author_name) ? highlight_keyword($book_asset->author_name, $keyword) : '-'; ?>

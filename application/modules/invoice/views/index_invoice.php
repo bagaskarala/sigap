@@ -143,7 +143,7 @@ function generate_invoice_action($invoice_id)
                                         id="excel"
                                         name="excel"
                                         value="1"
-                                    >Excel</button>
+                                    ><i class="fas fa-file-excel mr-2"></i>Export</button>
                                 </div>
                             </div>
                         </div>

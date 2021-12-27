@@ -393,10 +393,10 @@ class Book extends Admin_Controller
     {
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
-        $filename = 'DATA BUKU';
+        $filename = 'DATA BUKU ' . date('Y-m-d');
 
         // Column Title
-        $sheet->setCellValue('A1', 'DATA BUKU');
+        $sheet->setCellValue('A1', $filename);
         $spreadsheet->getActiveSheet()
             ->getStyle('A1')
             ->getFont()
@@ -409,23 +409,33 @@ class Book extends Admin_Controller
         $sheet->setCellValue('F3', 'Berat (gram)');
         $sheet->setCellValue('G3', 'Harga');
         $sheet->setCellValue('H3', 'Tanggal Terbit');
+        $sheet->setCellValue('I3', 'Kategori');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:H3')
+            ->getStyle('A3:I3')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
             ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:H3')
+            ->getStyle('A3:I3')
             ->getFont()
             ->setBold(true);
+
+        $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
+
 
         $get_data = $this->book->filter_excel_book($filters);
         $no = 1;
         $i = 4;
         // Column Content
         foreach ($get_data as $data) {
-            foreach (range('A', 'H') as $v) {
+
+            foreach (range('A', 'I') as $v) {
+                if ($v == 'B') {
+                    $sheet->getColumnDimension($v)->setWidth(50);
+                } else {
+                    $sheet->getColumnDimension($v)->setAutoSize(true);
+                }
                 switch ($v) {
                     case 'A': {
                             $value = $no++;
@@ -457,6 +467,10 @@ class Book extends Admin_Controller
                         }
                     case 'H': {
                             $value = $data->published_date;
+                            break;
+                        }
+                    case 'I': {
+                            $value = $data->category_name;
                             break;
                         }
                 }
