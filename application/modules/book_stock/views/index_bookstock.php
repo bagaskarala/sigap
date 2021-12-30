@@ -182,19 +182,22 @@ $i                  = isset($page) ? $page * $per_page - $per_page : 0;
                                             scope="col"
                                             style="min-width:100px;"
                                             class="align-middle text-center"
-                                        >Gudang
+                                        >
+                                            Gudang
                                         </th>
                                         <th
                                             scope="col"
                                             style="min-width:100px;"
                                             class="align-middle text-center"
                                         >
-                                            Perpustakaan</th>
+                                            Showroom
+                                        </th>
                                         <th
                                             scope="col"
                                             style="min-width:100px;"
                                             class="align-middle text-center"
-                                        >Showroom
+                                        >
+                                            Perpustakaan
                                         </th>
                                     </tr>
                                 </thead>
