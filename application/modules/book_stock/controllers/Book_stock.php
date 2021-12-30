@@ -324,14 +324,16 @@ class Book_stock extends Warehouse_Sales_Controller
         $sheet->setCellValue('B3', 'Judul');
         $sheet->setCellValue('C3', 'Penulis');
         $sheet->setCellValue('D3', 'Stok Gudang');
+        $sheet->setCellValue('E3', 'Stok Showroom');
+        $sheet->setCellValue('F3', 'Stok Perpustakaan');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:D3')
+            ->getStyle('A3:F3')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
             ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:D3')
+            ->getStyle('A3:F3')
             ->getFont()
             ->setBold(true);
 
@@ -339,13 +341,15 @@ class Book_stock extends Warehouse_Sales_Controller
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
 
         $get_data = $this->book_stock->filter_excel_stock($filters);
         $no = 1;
         $i = 4;
         // Column Content
         foreach ($get_data as $data) {
-            foreach (range('A', 'D') as $v) {
+            foreach (range('A', 'F') as $v) {
                 switch ($v) {
                     case 'A': {
                             $value = $no++;
@@ -369,6 +373,14 @@ class Book_stock extends Warehouse_Sales_Controller
                                     ->getStartColor()
                                     ->setARGB('FFC000');
                             }
+                            break;
+                        }
+                    case 'E': {
+                            $value = $data->showroom_present;
+                            break;
+                        }
+                    case 'F': {
+                            $value = $data->library_present;
                             break;
                         }
                 }
