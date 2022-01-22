@@ -209,7 +209,10 @@
                         class="invoice-table"
                         style="height: 33px; padding-left:5px;"
                     ><?= $i++ ?></td>
-                    <td class="invoice-table"></td>
+                    <td
+                        class="invoice-table"
+                        style="padding-left:5px;"
+                    ><?= $invoice_book->book_location ?></td>
                     <td
                         class="invoice-table"
                         style="padding-left:5px;"

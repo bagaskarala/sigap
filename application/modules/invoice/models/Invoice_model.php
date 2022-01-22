@@ -76,11 +76,12 @@ class Invoice_model extends MY_Model
     public function fetch_invoice_book($invoice_id)
     {
         return $this->db
-            ->select('invoice_book.*, book.book_title, author.author_name ')
+            ->select('invoice_book.*, book.book_title, author.author_name, book_stock.book_location')
             ->from('invoice_book')
             ->join('book', 'book.book_id = invoice_book.book_id')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id')
             ->join('author', 'draft_author.author_id = author.author_id')
+            ->join('book_stock', 'book_stock.book_id = book.book_id')
             ->group_by('draft_author.draft_id')
             ->where('invoice_id', $invoice_id)
             ->get()
@@ -145,7 +146,7 @@ class Invoice_model extends MY_Model
                 $stock = $this->fetch_showroom_stock($book->book_id);
                 $book->stock = $stock;
             }
-        } else 
+        } else
         if ($type == 'library') {
             foreach ($books as $book) {
                 // Tambahkan data stock ke buku
@@ -281,8 +282,7 @@ class Invoice_model extends MY_Model
         if ($filters['receipt'] != NULL) {
             if ($filters['receipt'] == 1) {
                 $this->db->where('invoice.receipt IS NOT NULL');
-            }
-            else {
+            } else {
                 $this->db->where('invoice.receipt IS NULL');
             }
             $this->db->where('invoice.type NOT LIKE "showroom"');
@@ -324,12 +324,12 @@ class Invoice_model extends MY_Model
     {
         $book_request = $this->select(['invoice_id', 'number', 'issued_date', 'due_date', 'status', 'type', 'source'])
             ->where('source', 'warehouse')
-                ->group_start()
-                ->where('status', 'confirm')
-                ->or_where('status', 'preparing')  
-                ->or_where('status', 'preparing_finish')
-                ->or_where('status', 'finish')                                              
-                ->group_end()
+            ->group_start()
+            ->where('status', 'confirm')
+            ->or_where('status', 'preparing')
+            ->or_where('status', 'preparing_finish')
+            ->or_where('status', 'finish')
+            ->group_end()
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
             ->when_request('status', $filters['status'])
@@ -339,12 +339,12 @@ class Invoice_model extends MY_Model
 
         $total = $this->select('invoice_id')
             ->where('source', 'warehouse')
-                ->group_start()
-                ->where('status', 'confirm')
-                ->or_where('status', 'preparing')  
-                ->or_where('status', 'preparing_finish')
-                ->or_where('status', 'finish')                                              
-                ->group_end()
+            ->group_start()
+            ->where('status', 'confirm')
+            ->or_where('status', 'preparing')
+            ->or_where('status', 'preparing_finish')
+            ->or_where('status', 'finish')
+            ->group_end()
             ->when_request('keyword', $filters['keyword'])
             ->when_request('type', $filters['type'])
             ->when_request('status', $filters['status'])
