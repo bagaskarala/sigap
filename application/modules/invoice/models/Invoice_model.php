@@ -190,7 +190,7 @@ class Invoice_model extends MY_Model
         return $book;
     }
 
-    public function get_book_dynamic_stock($book_id, $source, $library_id)
+    public function get_book_dynamic_stock($book_id, $source, $library_id = null)
     {
         $book = $this->db->select('*')
             ->from('book')

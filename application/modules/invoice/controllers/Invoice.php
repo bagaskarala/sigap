@@ -5,6 +5,17 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Invoice extends Sales_Controller
 {
+    public $invoice_type_options = array(
+        'credit'      => 'Kredit',
+        'online'      => 'Online',
+        'cash'        => 'Tunai',
+    );
+
+    public $source_options = array(
+        'warehouse' => 'Gudang',
+        'library'   => 'Perpustakaan',
+    );
+
     public function __construct()
     {
         parent::__construct();
@@ -175,31 +186,43 @@ class Invoice extends Sales_Controller
             } else {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
-                if ($type != 'showroom') echo json_encode(['status' => TRUE]);
-                else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
+                echo json_encode(['status' => TRUE, 'invoice_id' => $invoice_id]);
             }
         }
-
         //View add invoice
         else {
-            $invoice_type = array(
-                'credit'      => 'Kredit',
-                'online'      => 'Online',
-                'cash'        => 'Tunai',
-            );
+            $invoice = (object)[
+                'invoice_id'   => '',
+                'due_date'   => '',
+                'customer_id'   => '',
+                'delivery_fee'   => 0,
+            ];
 
-            $source = array(
-                'library'   => 'Perpustakaan',
-                'warehouse' => 'Gudang'
-            );
+            $customer = (object)[
+                'name'   => '',
+                'address'   => '',
+                'phone_number'   => '',
+                'email'   => '',
+                'type'   => '',
+            ];
+
+            $discount = 0;
+
+            $invoice_type_options = $this->invoice_type_options;
+
+            $source_options = $this->source_options;
 
             $customer_type = get_customer_type();
 
+            $invoice_book = [];
+
             $dropdown_book_options = $this->invoice->get_available_book_list('warehouse', '');
 
+            $form_type = 'add';
+
             $pages       = $this->pages;
-            $main_view   = 'invoice/add_invoice';
-            $this->load->view('template', compact('pages', 'main_view', 'invoice_type', 'source', 'customer_type', 'dropdown_book_options'));
+            $main_view   = 'invoice/form_invoice';
+            $this->load->view('template', compact('pages', 'main_view', 'invoice_type_options', 'source_options', 'customer_type', 'dropdown_book_options', 'form_type', 'invoice', 'invoice_book', 'customer', 'discount'));
         }
     }
 
@@ -214,8 +237,11 @@ class Invoice extends Sales_Controller
         $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options'));
     }
 
-    public function edit($invoice_id)
+    public function edit($invoice_id = null)
     {
+        if (!isset($invoice_id)) {
+            redirect('invoice');
+        }
         //post edit invoice
         if ($_POST) {
             //validasi input edit
@@ -245,8 +271,6 @@ class Invoice extends Sales_Controller
                 'due_date'          => $this->input->post('due-date'),
                 'status'            => 'waiting',
                 'delivery_fee'      => $this->input->post('delivery-fee')
-                // 'date_edited'   => date('Y-m-d H:i:s'),
-                // 'user_edited'   => $_SESSION['username']
             ];
 
             $this->db->set($edit)->where('invoice_id', $invoice_id)->update('invoice');
@@ -351,7 +375,7 @@ class Invoice extends Sales_Controller
             } else {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
-                echo json_encode(['status' => TRUE]);
+                echo json_encode(['status' => TRUE, 'invoice_id' => $invoice_id]);
             }
         }
         //view edit invoice
@@ -363,27 +387,21 @@ class Invoice extends Sales_Controller
             $discount_data = $this->db->select('discount')->from('discount')->where('membership', $customer->type)->get()->row();
             $discount = $discount_data->discount;
 
-            $invoice_type = array(
-                'credit'      => 'Kredit',
-                'online'      => 'Online',
-                'cash'        => 'Tunai',
-            );
+            $invoice_type_options = $this->invoice_type_options;
 
-            $source = array(
-                'library'   => 'Perpustakaan',
-                'warehouse' => 'Gudang',
-            );
+            $source_options = $this->source_options;
 
             $customer_type = get_customer_type();
 
             $invoice_book = $this->invoice->fetch_invoice_book($invoice->invoice_id);
 
-
             $dropdown_book_options = $this->invoice->get_available_book_list($invoice->source, $invoice->source_library_id);
 
+            $form_type = 'edit';
+
             $pages       = $this->pages;
-            $main_view   = 'invoice/edit_invoice';
-            $this->load->view('template', compact('pages', 'invoice', 'invoice_book', 'customer', 'discount', 'main_view', 'invoice_type', 'source', 'customer_type', 'dropdown_book_options'));
+            $main_view   = 'invoice/form_invoice';
+            $this->load->view('template', compact('pages', 'invoice', 'invoice_book', 'customer', 'discount', 'main_view', 'invoice_type_options', 'source_options', 'customer_type', 'dropdown_book_options', 'form_type'));
         }
     }
 
@@ -634,7 +652,7 @@ class Invoice extends Sales_Controller
         return $this->send_json_output(true, $book);
     }
 
-    public function api_get_book_dynamic_stock($book_id, $source, $library_id)
+    public function api_get_book_dynamic_stock($book_id, $source, $library_id = null)
     {
         $book = $this->invoice->get_book_dynamic_stock($book_id, $source, $library_id);
         return $this->send_json_output(true, $book);

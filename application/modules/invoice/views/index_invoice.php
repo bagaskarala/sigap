@@ -53,23 +53,6 @@ $receipt_options = array_merge([''  => '- Filter Bukti Bayar Faktur -'], get_inv
             <section class="card card-fluid">
                 <div class="card-body p-0">
                     <div class="p-3">
-                        <div
-                            class="alert alert-info alert-dismissible fade show"
-                            role="alert"
-                        >
-                            <h5>Info</h5>
-                            <p class="m-0">Klik tombol <button class="btn btn-sm btn-secondary"><i class="fa fa-thumbs-up"></i>
-                                    Aksi</button> untuk menyetujui atau menolak faktur
-                            </p>
-                            <button
-                                type="button"
-                                class="close"
-                                data-dismiss="alert"
-                                aria-label="Close"
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
                         <?= form_open($pages, ['method' => 'GET']); ?>
                         <div class="row">
                             <div class="col-12 col-md-4 mt-2">
