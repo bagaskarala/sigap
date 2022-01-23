@@ -54,9 +54,10 @@ class Proforma_model extends MY_Model
     public function fetch_proforma_book($proforma_id)
     {
         return $this->db
-            ->select('proforma_book.*, book.book_title, book.harga')
+            ->select('proforma_book.*, book.book_title, book.harga, book_stock.book_location, book.weight')
             ->from('proforma_book')
             ->join('book', 'book.book_id = proforma_book.book_id')
+            ->join('book_stock', 'book_stock.book_id = book.book_id')
             ->where('proforma_id', $proforma_id)
             ->get()
             ->result();

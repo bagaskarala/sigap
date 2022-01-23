@@ -495,7 +495,7 @@ class Invoice extends Sales_Controller
             $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
         }
 
-        redirect($this->pages);
+        redirect("{$this->pages}/view/{$invoice->invoice_id}");
     }
 
     public function update_delivery_fee($invoice_id)
@@ -508,11 +508,14 @@ class Invoice extends Sales_Controller
         echo json_encode(['status' => TRUE]);
     }
 
-    public function generate_pdf($invoice_id)
+    public function generate_pdf($invoice_type, $invoice_id)
     {
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+        if (!$invoice) {
+            echo 'invoice tidak ditemukan';
+            return;
+        }
         if ($invoice->status != 'waiting' && $invoice->status != 'cancel') {
-            $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
             $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
             $customer       = $this->invoice->get_customer($invoice->customer_id);
 
@@ -522,32 +525,18 @@ class Invoice extends Sales_Controller
             $data_format['invoice_books'] = $invoice_books ?? '';
             $data_format['customer'] = $customer ?? '';
 
-            $html = $this->load->view('invoice/view_invoice_pdf', $data_format, true);
+            $invoicePath = '';
+            if ($invoice_type === 'showroom') {
+                $invoicePath = 'invoice/view_showroom_receipt_pdf';
+            } else {
+                $invoicePath = 'invoice/view_invoice_pdf';
+            }
+            $html = $this->load->view($invoicePath, $data_format, true);
 
             $file_name = $invoice->number . '_Invoice';
 
             $this->pdf->generate_pdf_a4_portrait($html, $file_name);
         }
-    }
-
-    public function showroom_pdf($invoice_id)
-    {
-        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
-        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
-        $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
-        $customer       = $this->invoice->get_customer($invoice->customer_id);
-
-        // PDF
-        $this->load->library('pdf');
-        $data_format['invoice'] = $invoice ?? '';
-        $data_format['invoice_books'] = $invoice_books ?? '';
-        $data_format['customer'] = $customer ?? '';
-
-        $html = $this->load->view('invoice/view_showroom_receipt_pdf', $data_format, true);
-
-        $file_name = $invoice->number . '_Invoice';
-
-        $this->pdf->generate_pdf_a4_portrait($html, $file_name);
     }
 
     public function generate_excel($filters)

@@ -241,6 +241,9 @@ class Proforma extends Sales_Controller
         if ($_POST) {
             //validasi input edit
             $this->proforma->validate_proforma();
+
+            $this->db->trans_begin();
+
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
                 $customer_id = $this->input->post('customer-id');
@@ -261,8 +264,6 @@ class Proforma extends Sales_Controller
                 'customer_id'  => $customer_id,
                 'due_date'     => $this->input->post('due-date'),
                 'delivery_fee' => $this->input->post('delivery-fee')
-                // 'date_edited'   => date('Y-m-d H:i:s'),
-                // 'user_edited'   => $_SESSION['username']
             ];
 
             $this->db->set($edit)->where('proforma_id', $proforma_id)->update('proforma');
@@ -284,16 +285,29 @@ class Proforma extends Sales_Controller
                 ];
                 $this->db->insert('proforma_book', $book);
             }
-            echo json_encode(['status' => TRUE]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+                echo json_encode(['status' => TRUE]);
+            }
         }
         //view edit proforma
         else {
             $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
 
             //info customer dan diskon
-            $customer = $this->db->select('*')->from('customer')->where('customer_id', $proforma->customer_id)->get()->row();
-            $discount_data = $this->db->select('discount')->from('discount')->where('membership', $customer->type)->get()->row();
+            $customer = $this->db->select('*')->from('customer')
+                ->where('customer_id', $proforma->customer_id)
+                ->get()
+                ->row();
+            $discount_data = $this->db->select('discount')->from('discount')
+                ->where('membership', $customer->type)
+                ->get()
+                ->row();
             $discount = $discount_data->discount;
 
             $customer_type = get_customer_type();
@@ -313,6 +327,10 @@ class Proforma extends Sales_Controller
     public function generate_pdf($proforma_id)
     {
         $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
+        if (!$proforma) {
+            echo 'proforma tidak ditemukan';
+            return;
+        }
         $proforma_books = $this->proforma->fetch_proforma_book($proforma->proforma_id);
         $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
 

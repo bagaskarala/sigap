@@ -108,6 +108,10 @@
         border-collapse: collapse;
     }
 
+    .invoice-table td {
+        padding: 5px 10px;
+    }
+
     </style>
 </head>
 
@@ -135,9 +139,18 @@
             <td style="width:70%;">
                 Kepada Yth.<br>
                 <?= $customer->name ?><br>
-                <?= $customer->address ?><br>
-                <?= $customer->phone_number ?><br>
-                <?= $customer->email ?><br><br>
+                <?php if ($customer->address) : ?>
+                    <?= $customer->address ?><br>
+                <?php endif ?>
+
+                <?php if ($customer->phone_number) : ?>
+                    <?= $customer->phone_number ?><br>
+                <?php endif ?>
+
+                <?php if ($customer->email) : ?>
+                    <?= $customer->email ?><br>
+                <?php endif ?>
+                <br>
                 No Faktur : <b><?= $invoice->number ?></b><br>
                 Bukti Bayar : <?= $invoice->receipt ?>
             </td>
@@ -207,31 +220,25 @@
                 <tr class="invoice-table">
                     <td
                         class="invoice-table"
-                        style="height: 33px; padding-left:5px;"
+                        style="height: 33px;"
                     ><?= $i++ ?></td>
+                    <td class="invoice-table"><?= $invoice_book->book_location ?></td>
+                    <td class="invoice-table"><?= $invoice_book->book_title ?></td>
                     <td
                         class="invoice-table"
-                        style="padding-left:5px;"
-                    ><?= $invoice_book->book_location ?></td>
-                    <td
-                        class="invoice-table"
-                        style="padding-left:5px;"
-                    ><?= $invoice_book->book_title ?></td>
-                    <td
-                        class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
+                        style="text-align: right;"
                     ><?= $invoice_book->qty ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
+                        style="text-align: right;"
                     ><?= $invoice_book->discount ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
+                        style="text-align: right;"
                     ><?= number_format($invoice_book->price, 0, ',', '.'); ?></td>
                     <td
                         class="invoice-table"
-                        style="text-align: right; padding-right:5px;"
+                        style="text-align: right;"
                     ><?= number_format($invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100), 0, ',', '.'); ?></td>
                 </tr>
             <?php endforeach ?>
@@ -246,7 +253,7 @@
         </tbody>
     </table>
 
-    <table style="width: 100%;">
+    <table style="width: 100%; margin-bottom:20px;">
         <tr>
             <td
                 style="width:50%"

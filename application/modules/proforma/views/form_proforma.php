@@ -1,5 +1,10 @@
 <?php
 $empty_books        = $this->session->flashdata('empty_books');
+
+$total_weight = 0;
+foreach ($proforma_book as $book) {
+    $total_weight +=  $book->weight * $book->qty;
+}
 ?>
 
 <header class="page-title-bar">
@@ -445,7 +450,7 @@ $empty_books        = $this->session->flashdata('empty_books');
                                         >Rp 0</td>
                                     </tr>
                                     <tr>
-                                        <td></td>
+                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <?= $total_weight / 1000 ?> kg</td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
@@ -485,8 +490,7 @@ $empty_books        = $this->session->flashdata('empty_books');
 
 <script>
 $(document).ready(function() {
-    console.log("<?= $form_action ?>")
-
+    updateGrandTotal()
 
     $('#customer-id').change(function(e) {
         const customerId = e.target.value
@@ -650,7 +654,6 @@ $(document).ready(function() {
     $("#proforma_form").submit(function(e) {
         e.preventDefault(); // avoid to execute the actual submit of the form.
         var form = $(this);
-        console.log(form.serialize())
         $.ajax({
             type: "POST",
             url: "<?= base_url($form_action) ?>",
@@ -665,7 +668,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url('proforma'); ?>";
+                    location.href = "<?= base_url("proforma/view/{$proforma->proforma_id}"); ?>";
                 }
             },
             error: function(req, err) {

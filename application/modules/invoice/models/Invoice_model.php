@@ -76,7 +76,7 @@ class Invoice_model extends MY_Model
     public function fetch_invoice_book($invoice_id)
     {
         return $this->db
-            ->select('invoice_book.*, book.book_title, author.author_name, book_stock.book_location')
+            ->select('invoice_book.*, book.book_title, author.author_name, book_stock.book_location, book.weight')
             ->from('invoice_book')
             ->join('book', 'book.book_id = invoice_book.book_id')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id')

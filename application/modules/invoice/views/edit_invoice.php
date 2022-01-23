@@ -298,8 +298,12 @@
                                             <td id="info-price"></td>
                                         </tr>
                                         <tr>
-                                            <td width="175px"> Stock </td>
+                                            <td width="175px"> Stok </td>
                                             <td id="info-stock"></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="175px"> Berat </td>
+                                            <td><span id="info-weight"></span> gram</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -395,6 +399,11 @@
                                                     class="form-control"
                                                     value="<?= $books->book_id ?>"
                                                 />
+                                                <input
+                                                    type="number"
+                                                    id="invoice-book-weight-<?= $books->book_id ?>"
+                                                    value="<?= $books->weight ?>"
+                                                >
                                             </td>
                                             <td class="align-middle">Rp <?= $books->price ?>
                                                 <input
@@ -455,7 +464,7 @@
                                         >Rp 0</td>
                                     </tr>
                                     <tr>
-                                        <td></td>
+                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <span id="total_weight"></span> kg</td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
@@ -495,6 +504,7 @@
 <script>
 $(document).ready(function() {
     updateGrandTotal()
+    updateTotalWeight()
 
     var source = $('#source').val()
     var libraryId = $('#source-library-id').val()
@@ -580,6 +590,7 @@ $(document).ready(function() {
             add_book_to_invoice(qty.max);
             reset_book();
             updateGrandTotal()
+            updateTotalWeight()
         }
     });
 
@@ -589,6 +600,8 @@ $(document).ready(function() {
         var bookId = $selector.children("input").val()
         $("#book-id").prepend(new Option(bookTitle, bookId))
         $(this).closest("tr").remove();
+        updateGrandTotal()
+        updateTotalWeight()
     });
 
     $('#book-id').change(function(e) {
@@ -615,6 +628,7 @@ $(document).ready(function() {
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
                     $('#info-stock').html(res.data.stock)
+                    $('#info-weight').html(res.data.weight)
                 },
                 error: function(err) {
                     console.log(err);
@@ -685,7 +699,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url('invoice'); ?>";
+                    location.href = "<?= base_url("invoice/view/{$invoice->invoice_id}"); ?>";
                 }
             },
             error: function(req, err) {
@@ -697,12 +711,12 @@ $(document).ready(function() {
 
 function add_book_to_invoice(stock) {
     var bookId = document.getElementById('book-id');
-
     html = '<tr>';
 
     // Judul option yang di select
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;
     html += '<input type="text" hidden name="invoice_book_id[]" class="form-control" value="' + bookId.value + '"/>';
+    html += `<input id="invoice-book-weight-${bookId.value}" type="text" value="${$('#info-weight').text()}"/>`;
     html += '</td>';
 
     // Harga
@@ -725,14 +739,13 @@ function add_book_to_invoice(stock) {
     html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
 
     $('#invoice_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
 }
 
 function reset_book() {
-
     document.getElementById('qty').value = 1;
     $("#book-id").val('').trigger('change')
     $('#book-info').hide();
@@ -747,23 +760,32 @@ function updateQty(book_id) {
     var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
     updateGrandTotal()
+    updateTotalWeight()
 }
 
 function updateGrandTotal() {
-    var grandTotal = 0
+    let grandTotal = 0
     $('#invoice_items tr').each(function() {
         $selector = $(this).find("td:first")
         book_id = $selector.find("input").val()
-        grandTotal += Math.round($('#invoice-book-qty-' + book_id).val() * $('#invoice-book-price-' + book_id).val() * (1 - $('#invoice-book-discount-' + book_id).val() / 100))
-        $('#grand_total').html('Rp ' + grandTotal)
+        const qty = $('#invoice-book-qty-' + book_id).val()
+        const price = $('#invoice-book-price-' + book_id).val()
+        const discount = (1 - $('#invoice-book-discount-' + book_id).val() / 100)
+        grandTotal += Math.round(qty * price * discount)
     })
+    $('#grand_total').html('Rp ' + grandTotal)
 }
 
-function decreaseGrandTotal(book_id) {
-    var total_html = $('#invoice-book-total-' + book_id).html()
-    var res = total_html.split(" ")
-    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
-    $('#grand_total').html('Rp ' + grandTotal)
+function updateTotalWeight() {
+    let totalWeight = 0
+    $('#invoice_items tr').each(function() {
+        $selector = $(this).find("td:first")
+        book_id = $selector.find("input").val()
+        const qty = $('#invoice-book-qty-' + book_id).val()
+        const weight = $('#invoice-book-weight-' + book_id).val() / 1000
+        totalWeight += qty * weight
+    })
+    $('#total_weight').html(totalWeight.toFixed(3))
 }
 
 function updateDropdown(type, library_id) {
