@@ -187,33 +187,36 @@ $receipt_options = array_merge([''  => '- Filter Bukti Bayar Faktur -'], get_inv
                                         <td class="align-middle pr-4">
                                             <?= get_invoice_status()[$lData->status]; ?>
                                         </td>
-                                        <td class="align-middle text-right d-flex">
-                                            <?php if ($lData->status == 'waiting') : ?>
-                                                <button
-                                                    class="btn btn-sm btn-success mr-1"
-                                                    onclick="accept_invoice(<?= $lData->invoice_id ?>)"
-                                                    title="Faktur disetujui"
-                                                >
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                <button
-                                                    class="btn btn-sm btn-danger mr-1"
-                                                    onclick="decline_invoice(<?= $lData->invoice_id ?>)"
-                                                    title="Faktur ditolak"
-                                                >
-                                                    <i class="fa fa-ban"></i>
-                                                </button>
-                                                <a
-                                                    title="Edit"
-                                                    href="<?= base_url('invoice/edit/' . $lData->invoice_id . ''); ?>"
-                                                    class="btn btn-sm btn-secondary"
-                                                >
-                                                    <i class="fa fa-pencil-alt"></i>
-                                                    <span class="sr-only">Edit</span>
-                                                </a>
-                                            <?php endif; ?>
-                                            <!-- Faktur Selesai Diproses -->
-                                            <?php if ($lData->status == 'preparing_finish') : ?>
+                                        <td class="align-middle ">
+                                            <?php if ($lData->is_expired) : ?>
+                                                <em class="text-danger">Expired</em>
+                                            <?php elseif ($lData->status == 'waiting') : ?>
+                                                <div class="d-flex">
+                                                    <button
+                                                        class="btn btn-sm btn-success mr-1"
+                                                        onclick="accept_invoice(<?= $lData->invoice_id ?>)"
+                                                        title="Faktur disetujui"
+                                                    >
+                                                        <i class="fa fa-check"></i>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-sm btn-danger mr-1"
+                                                        onclick="decline_invoice(<?= $lData->invoice_id ?>)"
+                                                        title="Faktur ditolak"
+                                                    >
+                                                        <i class="fa fa-ban"></i>
+                                                    </button>
+                                                    <a
+                                                        title="Edit"
+                                                        href="<?= base_url('invoice/edit/' . $lData->invoice_id . ''); ?>"
+                                                        class="btn btn-sm btn-secondary"
+                                                    >
+                                                        <i class="fa fa-pencil-alt"></i>
+                                                        <span class="sr-only">Edit</span>
+                                                    </a>
+                                                </div>
+                                            <?php elseif ($lData->status == 'preparing_finish') : ?>
+                                                <!-- Faktur Selesai Diproses -->
                                                 <button
                                                     type="button"
                                                     class="btn btn-sm btn-secondary font-weight-bold w-100"

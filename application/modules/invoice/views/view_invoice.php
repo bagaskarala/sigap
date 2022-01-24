@@ -46,7 +46,7 @@
                                 <?php if ($invoice->type != 'showroom') : ?>
                                     <tr>
                                         <td width="200px"> Tanggal Jatuh Tempo </td>
-                                        <td><?= $invoice->due_date ?></td>
+                                        <td><?= $invoice->due_date ?> <?= $invoice->due_date ? '- <em class="text-danger">Expired</em>' : '' ?></td>
                                     </tr>
                                     <tr>
                                         <td width="200px"> Total Berat </td>
@@ -299,7 +299,7 @@
                         </button>
                     </div>
                 <?php endif ?>
-                <?php if ($invoice->status === 'waiting') : ?>
+                <?php if ($invoice->status === 'waiting' && !$invoice->is_expired) : ?>
                     <div class="d-flex justify-content-end">
                         <button
                             class="btn btn-outline-success mr-2"

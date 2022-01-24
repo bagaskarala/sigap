@@ -52,7 +52,7 @@ foreach ($proforma_books as $pb) {
                                 </tr>
                                 <tr>
                                     <td width="200px"> Tanggal Jatuh Tempo </td>
-                                    <td><?= $proforma->due_date ?></td>
+                                    <td><?= $proforma->due_date ?> <?= $proforma->due_date ? '- <em class="text-danger">Expired</em>' : '' ?></td>
                                 </tr>
                                 <tr>
                                     <td width="200px"> Total Berat </td>
@@ -150,62 +150,64 @@ foreach ($proforma_books as $pb) {
                 </table>
                 <br>
 
-                <div
-                    id="card-button"
-                    class="d-flex justify-content-end"
-                >
-                    <button
-                        type="button"
-                        class="btn btn-primary mr-2"
-                        data-toggle="modal"
-                        data-target="#modal-generate-invoice"
-                    >Buat Faktur</button>
-                    <!-- Modal -->
+                <?php if (!$proforma->is_expired) : ?>
                     <div
-                        class="modal fade"
-                        id="modal-generate-invoice"
-                        role="dialog"
-                        aria-hidden="true"
+                        id="card-button"
+                        class="d-flex justify-content-end"
                     >
+                        <button
+                            type="button"
+                            class="btn btn-primary mr-2"
+                            data-toggle="modal"
+                            data-target="#modal-generate-invoice"
+                        >Buat Faktur</button>
+                        <!-- Modal -->
                         <div
-                            class="modal-dialog modal-dialog-centered"
-                            role="document"
+                            class="modal fade"
+                            id="modal-generate-invoice"
+                            role="dialog"
+                            aria-hidden="true"
                         >
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Ubah proforma jadi faktur?</h5>
-                                </div>
-                                <div class="modal-footer">
-                                    <button
-                                        type="button"
-                                        class="btn btn-secondary"
-                                        data-dismiss="modal"
-                                    >Close</button>
-                                    <a
-                                        id="btn-modal-generate-invoice"
-                                        href="<?= base_url("proforma/action/$proforma->proforma_id/confirm") ?>"
-                                        class="btn btn-primary"
-                                    >
-                                        Confirm
-                                    </a>
+                            <div
+                                class="modal-dialog modal-dialog-centered"
+                                role="document"
+                            >
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Ubah proforma jadi faktur?</h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary"
+                                            data-dismiss="modal"
+                                        >Close</button>
+                                        <a
+                                            id="btn-modal-generate-invoice"
+                                            href="<?= base_url("proforma/action/$proforma->proforma_id/confirm") ?>"
+                                            class="btn btn-primary"
+                                        >
+                                            Confirm
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <a
-                        href="<?= base_url('proforma/edit/' . $proforma->proforma_id) ?>"
-                        class="btn btn-outline-primary mr-2"
-                        title="Edit"
-                    >Edit <i class="fas fa-edit fa-fw"></i></a>
-                    <a
-                        href="<?= base_url('proforma/generate_pdf/' . $proforma->proforma_id) ?>"
-                        class="btn btn-outline-danger"
-                        id="btn-generate-pdf"
-                        title="Generate PDF"
-                        taget="_blank"
-                    >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
-                </div>
+                        <a
+                            href="<?= base_url('proforma/edit/' . $proforma->proforma_id) ?>"
+                            class="btn btn-outline-primary mr-2"
+                            title="Edit"
+                        >Edit <i class="fas fa-edit fa-fw"></i></a>
+                        <a
+                            href="<?= base_url('proforma/generate_pdf/' . $proforma->proforma_id) ?>"
+                            class="btn btn-outline-danger"
+                            id="btn-generate-pdf"
+                            title="Generate PDF"
+                            taget="_blank"
+                        >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
+                    </div>
+                <?php endif ?>
             </div>
         </div>
     </section>

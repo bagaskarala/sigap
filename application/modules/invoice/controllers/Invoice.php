@@ -50,6 +50,10 @@ class Invoice extends Sales_Controller
         $total      = $get_data['total'];
         $pagination = $this->invoice->make_pagination(site_url('invoice'), 2, $total);
 
+        foreach ($invoice as $key => $value) {
+            $invoice[$key]->is_expired = $this->_check_if_expired($invoice[$key]->due_date);
+        }
+
         $pages      = $this->pages;
         $main_view  = 'invoice/index_invoice';
         $this->load->view('template', compact('pages', 'main_view', 'invoice', 'pagination', 'total'));
@@ -68,6 +72,7 @@ class Invoice extends Sales_Controller
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
         $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
         $invoice->customer = $this->invoice->get_customer($invoice->customer_id);
+        $invoice->is_expired = $this->_check_if_expired($invoice->due_date);
 
         $this->load->view('template', compact('pages', 'main_view', 'invoice', 'invoice_books'));
     }
@@ -384,6 +389,10 @@ class Invoice extends Sales_Controller
         //view edit invoice
         else {
             $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+            if ($this->_check_if_expired($invoice->due_date)) {
+                $this->session->set_flashdata('warning', 'Faktur sudah melewati tangal jatuh tempo');
+                redirect($this->pages);
+            }
 
             //info customer dan diskon
             $customer = $this->db->select('*')->from('customer')->where('customer_id', $invoice->customer_id)->get()->row();
@@ -413,6 +422,10 @@ class Invoice extends Sales_Controller
         $invoice = $this->invoice->where('invoice_id', $id)->get();
         if (!$invoice) {
             $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
+            redirect($this->pages);
+        }
+        if ($this->_check_if_expired($invoice->due_date)) {
+            $this->session->set_flashdata('warning', 'Faktur sudah melewati tangal jatuh tempo');
             redirect($this->pages);
         }
 
@@ -678,5 +691,12 @@ class Invoice extends Sales_Controller
     {
         $data = $this->invoice->get_available_book_list($type, $library_id);
         return $this->send_json_output(true, $data);
+    }
+
+    private function _check_if_expired($date)
+    {
+        $now = new DateTime();
+        $due_date = new DateTime($date);
+        return $now > $due_date;
     }
 }

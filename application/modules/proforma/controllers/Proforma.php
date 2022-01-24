@@ -30,6 +30,10 @@ class Proforma extends Sales_Controller
         $total      = $get_data['total'];
         $pagination = $this->proforma->make_pagination(site_url('proforma'), 2, $total);
 
+        foreach ($proforma as $key => $value) {
+            $proforma[$key]->is_expired = $this->_check_if_expired($proforma[$key]->due_date);
+        }
+
         $pages      = $this->pages;
         $main_view  = 'proforma/index_proforma';
         $this->load->view('template', compact('pages', 'main_view', 'proforma', 'pagination', 'total'));
@@ -45,6 +49,7 @@ class Proforma extends Sales_Controller
         $proforma       = $this->proforma->fetch_proforma_id($proforma_id);
         $proforma_books  = $this->proforma->fetch_proforma_book($proforma_id);
         $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
+        $proforma->is_expired = $this->_check_if_expired($proforma->due_date);
 
         $this->load->view('template', compact('pages', 'main_view', 'proforma', 'proforma_books'));
     }
@@ -54,6 +59,10 @@ class Proforma extends Sales_Controller
         $proforma = $this->proforma->where('proforma_id', $id)->get();
         if (!$proforma) {
             $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
+            redirect($this->pages);
+        }
+        if ($this->_check_if_expired($proforma->due_date)) {
+            $this->session->set_flashdata('warning', 'Proforma sudah melewati tangal jatuh tempo');
             redirect($this->pages);
         }
         $this->db->trans_begin();
@@ -315,7 +324,10 @@ class Proforma extends Sales_Controller
         //view edit proforma
         else {
             $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
-
+            if ($this->_check_if_expired($proforma->due_date)) {
+                $this->session->set_flashdata('warning', 'Proforma sudah melewati tangal jatuh tempo');
+                redirect($this->pages);
+            }
             //info customer dan diskon
             $customer = $this->db->select('*')->from('customer')
                 ->where('customer_id', $proforma->customer_id)
@@ -380,5 +392,12 @@ class Proforma extends Sales_Controller
     {
         $discount = $this->proforma->get_discount($customerType);
         return $this->send_json_output(true, $discount);
+    }
+
+    private function _check_if_expired($date)
+    {
+        $now = new DateTime();
+        $due_date = new DateTime($date);
+        return $now > $due_date;
     }
 }

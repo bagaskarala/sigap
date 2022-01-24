@@ -16,7 +16,6 @@ $customer_type_options = [
 ];
 ?>
 
-
 <header class="page-title-bar">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -163,28 +162,34 @@ $customer_type_options = [
                                             <?= date("d/m/y", strtotime($lData->due_date)); ?>
                                         </td>
                                         <td class="align-middle text-right d-flex">
-                                            <button
-                                                class="btn btn-sm btn-success mr-1"
-                                                onclick="accept_proforma(<?= $lData->proforma_id ?>)"
-                                                title="Ubah proforma menjadi faktur"
-                                            >
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            <button
-                                                class="btn btn-sm btn-danger mr-1"
-                                                onclick="decline_proforma(<?= $lData->proforma_id ?>)"
-                                                title="Hapus proforma"
-                                            >
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                            <a
-                                                title="Edit"
-                                                href="<?= base_url('proforma/edit/' . $lData->proforma_id . ''); ?>"
-                                                class="btn btn-sm btn-secondary"
-                                            >
-                                                <i class="fa fa-pencil-alt"></i>
-                                                <span class="sr-only">Edit</span>
-                                            </a>
+                                            <?php if (!$lData->is_expired) : ?>
+                                                <div style="min-width:100px">
+                                                    <button
+                                                        class="btn btn-sm btn-success"
+                                                        onclick="accept_proforma(<?= $lData->proforma_id ?>)"
+                                                        title="Ubah proforma menjadi faktur"
+                                                    >
+                                                        <i class="fa fa-check"></i>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-sm btn-danger"
+                                                        onclick="decline_proforma(<?= $lData->proforma_id ?>)"
+                                                        title="Hapus proforma"
+                                                    >
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                    <a
+                                                        title="Edit"
+                                                        href="<?= base_url('proforma/edit/' . $lData->proforma_id . ''); ?>"
+                                                        class="btn btn-sm btn-secondary"
+                                                    >
+                                                        <i class="fa fa-pencil-alt"></i>
+                                                        <span class="sr-only">Edit</span>
+                                                    </a>
+                                                </div>
+                                            <?php else : ?>
+                                                <em class="text-danger">Expired</em>
+                                            <?php endif ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
