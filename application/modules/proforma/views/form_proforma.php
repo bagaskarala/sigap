@@ -1,10 +1,5 @@
 <?php
 $empty_books        = $this->session->flashdata('empty_books');
-
-$total_weight = 0;
-foreach ($proforma_book as $book) {
-    $total_weight +=  $book->weight * $book->qty;
-}
 ?>
 
 <header class="page-title-bar">
@@ -269,6 +264,10 @@ foreach ($proforma_book as $book) {
                                             <td width="175px"> Stock </td>
                                             <td id="info-stock"></td>
                                         </tr>
+                                        <tr>
+                                            <td width="175px"> Berat </td>
+                                            <td><span id="info-weight"></span> gram</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -386,6 +385,12 @@ foreach ($proforma_book as $book) {
                                                         class="form-control"
                                                         value="<?= $books->book_id ?>"
                                                     />
+                                                    <input
+                                                        type="number"
+                                                        hidden
+                                                        id="proforma-book-weight-<?= $books->book_id ?>"
+                                                        value="<?= $books->weight ?>"
+                                                    >
                                                 </td>
                                                 <td class="align-middle">Rp <?= $books->price ?>
                                                     <input
@@ -450,7 +455,7 @@ foreach ($proforma_book as $book) {
                                         >Rp 0</td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <?= $total_weight / 1000 ?> kg</td>
+                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <span id="total_weight"></span> kg</td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
@@ -470,16 +475,18 @@ foreach ($proforma_book as $book) {
                         </div>
 
                         <!-- button -->
-                        <input
-                            type="submit"
-                            class="btn btn-primary"
-                            value="Submit"
-                        />
-                        <a
-                            class="btn btn-secondary"
-                            href="<?= base_url($pages); ?>"
-                            role="button"
-                        >Back</a>
+                        <div class="d-flex justify-content-end">
+                            <a
+                                class="btn btn-secondary"
+                                href="<?= base_url($pages); ?>"
+                                role="button"
+                            >Back</a>
+                            <input
+                                type="submit"
+                                class="btn btn-primary ml-2"
+                                value="Submit"
+                            />
+                        </div>
                     </form>
                 </div>
             </section>
@@ -491,6 +498,7 @@ foreach ($proforma_book as $book) {
 <script>
 $(document).ready(function() {
     updateGrandTotal()
+    updateTotalWeight()
 
     $('#customer-id').change(function(e) {
         const customerId = e.target.value
@@ -596,6 +604,7 @@ $(document).ready(function() {
             add_book_to_invoice(qty.max);
             reset_book();
             updateGrandTotal()
+            updateTotalWeight()
         }
     });
 
@@ -605,6 +614,8 @@ $(document).ready(function() {
         var bookId = $selector.children("input").val()
         $("#book-id").prepend(new Option(bookTitle, bookId))
         $(this).closest("tr").remove();
+        updateGrandTotal()
+        updateTotalWeight()
     });
 
     $('#book-id').change(function(e) {
@@ -627,6 +638,7 @@ $(document).ready(function() {
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
                     $('#info-stock').html(res.data.warehouse_present)
+                    $('#info-weight').html(res.data.weight)
                 },
                 error: function(err) {
                     console.log(err);
@@ -669,6 +681,7 @@ $(document).ready(function() {
                     }
                 } else {
                     location.href = "<?= base_url("proforma/view/{$proforma->proforma_id}"); ?>";
+                    location.href = "<?= base_url("proforma/view/"); ?>" + response.proforma_id
                 }
             },
             error: function(req, err) {
@@ -686,6 +699,7 @@ function add_book_to_invoice(stock) {
     // Judul option yang di select
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;
     html += '<input type="text" hidden name="proforma_book_id[]" class="form-control" value="' + bookId.value + '"/>';
+    html += `<input type="number" hidden id="proforma-book-weight-${bookId.value}" value="${$('#info-weight').text()}"/>`;
     html += '</td>';
 
     // Harga
@@ -708,14 +722,13 @@ function add_book_to_invoice(stock) {
     html += '<td class="align-middle"> <span id="proforma-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
 
     $('#proforma_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
 }
 
 function reset_book() {
-
     document.getElementById('qty').value = 1;
     $("#book-id").val('').trigger('change')
     $('#book-info').hide();
@@ -730,6 +743,7 @@ function updateQty(book_id) {
     var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
     updateGrandTotal()
+    updateTotalWeight()
 }
 
 function updateGrandTotal() {
@@ -742,10 +756,15 @@ function updateGrandTotal() {
     })
 }
 
-function decreaseGrandTotal(book_id) {
-    var total_html = $('#proforma-book-total-' + book_id).html()
-    var res = total_html.split(" ")
-    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
-    $('#grand_total').html('Rp ' + grandTotal)
+function updateTotalWeight() {
+    let totalWeight = 0
+    $('#proforma_items tr').each(function() {
+        $selector = $(this).find("td:first")
+        book_id = $selector.find("input").val()
+        const qty = $('#proforma-book-qty-' + book_id).val()
+        const weight = $('#proforma-book-weight-' + book_id).val() / 1000 // gram to kg
+        totalWeight += qty * weight
+    })
+    $('#total_weight').html(totalWeight.toFixed(3))
 }
 </script>

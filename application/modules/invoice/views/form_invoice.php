@@ -187,7 +187,10 @@
                                         <?= form_dropdown('customer-id', get_customer_list(), $invoice->customer_id, 'id="customer-id" class="form-control custom-select d-block"'); ?>
                                     </div>
 
-                                    <div id="customer-info">
+                                    <div
+                                        id="customer-info"
+                                        style="display: none;"
+                                    >
                                         <table class="table table-striped table-bordered mb-0">
                                             <tbody>
                                                 <tr>
@@ -525,16 +528,18 @@
                         </div>
 
                         <!-- button -->
-                        <input
-                            type="submit"
-                            class="btn btn-primary"
-                            value="Save"
-                        />
-                        <a
-                            class="btn btn-secondary"
-                            href="<?= base_url($pages); ?>"
-                            role="button"
-                        >Back</a>
+                        <div class="d-flex justify-content-end">
+                            <a
+                                class="btn btn-secondary"
+                                href="<?= base_url($pages); ?>"
+                                role="button"
+                            >Back</a>
+                            <input
+                                type="submit"
+                                class="btn btn-primary ml-2"
+                                value="Submit"
+                            />
+                        </div>
                     </form>
                 </div>
             </section>
@@ -565,26 +570,32 @@ $(document).ready(function() {
         $('#new-customer-type').val('')
     })
 
-    //hilangin buku yg sudah ada
-    <?php foreach ($invoice_book as $book) : ?>
-        $('#book-id option[value="' + <?= $book->book_id ?> + '"]').remove()
+    <?php if ($form_type == 'edit') : ?>
 
-        //fetch stock sekarang
-        $.ajax({
-            type: "GET",
-            url: "<?= base_url('invoice/api_get_book_dynamic_stock/'); ?>" + <?= $book->book_id ?> + '/' + source + '/' + libraryId,
-            datatype: "JSON",
-            success: function(res) {
-                $('#invoice-book-qty-' + <?= $book->book_id ?>).attr({
-                    "max": res.data.stock + <?= $book->qty ?>,
-                    "min": 1
-                });
-            },
-            error: function(err) {
-                console.log(err);
-            },
-        });
-    <?php endforeach; ?>
+        //hilangin buku yg sudah ada
+        <?php foreach ($invoice_book as $book) : ?>
+            $('#book-id option[value="' + <?= $book->book_id ?> + '"]').remove()
+
+            //fetch stock sekarang
+            $.ajax({
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_book_dynamic_stock/'); ?>" + <?= $book->book_id ?> + '/' + source + '/' + libraryId,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#invoice-book-qty-' + <?= $book->book_id ?>).attr({
+                        "max": res.data.stock + <?= $book->qty ?>,
+                        "min": 1
+                    });
+                },
+                error: function(err) {
+                    console.log(err);
+                },
+            });
+        <?php endforeach; ?>
+
+        $('#customer-info').show()
+    <?php endif ?>
+
 
     const $flatpickr = $('.dates').flatpickr({
         altInput: true,
@@ -866,7 +877,7 @@ function updateTotalWeight() {
         $selector = $(this).find("td:first")
         book_id = $selector.find("input").val()
         const qty = $('#invoice-book-qty-' + book_id).val()
-        const weight = $('#invoice-book-weight-' + book_id).val() / 1000
+        const weight = $('#invoice-book-weight-' + book_id).val() / 1000 // gram to kg
         totalWeight += qty * weight
     })
     $('#total_weight').html(totalWeight.toFixed(3))

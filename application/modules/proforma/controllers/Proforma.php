@@ -35,8 +35,11 @@ class Proforma extends Sales_Controller
         $this->load->view('template', compact('pages', 'main_view', 'proforma', 'pagination', 'total'));
     }
 
-    public function view($proforma_id)
+    public function view($proforma_id = null)
     {
+        if (!isset($proforma_id)) {
+            redirect('proforma');
+        }
         $pages          = $this->pages;
         $main_view      = 'proforma/view_proforma';
         $proforma       = $this->proforma->fetch_proforma_id($proforma_id);
@@ -218,25 +221,36 @@ class Proforma extends Sales_Controller
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
             }
-            echo json_encode(['status' => TRUE]);
+            echo json_encode([
+                'status' => TRUE,
+                'proforma_id' => $proforma_id
+            ]);
         }
-
         //View add proforma
         else {
             $customer_type = get_customer_type();
 
             $dropdown_book_options = $this->proforma->get_ready_book_list();
+            $proforma = (object)[
+                'proforma_id'   => '',
+                'customer_id'   => '',
+                'delivery_fee'   => 0,
+            ];
+            $proforma_book = [];
 
             $form_action = "proforma/add";
             $form_type = "add";
             $pages       = $this->pages;
             $main_view   = 'proforma/form_proforma';
-            $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options', 'form_action', 'form_type'));
+            $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options', 'form_action', 'form_type', 'proforma_book', 'proforma'));
         }
     }
 
-    public function edit($proforma_id)
+    public function edit($proforma_id = null)
     {
+        if (!isset($proforma_id)) {
+            redirect('proforma');
+        }
         //post edit proforma
         if ($_POST) {
             //validasi input edit
@@ -292,7 +306,10 @@ class Proforma extends Sales_Controller
             } else {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
-                echo json_encode(['status' => TRUE]);
+                echo json_encode([
+                    'status' => TRUE,
+                    'proforma_id' => $proforma_id
+                ]);
             }
         }
         //view edit proforma

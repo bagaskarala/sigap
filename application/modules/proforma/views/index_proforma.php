@@ -14,29 +14,6 @@ $customer_type_options = [
     'member' => 'Member',
     'general' => 'Umum'
 ];
-function generate_proforma_action($proforma_id)
-{
-    return html_escape('
-    <div class="list-group list-group-bordered" style="margin: -9px -15px;border-radius:0;">
-      <a href="' . base_url("proforma/action/{$proforma_id}/confirm") . '" class="list-group-item list-group-item-action p-2">
-        <div class="list-group-item-figure">
-        <div class="tile bg-success">
-        <span class="fa fa-check"></span>
-        </div>
-        </div>
-        <div class="list-group-item-body"> Buat Faktur </div>
-      </a>
-      <a href="' . base_url("proforma/action/{$proforma_id}/cancel") . '" class="list-group-item list-group-item-action p-2">
-        <div class="list-group-item-figure">
-        <div class="tile bg-danger">
-        <span class="fa fa-ban"></span>
-        </div>
-        </div>
-        <div class="list-group-item-body"> Hapus Proforma </div>
-      </a>
-    </div>
-    ');
-}
 ?>
 
 
@@ -187,17 +164,18 @@ function generate_proforma_action($proforma_id)
                                         </td>
                                         <td class="align-middle text-right d-flex">
                                             <button
-                                                type="button"
-                                                class="btn btn-sm btn-secondary"
-                                                data-container="body"
-                                                data-toggle="popover"
-                                                data-placement="left"
-                                                data-html="true"
-                                                data-content="<?= generate_proforma_action($lData->proforma_id); ?>"
-                                                data-trigger="focus"
-                                                style="margin-right:5px;"
+                                                class="btn btn-sm btn-success mr-1"
+                                                onclick="accept_proforma(<?= $lData->proforma_id ?>)"
+                                                title="Ubah proforma menjadi faktur"
                                             >
-                                                <i class="fa fa-thumbs-up">Aksi</i>
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                            <button
+                                                class="btn btn-sm btn-danger mr-1"
+                                                onclick="decline_proforma(<?= $lData->proforma_id ?>)"
+                                                title="Hapus proforma"
+                                            >
+                                                <i class="fa fa-trash"></i>
                                             </button>
                                             <a
                                                 title="Edit"
@@ -219,3 +197,21 @@ function generate_proforma_action($proforma_id)
         </div>
     </div>
 </div>
+
+<script>
+const baseUrl = '<?= base_url() ?>'
+
+function accept_proforma(proformaId) {
+    const acceptUrl = `${baseUrl}/proforma/action/${proformaId}/confirm`
+    if (window.confirm('Apakah anda yakin akan membuat faktur dari proforma ini?')) {
+        location.href = acceptUrl
+    }
+}
+
+function decline_proforma(proformaId) {
+    const declineUrl = `${baseUrl}/proforma/action/${proformaId}/cancel`
+    if (window.confirm('Apakah anda yakin akan menghapus proforma ini?')) {
+        location.href = declineUrl
+    }
+}
+</script>

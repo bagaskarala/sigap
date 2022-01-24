@@ -58,8 +58,11 @@ class Invoice extends Sales_Controller
         }
     }
 
-    public function view($invoice_id)
+    public function view($invoice_id = null)
     {
+        if (!isset($invoice_id)) {
+            redirect('invoice');
+        }
         $pages          = $this->pages;
         $main_view      = 'invoice/view_invoice';
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
