@@ -71,6 +71,8 @@ class Proforma extends Sales_Controller
 
         // Confirm Proforma
         if ($proforma_status == 'confirm') {
+            $total_weight = 0;
+
             //cek stok gudang dengan proforma_book
             $books = $this->proforma->fetch_proforma_book($id);
             foreach ($books as $book) {
@@ -81,7 +83,9 @@ class Proforma extends Sales_Controller
                     $flag = false;
                     array_push($empty_books, $book);
                 }
+                $total_weight +=  $book->weight * $book->qty;
             }
+
             if ($flag) {
                 $proforma       = $this->proforma->fetch_proforma_id($id);
                 $invoice_number = $this->proforma->get_last_proforma_number(true);
@@ -89,22 +93,20 @@ class Proforma extends Sales_Controller
                 //pemindahan data dari proforma ke faktur
                 $date_created       = date('Y-m-d H:i:s');
                 $add = [
-                    'number'            => $invoice_number,
-                    'customer_id'       => $proforma->customer_id,
-                    'due_date'          => $proforma->due_date,
-                    'type'              => 'cash',
-                    'source'            => 'warehouse',
-                    'status'            => 'waiting',
-                    'issued_date'       => $date_created,
-                    'delivery_fee'      => $proforma->delivery_fee
-                    // 'user_created'      => $user_created
+                    'number'       => $invoice_number,
+                    'customer_id'  => $proforma->customer_id,
+                    'due_date'     => $proforma->due_date,
+                    'type'         => 'cash',
+                    'source'       => 'warehouse',
+                    'status'       => 'waiting',
+                    'issued_date'  => $date_created,
+                    'delivery_fee' => $proforma->delivery_fee,
+                    'total_weight' => $total_weight
                 ];
                 $this->db->insert('invoice', $add);
 
                 // ID faktur terbaru untuk diisi buku
                 $invoice_id = $this->db->insert_id();
-
-                $total_weight = 0;
 
                 //pemindahan data dari proforma_book ke invoice_book
                 foreach ($books as $book) {
@@ -117,9 +119,6 @@ class Proforma extends Sales_Controller
                         'royalty'       => $this->invoice->get_book_royalty($book->book_id)
                     ];
                     $this->db->insert('invoice_book', $add_book);
-
-                    $book_weight = $this->proforma->get_book($book->book_id)->weight;
-                    $total_weight +=  $book_weight * $book->qty;
 
                     // Kurangi Stock Buku
                     $book_stock = $this->book_stock->where('book_id', $book->book_id)->get();
