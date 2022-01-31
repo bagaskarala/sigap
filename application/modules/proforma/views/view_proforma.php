@@ -52,11 +52,11 @@ foreach ($proforma_books as $pb) {
                                 </tr>
                                 <tr>
                                     <td width="200px"> Tanggal Jatuh Tempo </td>
-                                    <td><?= $proforma->due_date ?> <?= $proforma->due_date ? '- <em class="text-danger">Expired</em>' : '' ?></td>
+                                    <td><?= $proforma->due_date ?> <?= $proforma->is_expired ? '- <em class="text-danger">Expired</em>' : '' ?></td>
                                 </tr>
                                 <tr>
                                     <td width="200px"> Total Berat </td>
-                                    <td><?= $total_weight / 1000 ?> kg</td>
+                                    <td><?= $total_weight ?> gram</td>
                                 </tr>
                                 <tr>
                                     <td width="200px"> Ongkir </td>

@@ -508,7 +508,7 @@
                                         >Rp 0</td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <span id="total_weight"></span> kg</td>
+                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <span id="total_weight"></span> gram</td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
@@ -877,10 +877,10 @@ function updateTotalWeight() {
         $selector = $(this).find("td:first")
         book_id = $selector.find("input").val()
         const qty = $('#invoice-book-qty-' + book_id).val()
-        const weight = $('#invoice-book-weight-' + book_id).val() / 1000 // gram to kg
+        const weight = $('#invoice-book-weight-' + book_id).val()
         totalWeight += qty * weight
     })
-    $('#total_weight').html(totalWeight.toFixed(3))
+    $('#total_weight').html(totalWeight)
 }
 
 function updateDropdown(type, library_id) {

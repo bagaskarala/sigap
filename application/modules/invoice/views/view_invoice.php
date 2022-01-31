@@ -50,7 +50,7 @@
                                     </tr>
                                     <tr>
                                         <td width="200px"> Total Berat </td>
-                                        <td><?= $invoice->total_weight / 1000 ?> kg</td>
+                                        <td><?= $invoice->total_weight ?> gram</td>
                                     </tr>
                                     <tr>
                                         <td width="200px"> Ongkir </td>
@@ -343,7 +343,7 @@
             </div>
             <div class="modal-body">
                 <div class="my-2">
-                    Total Berat: <b><?= $invoice->total_weight / 1000 ?></b> kg
+                    Total Berat: <b><?= $invoice->total_weight ?></b>gram
                 </div>
                 <hr>
                 <div class="form-group">
