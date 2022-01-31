@@ -188,9 +188,7 @@ $receipt_options = array_merge([''  => '- Filter Bukti Bayar Faktur -'], get_inv
                                             <?= get_invoice_status()[$lData->status]; ?>
                                         </td>
                                         <td class="align-middle ">
-                                            <?php if ($lData->is_expired) : ?>
-                                                <em class="text-danger">Expired</em>
-                                            <?php elseif ($lData->status == 'waiting') : ?>
+                                            <?php if ($lData->status == 'waiting') : ?>
                                                 <div class="d-flex">
                                                     <button
                                                         class="btn btn-sm btn-success mr-1"

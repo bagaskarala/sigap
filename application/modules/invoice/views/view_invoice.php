@@ -46,7 +46,7 @@
                                 <?php if ($invoice->type != 'showroom') : ?>
                                     <tr>
                                         <td width="200px"> Tanggal Jatuh Tempo </td>
-                                        <td><?= $invoice->due_date ?> <?= $invoice->due_date ? '- <em class="text-danger">Expired</em>' : '' ?></td>
+                                        <td><?= $invoice->due_date ?></td>
                                     </tr>
                                     <tr>
                                         <td width="200px"> Total Berat </td>

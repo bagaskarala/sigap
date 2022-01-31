@@ -204,7 +204,7 @@ foreach ($proforma_books as $pb) {
                             class="btn btn-outline-danger"
                             id="btn-generate-pdf"
                             title="Generate PDF"
-                            taget="_blank"
+                            target="_blank"
                         >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
                     </div>
                 <?php endif ?>
