@@ -395,8 +395,8 @@ class Proforma extends Sales_Controller
 
     private function _check_if_expired($date)
     {
-        $now = new DateTime();
-        $due_date = new DateTime($date);
-        return $now > $due_date;
+        $now = (new Datetime())->format('Y-m-d');
+        $due_date = (new Datetime($date))->format('Y-m-d');
+        return $due_date < $now;
     }
 }
