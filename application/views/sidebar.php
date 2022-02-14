@@ -12,6 +12,11 @@ $menu_list = [
         'icon' => 'fa fa-home'
     ],
     [
+        'name' => 'Notifikasi',
+        'url'  => 'notifikasi',
+        'icon' => 'fa fa-star'
+    ],
+    [
         'title' => 'Penerbitan'
     ],
     [

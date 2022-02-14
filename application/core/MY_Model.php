@@ -232,6 +232,12 @@ class MY_Model extends CI_Model
         return $this;
     }
 
+    public function join_piyambak($table_to, $table_from, $column_table_to, $column_table_from, $type='left')
+    {
+        $this->db->join($table_to, "$table_to.{$column_table_to} = $table_from.{$column_table_from}", $type);
+        return $this;
+    }
+
     /**
      * Menggabungkan tabel secara fleksibel
      *
@@ -336,7 +342,7 @@ class MY_Model extends CI_Model
             $config['suffix']    = http_build_query($_GET, '', "&");
             $config['first_url'] = $config['base_url'];
         }
-
+        
         $this->pagination->initialize($config);
         return $this->pagination->create_links();
     }

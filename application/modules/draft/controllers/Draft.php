@@ -197,6 +197,39 @@ class Draft extends Operator_Controller
             $this->session->set_flashdata('error', $this->lang->line('toast_add_fail'));
         } else {
             $this->db->trans_commit();
+
+            //notifikasi apabila transaksi sukses 
+            $this->load->model('Notifikasi_model');
+            //get id user dari author
+            $authorids = [];
+            foreach ($input->author_id as $key => $value) {
+                array_push($authorids, $value);
+            }
+            $g_authors = $this->Notifikasi_model->get_authorsByIds($authorids);
+
+            foreach ($g_authors as $key) 
+            {
+                $datasa = array(
+                    'id_user_pembuat' => $this->user_id,
+                    'id_user_kepada' => $key->user_id,
+                    'id_draft' => $draft_id,
+                    'ket' => "Draft dengan judul buku ".$input->draft_title." masuk tahap desk screening"
+                );
+                $this->Notifikasi_model->insert_notifikasi($datasa);
+            }
+            //get seluruh admin penerbitan dan superadmin
+            $g_admins = $this->Notifikasi_model->get_all_adminpenerbitan_superadmin();
+            foreach ($g_admins as $key) {
+
+                $datasa = array(
+                    'id_user_pembuat' => $this->user_id,
+                    'id_user_kepada' => $key->user_id,
+                    'id_draft' => $draft_id,
+                    'ket' => "Draft dengan judul buku ".$input->draft_title." menunggu persetujuan desk screening"
+                );
+                $this->Notifikasi_model->insert_notifikasi($datasa);
+            }
+
             $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
         }
 
@@ -366,6 +399,34 @@ class Draft extends Operator_Controller
             return $this->send_json_output(false, $this->lang->line('toast_edit_fail'));
         } else {
             $this->db->trans_commit();
+
+            //kirim notifikasi hanya apabila berhasil
+            if ($input->progress == 'review' || $input->progress == 'edit' || $input->progress == 'layout' || $input->progress == 'proofread')
+            {
+                $this->load->model('Notifikasi_model');
+                $g_draft = $this->Notifikasi_model->get_draftById($draft_id);
+                $g_admins = $this->Notifikasi_model->get_all_adminpenerbitan_superadmin();
+                foreach ($g_admins as $key) {
+
+                    $datasa = array(
+                        'id_user_pembuat' => $this->user_id,
+                        'id_user_kepada' => $key->user_id,
+                        'id_draft' => $draft_id
+                    );
+
+                    if($input->progress == 'review')
+                        $datasa['ket'] = "Draft dengan judul buku ".$g_draft[0]->draft_title." yang telah selesai direview oleh ".$this->username." menunggu aksi persetujuan";
+                    if($input->progress == 'edit')
+                        $datasa['ket'] = "Draft dengan judul buku ".$g_draft[0]->draft_title." yang telah selesai di edit oleh ".$this->username." aksi menunggu persetujuan";
+                    if($input->progress == 'layout')
+                        $datasa['ket'] = "Layouting Draft dengan judul buku ".$g_draft[0]->draft_title." yang telah selesai di layout oleh ".$this->username." menunggu persetujuan";
+                    if($input->progress == 'proofread')
+                        $datasa['ket'] = "Proofread Draft dengan judul buku ".$g_draft[0]->draft_title." telah selesai dan menunggu aksi finalisasi";
+
+                    $this->Notifikasi_model->insert_notifikasi($datasa);
+                }
+            }
+
             return $this->send_json_output(true, $this->lang->line('toast_edit_success'));
         }
     }
@@ -415,10 +476,12 @@ class Draft extends Operator_Controller
             }
         }
 
+        $g_identifier = $input->progress;
         // unset unnecesary data
         unset($input->progress);
 
         if ($this->draft->where('draft_id', $draft_id)->update($input)) {
+
             return $this->send_json_output(true, $this->lang->line('toast_edit_success'));
         } else {
             return $this->send_json_output(false, $this->lang->line('toast_edit_fail'));
@@ -459,6 +522,13 @@ class Draft extends Operator_Controller
         }
     }
 
+    public function coba()
+    {
+        $reviewers = $this->reviewer->get_draft_reviewers(1211);
+        //$g_editor   = $this->user->get_draft_staffs(1211, 'editor');
+        echo var_dump($reviewers);
+    }
+
     // update draft, kirim update via post
     public function api_action_progress($draft_id)
     {
@@ -496,12 +566,135 @@ class Draft extends Operator_Controller
 
             // update draft status ketika selesai progress
             if ($input->progress == 'review') {
+
+                $this->load->model('Notifikasi_model');
+                $g_draft = $this->Notifikasi_model->get_draftById($draft_id);
+                if(!empty($g_draft))
+                {
+                    //kirim notifikasi kepada seluruh author
+                    $g_draft_authors = $this->Notifikasi_model->get_draft_author_idByIdDraft($draft_id);
+                    foreach ($g_draft_authors as $key) {
+                        $datasa = array(
+                            'id_user_pembuat' => $this->user_id,
+                            'id_user_kepada' => $key->user_id,
+                            'id_draft' => $draft_id       
+                        );
+                        if($input->accept)
+                            $datasa['ket'] = "Review draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." dan masuk tahap editorial";
+                        else
+                            $datasa['ket'] = "Review draft dengan judul buku ".$g_draft[0]->draft_title." telah ditolak oleh ".$this->username." Naskah ditolak";
+                        $this->Notifikasi_model->insert_notifikasi($datasa);
+                    }
+
+                    //kirim notifikasi kepada seluruh admin penerbitan
+                    if($input->accept)
+                    {
+                        $g_admins = $this->Notifikasi_model->get_all_adminpenerbitan_superadmin();
+                        foreach ($g_admins as $key) {
+
+                            $datasa = array(
+                                'id_user_pembuat' => $this->user_id,
+                                'id_user_kepada' => $key->user_id,
+                                'id_draft' => $draft_id,
+                                'ket' => "Draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." Tentukan editor naskah "
+                            );
+                            $this->Notifikasi_model->insert_notifikasi($datasa);
+                        }
+                    }
+                }
+
                 $input->draft_status = filter_boolean($input->accept) ? 5 : 99;
             } elseif ($input->progress == 'edit') {
+
+                $this->load->model('Notifikasi_model');
+                $g_draft = $this->Notifikasi_model->get_draftById($draft_id);
+                if(!empty($g_draft))
+                {
+                    //kirim notifikasi kepada author
+                    $g_draft_authors = $this->Notifikasi_model->get_draft_author_idByIdDraft($draft_id);
+                    foreach ($g_draft_authors as $key) {
+                        $datasa = array(
+                            'id_user_pembuat' => $this->user_id,
+                            'id_user_kepada' => $key->user_id,
+                            'id_draft' => $draft_id       
+                        );
+                        if($input->accept)
+                            $datasa['ket'] = "Editorial draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." dan masuk tahap layouting";
+                        /*else
+                            $datasa['ket'] = "XXXXXXXXXX Status eddit draft telah ditolak";*/
+                        $this->Notifikasi_model->insert_notifikasi($datasa);
+                    }
+                    //kirim notifikasi kepada seluruh admin penerbitan
+                    if($input->accept)
+                    {
+                        $g_admins = $this->Notifikasi_model->get_all_adminpenerbitan_superadmin();
+                        foreach ($g_admins as $key) {
+
+                            $datasa = array(
+                                'id_user_pembuat' => $this->user_id,
+                                'id_user_kepada' => $key->user_id,
+                                'id_draft' => $draft_id,
+                                'ket' => "Draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." Tentukan layouter dan design cover naskah"
+                            );
+                            $this->Notifikasi_model->insert_notifikasi($datasa);
+                        }
+                    }
+                }
+            
                 $input->draft_status = filter_boolean($input->accept) ? 7 : 99;
             } elseif ($input->progress == 'layout') {
+
+                $this->load->model('Notifikasi_model');
+                $g_draft = $this->Notifikasi_model->get_draftById($draft_id);
+                if(!empty($g_draft))
+                {
+                    if($input->accept)
+                    {
+                        //kirim notifikasi kepada author
+                        $g_draft_authors = $this->Notifikasi_model->get_draft_author_idByIdDraft($draft_id);
+                        foreach ($g_draft_authors as $key) {
+                            $datasa = array(
+                                'id_user_pembuat' => $this->user_id,
+                                'id_user_kepada' => $key->user_id,
+                                'id_draft' => $draft_id       
+                            );
+                            $datasa['ket'] = "Layouting draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." dan masuk tahap proofread";
+                            $this->Notifikasi_model->insert_notifikasi($datasa);
+                        }
+                        //kirim notifikasi kepada seluruh admin penerbitan
+                        $g_admins = $this->Notifikasi_model->get_all_adminpenerbitan_superadmin();
+                        foreach ($g_admins as $key) {
+
+                            $datasa = array(
+                                'id_user_pembuat' => $this->user_id,
+                                'id_user_kepada' => $key->user_id,
+                                'id_draft' => $draft_id,
+                                'ket' => "Draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." dan masuk tahap proofread"
+                            );
+                            $this->Notifikasi_model->insert_notifikasi($datasa);
+                        }
+                    }
+                    /*else
+                    {
+                        //kirim notifikasi kepada layouter yang terlibat
+                        $g_layouter = $this->user->get_draft_staffs($draft_id, 'layouter');
+                        foreach ($g_layouter as $key) {
+                            $datasa = array(
+                                'id_user_pembuat' => $this->user_id,
+                                'id_user_kepada' => $key->user_id,
+                                'id_draft' => $draft_id       
+                            );
+                            
+                            $datasa['ket'] = "XXXXXXXXXX Keterangan : layout telah ditolak";
+                            $this->Notifikasi_model->insert_notifikasi($datasa);
+                        }
+                    }*/
+                }
+
                 $input->draft_status = filter_boolean($input->accept) ? 9 : 99;
             } elseif ($input->progress == 'proofread') {
+
+
                 $input->draft_status = filter_boolean($input->accept) ? 13 : 99;
             }
         }
@@ -761,7 +954,30 @@ class Draft extends Operator_Controller
             $this->session->set_flashdata('error', $this->lang->line('toast_add_fail'));
         } else {
             $this->db->trans_commit();
+
             if ($book_id != 0) {
+
+                //kirim notif ketika sudah selesai
+                $this->load->model('Notifikasi_model');
+                $g_draft = $this->Notifikasi_model->get_draftById($draft_id);
+                if(!empty($g_draft))
+                {
+                    $g_draft_authors = $this->Notifikasi_model->get_draft_author_idByIdDraft($draft_id);
+                    foreach ($g_draft_authors as $key) {
+                        $datasa = array(
+                            'id_user_pembuat' => $this->user_id,
+                            'id_user_kepada' => $key->user_id,
+                            'id_draft' => $draft_id       
+                        );
+                        if($input->accept)
+                            $datasa['ket'] = "Finalisasi draft dengan judul buku ".$draft->draft_title." telah disetujui oleh ".$this->username.". Naskah siap dicetak";
+                        /*else
+                            $datasa['ket'] = "XXXXXXXXXX Keterangan : Proofread telah ditolak";*/
+                        $this->Notifikasi_model->insert_notifikasi($datasa);
+                    }
+                }
+
+                
                 $this->session->set_flashdata('warning', 'Lengkapi data buku berikut');
                 redirect("book/edit/$book_id");
             } else {

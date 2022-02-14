@@ -37,7 +37,7 @@ class Worksheet extends Operator_Controller
         $pagination = $this->worksheet->make_pagination(site_url('worksheet'), 2, $total);
         $this->load->view('template', compact('pages', 'main_view', 'worksheets', 'pagination', 'total'));
     }
-
+    
     public function edit($id = null)
     {
         $worksheet = $this->worksheet->where('worksheet_id', $id)->get();
@@ -72,12 +72,51 @@ class Worksheet extends Operator_Controller
             if (!$input->worksheet_end_date) {
                 $input->worksheet_end_date = now();
             }
-        }
 
+            //notifikasi apabila transaksi sukses 
+            $this->load->model('Notifikasi_model');
+            //mengambil record draft
+            $g_draft = $this->Notifikasi_model->get_draftById($input->draft_id);
+            if(!empty($g_draft))
+            {
+                if($input->worksheet_status == 0)
+                {
+                    //jika masuk tahap desk screening kirim ke all admin penerbitan
+                    $g_admins = $this->Notifikasi_model->get_all_adminpenerbitan_superadmin();
+                    foreach ($g_admins as $key) {
+
+                        $datasa = array(
+                            'id_user_pembuat' => $this->user_id,
+                            'id_user_kepada' => $key->user_id,
+                            'id_draft' => $draft_id,
+                            'ket' => "Draft dengan judul buku ".$draft->draft_title." telah disetujui oleh ".$this->username." Tentukan reviewer untuk mengulas naskah "
+                        );
+                        $this->Notifikasi_model->insert_notifikasi($datasa);
+                    }
+                }
+
+                $g_draft_authors = $this->Notifikasi_model->get_draft_author_idByIdDraft($input->draft_id);
+                foreach ($g_draft_authors as $key) {
+                    $datasa = array(
+                        'id_user_pembuat' => $this->user_id,
+                        'id_user_kepada' => $key->user_id,
+                        'id_draft' => $input->draft_id       
+                    );
+                    if($input->worksheet_status == 1)
+                        $datasa['ket'] = "Draft dengan judul buku ".$g_draft[0]->draft_title." telah disetujui oleh ".$this->username." dan masuk tahap review";
+                    if($input->worksheet_status == 2)
+                        $datasa['ket'] = "Draft dengan judul buku ".$g_draft[0]->draft_title." tidak lolos deskscreening. Silakan ajukan pendaftaran naskah kembali";
+                    $this->Notifikasi_model->insert_notifikasi($datasa);
+                }
+            }            
+        }
+        
         $this->db->trans_begin();
 
         // update lembar kerja
         $this->worksheet->where('worksheet_id', $id)->update($input);
+
+        //notifikasi
 
         // update draft status
         // worksheet_status berisi 0 | 1 | 2 sesuai dengan draft status

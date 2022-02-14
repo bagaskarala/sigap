@@ -39,6 +39,21 @@ class Draft_reviewer extends Operator_Controller
         }
 
         if ($this->draft_reviewer->insert($input)) {
+            
+            //kirim notifikasi kepada reviewer yg terlibat
+            $this->load->model('Notifikasi_model');
+            $g_draft = $this->Notifikasi_model->get_draftById($input->draft_id);
+            $g_reviewer = $this->Notifikasi_model->get_userByIdReviewer($input->reviewer_id);
+            if(!empty($g_reviewer)) {
+                $datasa = array(
+                    'id_user_pembuat' => $this->user_id,
+                    'id_user_kepada' => $g_reviewer[0]->user_id,
+                    'id_draft' => $input->draft_id       
+                );
+                $datasa['ket'] = "Anda terpilih menjadi reviewer untuk mengulas draft dengan judul buku ".$g_draft[0]->draft_title;
+                $this->Notifikasi_model->insert_notifikasi($datasa);
+            }
+
             return $this->send_json_output(true, $this->lang->line('toast_add_success'));
         } else {
             return $this->send_json_output(false, $this->lang->line('toast_add_fail'));

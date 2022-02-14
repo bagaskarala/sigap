@@ -88,6 +88,26 @@ class Responsibility extends Operator_Controller
         }
 
         if ($this->responsibility->insert($input)) {
+
+            //kirim notifikasi kepada editor yang terlibat
+            $this->load->model('Notifikasi_model');
+            $g_draft = $this->Notifikasi_model->get_draftById($input->draft_id);
+            if(!empty($g_draft))
+            {
+                $datasa = array(
+                    'id_user_pembuat' => $this->user_id,
+                    'id_user_kepada' => $input->user_id,
+                    'id_draft' => $input->draft_id       
+                );   
+
+                if($level == "editor")
+                    $datasa['ket'] = "Anda terpilih menjadi editor draft dengan judul ".$g_draft[0]->draft_title;
+                if($level == "layouter")
+                    $datasa['ket'] = " Anda telah terpilih menjadi layouter/design cover pada draft ".$g_draft[0]->draft_title;
+                
+                $this->Notifikasi_model->insert_notifikasi($datasa);
+            }    
+
             return $this->send_json_output(true, $this->lang->line('toast_add_success'));
         } else {
             return $this->send_json_output(false, $this->lang->line('toast_add_fail'));
