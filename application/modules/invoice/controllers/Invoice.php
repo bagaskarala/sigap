@@ -590,12 +590,22 @@ class Invoice extends Sales_Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $filename = 'Data_Faktur';
-        $invoice_test = $this->invoice->filter_invoice($filters, -1);
+
+        // get all invoice without pagination
+        $invoice_data = $this->invoice->filter_invoice($filters, -1);
+        $invoices = $invoice_data['invoice'];
+
         $i = 2;
         $no = 1;
         // Column Content
-        foreach ($invoice_test['invoice'] as $data) {
-            foreach (range('A', 'J') as $v) {
+        foreach ($invoices as $data) {
+            $invoice_books = $this->invoice->fetch_invoice_book($data->invoice_id);
+            $total = 0;
+            foreach ($invoice_books as $invoice_book) {
+                $total += $invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100);
+            }
+
+            foreach (range('A', 'K') as $v) {
                 $receipt = explode("-", $data->receipt);
                 switch ($v) {
                     case 'A': {
@@ -638,6 +648,10 @@ class Invoice extends Sales_Controller
                             $value = $receipt[1] ?? '';
                             break;
                         }
+                    case 'K': {
+                            $value = $total;
+                            break;
+                        }
                 }
                 $sheet->setCellValue($v . $i, $value);
             }
@@ -654,6 +668,7 @@ class Invoice extends Sales_Controller
         $sheet->setCellValue('H1', 'Jatuh Tempo');
         $sheet->setCellValue('I1', 'Bukti Bayar');
         $sheet->setCellValue('J1', 'Marketplace');
+        $sheet->setCellValue('K1', 'Total Harga');
         // Auto width
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -665,6 +680,7 @@ class Invoice extends Sales_Controller
         $sheet->getColumnDimension('H')->setAutoSize(true);
         $sheet->getColumnDimension('I')->setAutoSize(true);
         $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');
