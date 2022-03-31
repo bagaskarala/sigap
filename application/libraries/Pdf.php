@@ -11,7 +11,8 @@ class Pdf extends Dompdf
         parent::__construct();
     }
 
-    public function generate_pdf_a4_portrait($html, $file_name) {
+    public function generate_pdf_a4_portrait($html, $file_name)
+    {
         $dompdf = new Dompdf();
 
         $options = new Options();
@@ -22,10 +23,11 @@ class Pdf extends Dompdf
         $dompdf->setPaper('A4', 'potrait');
         $dompdf->loadHtml($html);
         $dompdf->render();
-        $dompdf->stream($file_name.'.pdf',array("Attachment"=>0));
+        $dompdf->stream($file_name . '.pdf', array("Attachment" => 0));
     }
-    
-    public function generate_pdf_a4_landscape($html, $file_name) {
+
+    public function generate_pdf_a4_landscape($html, $file_name)
+    {
         $dompdf = new Dompdf();
 
         $options = new Options();
@@ -36,7 +38,23 @@ class Pdf extends Dompdf
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->loadHtml($html);
         $dompdf->render();
-        $dompdf->stream($file_name.'.pdf',array("Attachment"=>0));
+        $dompdf->stream($file_name . '.pdf', array("Attachment" => 0));
     }
 
+    public function generate_pdf_thermal($html, $file_name)
+    {
+        $dompdf = new Dompdf();
+
+        $options = new Options([
+            'dpi' => 72
+        ]);
+        $options->setIsRemoteEnabled(true);
+
+        $dompdf->setOptions($options);
+
+        $dompdf->setPaper('A4', 'potrait');
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        $dompdf->stream($file_name . '.pdf', array("Attachment" => 0));
+    }
 }

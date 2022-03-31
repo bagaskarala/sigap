@@ -581,7 +581,11 @@ class Invoice extends Sales_Controller
 
             $file_name = $invoice->number . '_Invoice';
 
-            $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+            if ($invoice_type === 'showroom') {
+                $this->pdf->generate_pdf_thermal($html, $file_name);
+            } else {
+                $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+            }
         }
     }
 
