@@ -61,7 +61,10 @@
         <tbody>
             <?php foreach ($invoice_books as $invoice_book) : ?>
                 <tr>
-                    <td colspan="4"><?= $invoice_book->book_title ?></td>
+                    <td
+                        colspan="4"
+                        style="padding-top: 5px;"
+                    ><?= $invoice_book->book_title ?></td>
                 </tr>
                 <tr>
                     <td style="width:5%">x<?= $invoice_book->qty ?></td>
