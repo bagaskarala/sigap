@@ -14,6 +14,38 @@ class Notifikasi_model extends MY_Model{
     return $this->db->insert_id();
   }
 
+  public function get_notifById($id)
+  {
+    $this->db->where('id', $id);
+    return $this->db->get('notifikasi')->result();    
+  }
+
+  public function update_notif($data, $id)
+  {
+    $this->db->where('id', $id);
+    $this->db->update('notifikasi', $data);
+  }
+
+  public function get_notif_belum_pushByUserKepadaTgl($id_user_kpd, $date)
+  {
+    $this->db->select('n.*, u.username');
+    $this->db->join('user u', 'u.user_id = n.id_user_pembuat');
+    $this->db->where('n.id_user_kepada', $id_user_kpd);
+    $this->db->where('n.is_pushed', '0');
+    $this->db->like('n.creation_date', $date);
+    return $this->db->get('notifikasi n')->row();    
+  }
+
+  public function get_notif_belum_readByUserKepada($id_user_kpd='')
+  {
+    $this->db->select('n.*, u.username');
+    $this->db->join('user u', 'u.user_id = n.id_user_pembuat');
+    $this->db->where('n.id_user_kepada', $id_user_kpd);
+    $this->db->where('n.is_read', '0');
+    $this->db->from('notifikasi n');
+    return $this->db->count_all_results();    
+  }
+
   public function get_userByUsername($username='')
   {
     $this->db->where('username', $username);
@@ -25,6 +57,39 @@ class Notifikasi_model extends MY_Model{
     $this->db->where('level', "admin_penerbitan");
     $this->db->or_where('level', "superadmin");
     return $this->db->get('user')->result();    
+  }
+
+  public function get_draftByreview_deadline($date = '')
+  {
+    $this->db->select('d.draft_id, u.user_id, d.draft_title, u.username, u.level');
+    $this->db->join('draft_reviewer r', 'r.draft_id = d.draft_id');
+    $this->db->join('reviewer rv', 'r.reviewer_id = rv.reviewer_id');
+    $this->db->join('user u', 'rv.user_id = u.user_id', 'left');
+    $this->db->like('d.review1_deadline', $date);
+    $this->db->where('d.review_end_date is null', NULL, FALSE);
+    return $this->db->get('draft d')->result();    
+  }
+
+  public function get_draftByedit_deadline($date = '')
+  {
+    $this->db->select('d.draft_id, u.user_id, d.draft_title, u.username, u.level');
+    $this->db->join('responsibility r', 'r.draft_id = d.draft_id');
+    $this->db->join('user u', 'r.user_id = u.user_id', 'left');
+    $this->db->like('d.edit_deadline', $date);
+    $this->db->where('u.level', 'editor');
+    $this->db->where('d.edit_end_date is null', NULL, FALSE);
+    return $this->db->get('draft d')->result();    
+  } 
+
+  public function get_draftBylayout_deadline($date = '')
+  {
+    $this->db->select('d.draft_id, u.user_id, d.draft_title, u.username, u.level');
+    $this->db->join('responsibility r', 'r.draft_id = d.draft_id');
+    $this->db->join('user u', 'r.user_id = u.user_id', 'left');
+    $this->db->like('d.layout_deadline', $date);
+    $this->db->where('u.level', 'layouter');
+    $this->db->where('d.layout_end_date is null', NULL, FALSE);
+    return $this->db->get('draft d')->result();    
   }
 
   public function get_draft_author_idByIdDraft($draft_id='')
@@ -92,7 +157,7 @@ class Notifikasi_model extends MY_Model{
             ->when('is_starred', $filters['is_starred'])
             ->when('is_read', $filters['is_read'])
             ->where('id_user_kepada', $id_user_kpd)
-            ->order_by('id')
+            ->order_by('id','desc')
             ->paginate($page)
             ->get_all();
         $total = $this->select('id')

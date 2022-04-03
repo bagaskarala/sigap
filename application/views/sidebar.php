@@ -337,7 +337,7 @@ $menu_list = [
                                         class="menu-link"
                                     >
                                         <span class="menu-icon <?= $menu['icon'] ?>"></span>
-                                        <span class="menu-text"><?= $menu['name'] ?></span>
+                                        <span class="menu-text"><?= $menu['name'] ?> <?php if($menu['name'] == 'Notifikasi') echo '<span id="count_belum_read_notif" class="badge badge-danger"></span>'; ?></span>
                                     </a>
                                 </li>
                             <?php endif ?>

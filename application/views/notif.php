@@ -46,7 +46,8 @@ $is_starred_options = [
                             <h5>Info</h5>
                             <p class="m-0">Klik tombol <button class="btn btn-sm btn-secondary"><i class="fa fa-check"></i>
                                     Dibaca</button> untuk membuat status pesan menjadi sudah terbaca</p>
-                            <p class="m-0">Klik lambang <button class="btn btn-sm btn-secondary"><i class="fa fa-star"></i></button> untuk menandai sebagai notifikasi berbintang</p>
+                            <p class="m-0">Lambang <button class="btn btn-sm btn-secondary"><i class="fa fa-star"></i></button> adalah tanda bahwa pesan merupakan notifikasi berbintang. Anda dapat melakukan klik pada lambang tersebut untuk toggle pesan berbintang.</p>
+                            
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -102,8 +103,8 @@ $is_starred_options = [
                                             <th scope="col" style="min-width:150px;">Pengirim</th>
                                             <th scope="col" style="min-width:220px;">Judul Buku</th>
                                             <th scope="col" style="min-width:350px;">Isi Notifikasi</th>
-                                            <th scope="col">Status</th>
-                                            <th></th>
+                                            <th scope="col" style="min-width:100px">Status</th>
+                                            <th scope="col" style="min-width:100px">Berbintang</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -118,11 +119,21 @@ $is_starred_options = [
                                                     ".highlight_keyword($key->judul_buku, $keyword)."
                                                 </a></td>";
                                         echo "<td class='align-middle'>".$key->ket."</td>";
-                                        echo "<td class='align-middle'>".$key->is_read."</td>";
-                                        echo "<td class='align-middle'>".$key->is_read."</td>";
+                                        if(empty($key->is_read))
+                                            echo "<td class='align-middle'>
+                                                <a href='".base_url('notifikasi/read/1/'.$key->id.'')."' class='btn btn-sm btn-secondary'><i class='fa fa-check'></i>
+                                                Dibaca</a></td>";
+                                        else
+                                            echo "<td class='align-middle'>Sudah Dibaca</td>";
+                                        if(empty($key->is_starred))
+                                        echo "<td class='align-middle'>
+                                                <a href='".base_url('notifikasi/toggle_bintang/1/'.$key->id.'')."' class='btn btn-sm btn-secondary'><i class='far fa-star'></i>
+                                                </a></td>";
+                                        else
+                                            echo "<td class='align-middle'>
+                                                <a href='".base_url('notifikasi/toggle_bintang/0/'.$key->id.'')."' class='btn btn-sm btn-secondary'><i class='fa fa-star'></i>
+                                                </a></td>";
                                         echo "</tr>";
-                                        
-                                        
                                             $j++;
                                         } ?>
                                     </tbody>
@@ -143,5 +154,6 @@ $is_starred_options = [
 <script type="text/javascript">
 $(document).ready(function() {
     doublescroll();
+
 });
 </script>

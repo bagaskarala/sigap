@@ -131,6 +131,7 @@
     <script src="<?= base_url('assets/vendor/select2/js/select2.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/summernote/summernote-bs4.min.js'); ?>"></script>
     <script src="<?= base_url('assets/vendor/toastr/toastr.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/vendor/push.js/bin/push.min.js'); ?>"></script>
     <!--
    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script> -->
@@ -148,3 +149,46 @@
 </body>
 
 </html>
+
+<!-- cek notifikasi utk dipush setiap 1 detik-->
+<script type="text/javascript">
+    function ajax_cek_notif() {
+        setInterval(function()
+        { 
+            $.ajax({
+                type:"get",
+                url:"<?php echo base_url()?>/notifikasi/cek_push",
+                datatype:"json",
+                success:function(data)
+                {
+                    res = JSON.parse(data);
+                    if(res['dari'])
+                    {
+                        Push.create("Notifikasi dari "+res['dari'], {
+                            body: res['message'],
+                            icon: '<?= base_url('assets/favicon.ico'); ?>',
+                            timeout: 10000,
+                            onClick: function () {
+                                window.focus();
+                                this.close();
+                            }
+                        });
+                    }
+                }
+            });
+
+            $.ajax({
+                type:"get",
+                url:"<?php echo base_url()?>/notifikasi/count_belum_read",
+                datatype:"json",
+                success:function(data)
+                {
+                    res = JSON.parse(data);
+                    $('#count_belum_read_notif').html(res['total'])
+                }
+            });            
+        }, 1500)
+    }
+    ajax_cek_notif();
+    
+</script>
