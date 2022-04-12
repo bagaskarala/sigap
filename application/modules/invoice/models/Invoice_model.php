@@ -76,7 +76,7 @@ class Invoice_model extends MY_Model
     public function fetch_invoice_book($invoice_id)
     {
         return $this->db
-            ->select('invoice_book.*, book.book_title, author.author_name, book_stock.book_location')
+            ->select('invoice_book.*, book.book_title, author.author_name, book_stock.book_location, book.weight')
             ->from('invoice_book')
             ->join('book', 'book.book_id = invoice_book.book_id')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id')
@@ -190,7 +190,7 @@ class Invoice_model extends MY_Model
         return $book;
     }
 
-    public function get_book_dynamic_stock($book_id, $source, $library_id)
+    public function get_book_dynamic_stock($book_id, $source, $library_id = null)
     {
         $book = $this->db->select('*')
             ->from('book')
@@ -400,7 +400,6 @@ class Invoice_model extends MY_Model
             "preparing_end_date" => date('Y-m-d H:i:s')
         ];
 
-
         $update_state = $this->invoice->where('invoice_id', $invoice_id)->update($input);
 
         if ($update_state) {
@@ -408,5 +407,11 @@ class Invoice_model extends MY_Model
         } else {
             return false;
         }
+    }
+
+    public function get_all_expired_invoice()
+    {
+        $now = date('Y-m-d');
+        return $this->select('invoice_id, due_date, status')->where('DATE(`due_date`) <', $now)->where('status', 'waiting')->get_all();
     }
 }

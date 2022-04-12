@@ -21,51 +21,102 @@
                     <form
                         id="invoice_form"
                         method="post"
-                        action="<?= base_url("invoice/add"); ?>"
                     >
-                        <legend>Form Tambah Faktur</legend>
-                        <div class="form-group">
-                            <label
-                                for="type"
-                                class="font-weight-bold"
-                            >Jenis Faktur<abbr title="Required">*</abbr></label>
+                        <legend>Form Faktur</legend>
+                        <!-- invoice -->
+                        <?php if ($form_type === 'edit') : ?>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-striped table-bordered mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td width="200px"> Nomor Faktur </td>
+                                            <td><strong><?= $invoice->number ?></strong> </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="200px"> Jenis Faktur </td>
+                                            <td><?= $invoice_type_options[$invoice->type] ?? $invoice->type; ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="200px"> Asal Faktur </td>
+                                            <td><?= $source_options[$invoice->source] ?? $invoice->source; ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="200px"> Nama Perpustakaan </td>
+                                            <td><?= $invoice->source_library_id ?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <?= form_dropdown('type', $invoice_type, 0, 'id="type" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-type"
-                                class="d-none error-message text-danger"
-                            >Jenis Faktur wajib diisi!</small>
-                        </div>
-                        <div
-                            class="form-group"
-                            style="display: none;"
-                            id='source-dropdown'
-                        >
-                            <label
-                                for="source"
-                                class="font-weight-bold"
-                            >Asal Stok<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source', $source, 'warehouse', 'id="source" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-source"
-                                class="d-none error-message text-danger"
-                            >Asal stok wajib diisi jika jenis faktur adalah tunai!</small>
-                        </div>
-                        <div
-                            class="form-group"
-                            id="source-library-dropdown"
-                            style="display:none"
-                        >
-                            <label
-                                for="source-library-id"
-                                class="font-weight-bold"
-                            >Asal Perpustakaan<abbr title="Required">*</abbr></label>
-                            <?= form_dropdown('source-library-id', get_dropdown_list_library(), 0, 'id="source-library-id" class="form-control custom-select d-block"'); ?>
-                            <small
-                                id="error-source-library"
-                                class="d-none error-message text-danger"
-                            >Asal perpustakaan wajib diisi jika asal stok faktur adalah perpustakaan!</small>
-                        </div>
+                            <!-- input hidden for holding value -->
+                            <input
+                                hidden
+                                name="type"
+                                id="type"
+                                class="form-control"
+                                value="<?= $invoice->type ?>"
+                            />
+                            <input
+                                hidden
+                                type="text"
+                                id="source"
+                                name="source"
+                                value="<?= $invoice->source ?>"
+                            >
+                            <input
+                                hidden
+                                type="number"
+                                id="source-library-id"
+                                name="source-library-id"
+                                value="<?= $invoice->source_library_id ?>"
+                            >
+                        <?php endif ?>
+                        <?php if ($form_type === 'add') : ?>
+                            <div id="invoice_form_add">
+                                <div class="form-group">
+                                    <label
+                                        for="type"
+                                        class="font-weight-bold"
+                                    >Jenis Faktur<abbr title="Required">*</abbr></label>
+
+                                    <?= form_dropdown('type', $invoice_type_options, null, 'id="type" class="form-control custom-select d-block"'); ?>
+                                    <small
+                                        id="error-type"
+                                        class="d-none error-message text-danger"
+                                    >Jenis Faktur wajib diisi!</small>
+                                </div>
+                                <div
+                                    class="form-group"
+                                    style="display: none;"
+                                    id='source-dropdown'
+                                >
+                                    <label
+                                        for="source"
+                                        class="font-weight-bold"
+                                    >Asal Stok<abbr title="Required">*</abbr></label>
+                                    <?= form_dropdown('source', $source_options, 'warehouse', 'id="source" class="form-control custom-select d-block"'); ?>
+                                    <small
+                                        id="error-source"
+                                        class="d-none error-message text-danger"
+                                    >Asal stok wajib diisi jika jenis faktur adalah tunai!</small>
+                                </div>
+                                <div
+                                    class="form-group"
+                                    id="source-library-dropdown"
+                                    style="display:none"
+                                >
+                                    <label
+                                        for="source-library-id"
+                                        class="font-weight-bold"
+                                    >Asal Perpustakaan<abbr title="Required">*</abbr></label>
+                                    <?= form_dropdown('source-library-id', get_dropdown_list_library(), 0, 'id="source-library-id" class="form-control custom-select d-block"'); ?>
+                                    <small
+                                        id="error-source-library"
+                                        class="d-none error-message text-danger"
+                                    >Asal perpustakaan wajib diisi jika asal stok faktur adalah perpustakaan!</small>
+                                </div>
+                            </div>
+                        <?php endif ?>
                         <div class="form-group">
                             <label
                                 for="due-date"
@@ -78,6 +129,7 @@
                                     name="due-date"
                                     id="due-date"
                                     class="form-control dates"
+                                    value="<?= $invoice->due_date ?>"
                                     required
                                 />
                                 <div class="input-group-append">
@@ -88,13 +140,16 @@
                                     >Clear</button>
                                 </div>
                             </div>
+                            <?= form_error('due_date', $invoice->due_date); ?>
                             <small
                                 id="error-due-date"
                                 class="d-none error-message text-danger"
                             >Jatuh Tempo wajib diisi!</small>
                         </div>
+
                         <hr class="my-4">
 
+                        <!-- customer -->
                         <div class="form-group">
                             <label
                                 for="customer-id"
@@ -129,7 +184,7 @@
                                     id="customer-existing"
                                 >
                                     <div class="form-group col-md-8 p-0">
-                                        <?= form_dropdown('customer-id', get_customer_list(), 0, 'id="customer-id" class="form-control custom-select d-block"'); ?>
+                                        <?= form_dropdown('customer-id', get_customer_list(), $invoice->customer_id, 'id="customer-id" class="form-control custom-select d-block"'); ?>
                                     </div>
 
                                     <div
@@ -140,23 +195,22 @@
                                             <tbody>
                                                 <tr>
                                                     <td width="175px"> Nama Pembeli </td>
-                                                    <td id="info-customer-name"></td>
+                                                    <td id="info-customer-name"><?= $customer->name ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td width="175px"> Alamat </td>
-                                                    <td id="info-address"></td>
+                                                    <td id="info-address"><?= $customer->address ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td width="175px"> Nomor Telepon </td>
-                                                    <td id="info-phone-number"></td>
-                                                </tr>
+                                                    <td id="info-phone-number"><?= $customer->phone_number ?></td>
                                                 <tr>
                                                     <td width="175px"> Email </td>
-                                                    <td id="info-email"></td>
+                                                    <td id="info-email"><?= $customer->email ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td width="175px"> Tipe Membership </td>
-                                                    <td id="info-type"></td>
+                                                    <td id="info-type"><?= $customer->type ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -224,19 +278,6 @@
                                         </div>
                                         <div class="form-group">
                                             <label
-                                                for="new-customer-email"
-                                                class="font-weight-bold"
-                                            >Email
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="new-customer-email"
-                                                id="new-customer-email"
-                                                class="form-control"
-                                            />
-                                        </div>
-                                        <div class="form-group">
-                                            <label
                                                 for="new-customer-type"
                                                 class="font-weight-bold"
                                             >Jenis Customer<abbr title="Required">*</abbr></label>
@@ -251,18 +292,16 @@
                             </div>
 
                         </div>
-
                         <small
                             id="error-customer-info"
                             class="d-none error-message text-danger"
                         >Data customer wajib diisi!</small>
 
                         <hr class="my-4">
+
+                        <!-- book -->
                         <div class="row">
-                            <div
-                                id="book-dropdown"
-                                class="form-group col-md-8"
-                            >
+                            <div class="form-group col-md-8">
                                 <label
                                     for="book_id"
                                     class="font-weight-bold"
@@ -273,9 +312,7 @@
                                     class="d-none error-message text-danger"
                                 >Buku wajib diisi!</small>
                             </div>
-
                         </div>
-
                         <div
                             id="book-info"
                             style="display:none"
@@ -304,8 +341,12 @@
                                             <td id="info-price"></td>
                                         </tr>
                                         <tr>
-                                            <td width="175px"> Stock </td>
+                                            <td width="175px"> Stok </td>
                                             <td id="info-stock"></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="175px"> Berat </td>
+                                            <td><span id="info-weight"></span> gram</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -313,7 +354,7 @@
                             <br>
 
                             <div class="row">
-                                <div class="form-group col-4 col-md-2">
+                                <div class="form-group col-md-2">
                                     <label
                                         for="qty"
                                         class="font-weight-bold"
@@ -327,7 +368,7 @@
                                         class="form-control"
                                     />
                                 </div>
-                                <div class="form-group col-4 col-md-2">
+                                <div class="form-group col-md-2">
                                     <label
                                         for="discount"
                                         class="font-weight-bold"
@@ -342,7 +383,7 @@
                                         class="form-control"
                                     />
                                 </div>
-                                <div class="form-group col-4 col-md-2">
+                                <div class="form-group col-md-2">
                                     <label
                                         for="add-item"
                                         class="font-weight-bold"
@@ -391,6 +432,69 @@
                                 </thead>
                                 <tbody id="invoice_items">
                                     <!-- Items -->
+                                    <?php foreach ($invoice_book as $books) : ?>
+                                        <tr>
+                                            <td class="align-middle text-left font-weight-bold"><?= $books->book_title ?>
+                                                <input
+                                                    type="text"
+                                                    hidden
+                                                    name="invoice_book_id[]"
+                                                    class="form-control"
+                                                    value="<?= $books->book_id ?>"
+                                                />
+                                                <input
+                                                    type="number"
+                                                    hidden
+                                                    id="invoice-book-weight-<?= $books->book_id ?>"
+                                                    value="<?= $books->weight ?>"
+                                                >
+                                            </td>
+                                            <td class="align-middle">Rp <?= $books->price ?>
+                                                <input
+                                                    id="invoice-book-price-<?= $books->book_id ?>"
+                                                    type="number"
+                                                    hidden
+                                                    name="invoice_book_price[]"
+                                                    class="form-control"
+                                                    value="<?= $books->price ?>"
+                                                />
+                                            </td>
+                                            <td class="align-middle">
+                                                <input
+                                                    id="invoice-book-qty-<?= $books->book_id ?>"
+                                                    type="number"
+                                                    required
+                                                    name="invoice_book_qty[]"
+                                                    class="form-control"
+                                                    value="<?= $books->qty ?>"
+                                                    onchange="updateQty(<?= $books->book_id ?>)"
+                                                />
+                                            </td>
+                                            <td class="align-middle"><?= $books->discount ?>%
+                                                <input
+                                                    id="invoice-book-discount-<?= $books->book_id ?>"
+                                                    type="number"
+                                                    hidden
+                                                    name="invoice_book_discount[]"
+                                                    class="form-control"
+                                                    value="<?= $books->discount ?>"
+                                                />
+                                            </td>
+                                            <td class="align-middle">
+                                                <span id="invoice-book-total-<?= $books->book_id ?>">
+                                                    Rp
+                                                    <?php
+                                                    $total = $books->qty * $books->price * (1 - $books->discount / 100);
+                                                    echo $total;
+                                                    ?>
+                                                </span>
+                                            </td>
+                                            <td class="align-middle"><button
+                                                    type="button"
+                                                    class="btn btn-danger remove"
+                                                >Hapus</button></td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                                 <tfoot>
                                     <tr>
@@ -399,12 +503,12 @@
                                         <td></td>
                                         <td><b>Grand Total</b></td>
                                         <td
-                                            id="grand_total"
                                             colspan="2"
+                                            id="grand_total"
                                         >Rp 0</td>
                                     </tr>
                                     <tr>
-                                        <td></td>
+                                        <td style="vertical-align: middle;"> <b>Berat Total</b>: <span id="total_weight"></span> gram</td>
                                         <td></td>
                                         <td></td>
                                         <td class="align-middle"><b>Ongkir</b></td>
@@ -414,7 +518,7 @@
                                                 min="0"
                                                 name="delivery-fee"
                                                 id="delivery-fee"
-                                                value="0"
+                                                value="<?= $invoice->delivery_fee ?>"
                                                 class="form-control"
                                             />
                                         </td>
@@ -424,16 +528,18 @@
                         </div>
 
                         <!-- button -->
-                        <input
-                            type="submit"
-                            class="btn btn-primary"
-                            value="Submit"
-                        />
-                        <a
-                            class="btn btn-secondary"
-                            href="<?= base_url($pages); ?>"
-                            role="button"
-                        >Back</a>
+                        <div class="d-flex justify-content-end">
+                            <a
+                                class="btn btn-secondary"
+                                href="<?= base_url($pages); ?>"
+                                role="button"
+                            >Back</a>
+                            <input
+                                type="submit"
+                                class="btn btn-primary ml-2"
+                                value="Submit"
+                            />
+                        </div>
                     </form>
                 </div>
             </section>
@@ -443,7 +549,13 @@
 
 <script>
 $(document).ready(function() {
-    $('#type').val('')
+    updateGrandTotal()
+    updateTotalWeight()
+
+    var source = $('#source').val() || null
+    var libraryId = $('#source-library-id').val() || null
+
+    $('#discount').val('<?= $discount ?>')
 
     $('#tab-customer-new').click(function() {
         $('#customer-info').hide()
@@ -454,9 +566,36 @@ $(document).ready(function() {
         $('#new-customer-name').val('')
         $('#new-customer-address').val('')
         $('#new-customer-phone-number').val('')
-        $('#new-customer-type').val('')
         $('#new-customer-email').val('')
+        $('#new-customer-type').val('')
     })
+
+    <?php if ($form_type == 'edit') : ?>
+
+        //hilangin buku yg sudah ada
+        <?php foreach ($invoice_book as $book) : ?>
+            $('#book-id option[value="' + <?= $book->book_id ?> + '"]').remove()
+
+            //fetch stock sekarang
+            $.ajax({
+                type: "GET",
+                url: "<?= base_url('invoice/api_get_book_dynamic_stock/'); ?>" + <?= $book->book_id ?> + '/' + source + '/' + libraryId,
+                datatype: "JSON",
+                success: function(res) {
+                    $('#invoice-book-qty-' + <?= $book->book_id ?>).attr({
+                        "max": res.data.stock + <?= $book->qty ?>,
+                        "min": 1
+                    });
+                },
+                error: function(err) {
+                    console.log(err);
+                },
+            });
+        <?php endforeach; ?>
+
+        $('#customer-info').show()
+    <?php endif ?>
+
 
     const $flatpickr = $('.dates').flatpickr({
         altInput: true,
@@ -478,10 +617,12 @@ $(document).ready(function() {
         placeholder: '-- Pilih --',
         dropdownParent: $('#app-main')
     });
-    $("#source-library-id").select2({
-        placeholder: '-- Pilih --',
-        dropdownParent: $('#app-main')
-    });
+    if ($("#source-library-dropdown").length) {
+        $("#source-library-id").select2({
+            placeholder: '-- Pilih --',
+            dropdownParent: $('#app-main')
+        });
+    }
 
     $('#add-item').click(function() {
         // Judul buku harus dipilih
@@ -504,6 +645,7 @@ $(document).ready(function() {
             add_book_to_invoice(qty.max);
             reset_book();
             updateGrandTotal()
+            updateTotalWeight()
         }
     });
 
@@ -513,6 +655,8 @@ $(document).ready(function() {
         var bookId = $selector.children("input").val()
         $("#book-id").prepend(new Option(bookTitle, bookId))
         $(this).closest("tr").remove();
+        updateGrandTotal()
+        updateTotalWeight()
     });
 
     $('#book-id').change(function(e) {
@@ -539,6 +683,7 @@ $(document).ready(function() {
                     $('#info-price').html(res.data.harga)
                     $('#info-year').html(published_date.getFullYear())
                     $('#info-stock').html(res.data.stock)
+                    $('#info-weight').html(res.data.weight)
                 },
                 error: function(err) {
                     console.log(err);
@@ -565,29 +710,28 @@ $(document).ready(function() {
 
     $('#customer-id').change(function(e) {
         const customerId = e.target.value
+        if (!customerId) return
+        $('#new-customer-info').hide()
         $('#new-customer-name').val('')
         $('#new-customer-type').val('')
-
-        if (customerId != '') {
-            $.ajax({
-                type: "GET",
-                url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
-                datatype: "JSON",
-                success: function(res) {
-                    $('#customer-info').show()
-                    $('#discount').val(res.data.discount)
-                    $('#info-customer-name').html(res.data.name)
-                    $('#info-address').html(res.data.address)
-                    $('#info-phone-number').html(res.data.phone_number)
-                    $('#info-email').html(res.data.email)
-                    $('#info-type').html(res.data.type)
-                },
-                error: function(err) {
-                    $('#customer-info').hide()
-                },
-            });
-        }
-
+        $.ajax({
+            type: "GET",
+            url: "<?= base_url('invoice/api_get_customer/'); ?>" + customerId,
+            datatype: "JSON",
+            success: function(res) {
+                $('#discount').val(res.data.discount)
+                $('#customer-info').show()
+                $('#info-customer-name').html(res.data.name)
+                $('#info-address').html(res.data.address)
+                $('#info-phone-number').html(res.data.phone_number)
+                $('#info-email').html(res.data.email)
+                $('#info-type').html(res.data.type)
+            },
+            error: function(err) {
+                console.log("tidak ada orang")
+                $('#customer-info').hide()
+            },
+        });
     })
 
     $('#type').change(function(e) {
@@ -633,10 +777,12 @@ $(document).ready(function() {
     $("#invoice_form").submit(function(e) {
         e.preventDefault(); // avoid to execute the actual submit of the form.
         var form = $(this);
-        console.log(form.serialize())
+        const baseUrl = '<?= base_url() ?>';
+        const formType = '<?= $form_type ?>'
+        const invoiceId = '<?= $invoice->invoice_id  ?>'
         $.ajax({
             type: "POST",
-            url: "<?= base_url("invoice/add"); ?>",
+            url: formType === 'add' ? `${baseUrl}invoice/add` : `${baseUrl}invoice/edit/${invoiceId}`,
             data: form.serialize(), // serializes the form's elements.
             success: function(result) {
                 var response = $.parseJSON(result)
@@ -648,7 +794,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url('invoice'); ?>";
+                    location.href = `${baseUrl}invoice/view/${response.invoice_id}`
                 }
             },
             error: function(req, err) {
@@ -660,12 +806,12 @@ $(document).ready(function() {
 
 function add_book_to_invoice(stock) {
     var bookId = document.getElementById('book-id');
-
     html = '<tr>';
 
-    // Judul option yang di select
+    // Judul option yang di select, hidden: book_id, weight
     html += '<td class="align-middle text-left font-weight-bold">' + bookId.options[bookId.selectedIndex].text;
     html += '<input type="text" hidden name="invoice_book_id[]" class="form-control" value="' + bookId.value + '"/>';
+    html += `<input type="number" hidden id="invoice-book-weight-${bookId.value}" value="${$('#info-weight').text()}"/>`;
     html += '</td>';
 
     // Harga
@@ -685,10 +831,10 @@ function add_book_to_invoice(stock) {
 
     // Total
     var totalPrice = (parseFloat($('#info-price').text())) * (parseFloat($('#qty').val())) * (1 - (parseFloat($('#discount').val()) / 100));
-    html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '">Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
+    html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
 
     $('#invoice_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
@@ -709,23 +855,32 @@ function updateQty(book_id) {
     var total = Math.round(qty * price * (1 - discount / 100));
     total_html.html('Rp ' + total)
     updateGrandTotal()
+    updateTotalWeight()
 }
 
 function updateGrandTotal() {
-    var grandTotal = 0
+    let grandTotal = 0
     $('#invoice_items tr').each(function() {
         $selector = $(this).find("td:first")
         book_id = $selector.find("input").val()
-        grandTotal += Math.round($('#invoice-book-qty-' + book_id).val() * $('#invoice-book-price-' + book_id).val() * (1 - $('#invoice-book-discount-' + book_id).val() / 100))
-        $('#grand_total').html('Rp ' + grandTotal)
+        const qty = $('#invoice-book-qty-' + book_id).val()
+        const price = $('#invoice-book-price-' + book_id).val()
+        const discount = (1 - $('#invoice-book-discount-' + book_id).val() / 100)
+        grandTotal += Math.round(qty * price * discount)
     })
+    $('#grand_total').html('Rp ' + grandTotal)
 }
 
-function decreaseGrandTotal(book_id) {
-    var total_html = $('#invoice-book-total-' + book_id).html()
-    var res = total_html.split(" ")
-    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
-    $('#grand_total').html('Rp ' + grandTotal)
+function updateTotalWeight() {
+    let totalWeight = 0
+    $('#invoice_items tr').each(function() {
+        $selector = $(this).find("td:first")
+        book_id = $selector.find("input").val()
+        const qty = $('#invoice-book-qty-' + book_id).val()
+        const weight = $('#invoice-book-weight-' + book_id).val()
+        totalWeight += qty * weight
+    })
+    $('#total_weight').html(totalWeight)
 }
 
 function updateDropdown(type, library_id) {

@@ -1,7 +1,11 @@
 <?php
-$level              = check_level();
+$total_weight = 0;
+$grand_total = 0;
+foreach ($proforma_books as $pb) {
+    $total_weight +=  $pb->weight * $pb->qty;
+    $grand_total += $pb->price * $pb->qty * (1 - $pb->discount / 100);
+}
 ?>
-
 <header class="page-title-bar mb-3">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -25,8 +29,6 @@ $level              = check_level();
         class="card"
     >
         <div class="card-body">
-            <?php //=isset($input->draft_id) ? form_hidden('draft_id', $input->draft_id) : ''; 
-            ?>
             <div class="tab-content">
                 <!-- book-data -->
                 <div
@@ -50,7 +52,15 @@ $level              = check_level();
                                 </tr>
                                 <tr>
                                     <td width="200px"> Tanggal Jatuh Tempo </td>
-                                    <td><?= $proforma->due_date ?></td>
+                                    <td><?= $proforma->due_date ?> <?= $proforma->is_expired ? '- <em class="text-danger">Expired</em>' : '' ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Total Berat </td>
+                                    <td><?= $total_weight ?> gram</td>
+                                </tr>
+                                <tr>
+                                    <td width="200px"> Ongkir </td>
+                                    <td>Rp <?= number_format($proforma->delivery_fee, 0, ',', '.') ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,39 +139,50 @@ $level              = check_level();
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-
-                        <?php
-                        $total = 0;
-                        foreach ($proforma_books as $proforma_book) {
-                            $total += $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100);
-                        }
-                        ?>
                     </tbody>
                     <tfoot>
                         <tr style="text-align:center;">
                             <td colspan="4"></td>
                             <td colspan="2"><b>Grand Total</b></td>
-                            <td>Rp <?= number_format($total, 0, ',', '.') ?></td>
+                            <td>Rp <?= number_format($grand_total, 0, ',', '.') ?></td>
                         </tr>
                     </tfoot>
                 </table>
                 <br>
 
-                <div
-                    id="card-button"
-                    class="d-flex justify-content-end"
-                >
-                    <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-generate-invoice">Buat Faktur</button>
+                <?php if (!$proforma->is_expired) : ?>
+                    <div
+                        id="card-button"
+                        class="d-flex justify-content-end"
+                    >
+                        <button
+                            type="button"
+                            class="btn btn-primary mr-2"
+                            data-toggle="modal"
+                            data-target="#modal-generate-invoice"
+                        >Buat Faktur</button>
                         <!-- Modal -->
-                        <div class="modal fade" id="modal-generate-invoice" role="dialog"aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered"role="document">
+                        <div
+                            class="modal fade"
+                            id="modal-generate-invoice"
+                            role="dialog"
+                            aria-hidden="true"
+                        >
+                            <div
+                                class="modal-dialog modal-dialog-centered"
+                                role="document"
+                            >
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Ubah proforma jadi faktur?</h5>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <a 
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary"
+                                            data-dismiss="modal"
+                                        >Close</button>
+                                        <a
                                             id="btn-modal-generate-invoice"
                                             href="<?= base_url("proforma/action/$proforma->proforma_id/confirm") ?>"
                                             class="btn btn-primary"
@@ -172,16 +193,21 @@ $level              = check_level();
                                 </div>
                             </div>
                         </div>
-                        
-                    <a
-                        href="<?= base_url('proforma/generate_pdf/' . $proforma->proforma_id) ?>"
-                        class="btn btn-outline-danger"
-                        id="btn-generate-pdf"
-                        title="Generate PDF"
-                    >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
-                </div>
 
-
+                        <a
+                            href="<?= base_url('proforma/edit/' . $proforma->proforma_id) ?>"
+                            class="btn btn-outline-primary mr-2"
+                            title="Edit"
+                        >Edit <i class="fas fa-edit fa-fw"></i></a>
+                        <a
+                            href="<?= base_url('proforma/generate_pdf/' . $proforma->proforma_id) ?>"
+                            class="btn btn-outline-danger"
+                            id="btn-generate-pdf"
+                            title="Generate PDF"
+                            target="_blank"
+                        >Generate PDF <i class="fas fa-file-pdf fa-fw"></i></a>
+                    </div>
+                <?php endif ?>
             </div>
         </div>
     </section>

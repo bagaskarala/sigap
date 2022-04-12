@@ -1,7 +1,3 @@
-<?php
-$level              = check_level();
-?>
-
 <header class="page-title-bar mb-3">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -54,10 +50,10 @@ $level              = check_level();
                                     </tr>
                                     <tr>
                                         <td width="200px"> Total Berat </td>
-                                        <td><?= $invoice->total_weight / 1000 ?> kg</td>
+                                        <td><?= $invoice->total_weight ?> gram</td>
                                     </tr>
                                     <tr>
-                                        <td width="200px"> Total Ongkir </td>
+                                        <td width="200px"> Ongkir </td>
                                         <td>Rp <?= number_format($invoice->delivery_fee, 0, ',', '.') ?></td>
                                     </tr>
                                     <tr>
@@ -292,7 +288,7 @@ $level              = check_level();
                                 onclick="show_modal_edit()"
                                 class="btn btn-outline-primary mr-2"
                             >
-                                Edit Data <i class="fas fa-edit fa-fw"></i>
+                                Edit Ongkir
                             </button>
                         <?php endif ?>
                         <button
@@ -301,6 +297,28 @@ $level              = check_level();
                         >
                             Generate PDF<i class="fas fa-file-pdf fa-fw"></i>
                         </button>
+                    </div>
+                <?php endif ?>
+                <?php if ($invoice->status === 'waiting' && !$invoice->is_expired) : ?>
+                    <div class="d-flex justify-content-end">
+                        <button
+                            class="btn btn-outline-success mr-2"
+                            onclick="accept_invoice()"
+                        >
+                            Setuju
+                        </button>
+                        <button
+                            class="btn btn-outline-danger mr-2"
+                            onclick="decline_invoice()"
+                        >
+                            Tolak
+                        </button>
+                        <a
+                            href="<?= base_url("/invoice/edit/{$invoice->invoice_id}") ?>"
+                            class="btn btn-outline-primary mr-2"
+                        >
+                            Edit Data <i class="fas fa-edit fa-fw"></i>
+                        </a>
                     </div>
                 <?php endif ?>
             </div>
@@ -321,11 +339,11 @@ $level              = check_level();
     >
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Data</h5>
+                <h5 class="modal-title">Edit Ongkir</h5>
             </div>
             <div class="modal-body">
                 <div class="my-2">
-                    Total Berat: <b><?= $invoice->total_weight / 1000 ?></b> kg
+                    Total Berat: <b><?= $invoice->total_weight ?></b>gram
                 </div>
                 <hr>
                 <div class="form-group">
@@ -418,11 +436,8 @@ function show_modal_edit() {
 }
 
 function generate_pdf() {
-    if ($('#invoice_type').html() != 'Showroom') {
-        location.href = "<?= base_url("invoice/generate_pdf/" . $invoice->invoice_id); ?>"
-    } else {
-        location.href = "<?= base_url("invoice/showroom_pdf/" . $invoice->invoice_id); ?>"
-    }
+    const pdfUrl = "<?= base_url("invoice/generate_pdf/{$invoice->type}/{$invoice->invoice_id}"); ?>"
+    window.open(pdfUrl, '_blank')
 }
 
 function validate_input() {
@@ -467,6 +482,20 @@ function save_data() {
                 console.log(err)
             },
         })
+    }
+}
+
+function accept_invoice() {
+    const acceptUrl = '<?= base_url("invoice/action/{$invoice->invoice_id}/confirm") ?>'
+    if (window.confirm('Apakah anda yakin akan menyetujui faktur ini?')) {
+        location.href = acceptUrl
+    }
+}
+
+function decline_invoice() {
+    const declineUrl = '<?= base_url("invoice/action/{$invoice->invoice_id}/cancel") ?>'
+    if (window.confirm('Apakah anda yakin akan menolak faktur ini?')) {
+        location.href = declineUrl
     }
 }
 </script>

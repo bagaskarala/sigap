@@ -30,18 +30,26 @@ class Proforma extends Sales_Controller
         $total      = $get_data['total'];
         $pagination = $this->proforma->make_pagination(site_url('proforma'), 2, $total);
 
+        foreach ($proforma as $key => $value) {
+            $proforma[$key]->is_expired = $this->_check_if_expired($proforma[$key]->due_date);
+        }
+
         $pages      = $this->pages;
         $main_view  = 'proforma/index_proforma';
         $this->load->view('template', compact('pages', 'main_view', 'proforma', 'pagination', 'total'));
     }
 
-    public function view($proforma_id)
+    public function view($proforma_id = null)
     {
+        if (!isset($proforma_id)) {
+            redirect('proforma');
+        }
         $pages          = $this->pages;
         $main_view      = 'proforma/view_proforma';
         $proforma       = $this->proforma->fetch_proforma_id($proforma_id);
         $proforma_books  = $this->proforma->fetch_proforma_book($proforma_id);
         $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
+        $proforma->is_expired = $this->_check_if_expired($proforma->due_date);
 
         $this->load->view('template', compact('pages', 'main_view', 'proforma', 'proforma_books'));
     }
@@ -53,12 +61,18 @@ class Proforma extends Sales_Controller
             $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
             redirect($this->pages);
         }
+        if ($this->_check_if_expired($proforma->due_date)) {
+            $this->session->set_flashdata('warning', 'Proforma sudah melewati tangal jatuh tempo');
+            redirect($this->pages);
+        }
         $this->db->trans_begin();
         $flag = true;
         $empty_books = array();
 
         // Confirm Proforma
         if ($proforma_status == 'confirm') {
+            $total_weight = 0;
+
             //cek stok gudang dengan proforma_book
             $books = $this->proforma->fetch_proforma_book($id);
             foreach ($books as $book) {
@@ -69,7 +83,9 @@ class Proforma extends Sales_Controller
                     $flag = false;
                     array_push($empty_books, $book);
                 }
+                $total_weight +=  $book->weight * $book->qty;
             }
+
             if ($flag) {
                 $proforma       = $this->proforma->fetch_proforma_id($id);
                 $invoice_number = $this->proforma->get_last_proforma_number(true);
@@ -77,22 +93,20 @@ class Proforma extends Sales_Controller
                 //pemindahan data dari proforma ke faktur
                 $date_created       = date('Y-m-d H:i:s');
                 $add = [
-                    'number'            => $invoice_number,
-                    'customer_id'       => $proforma->customer_id,
-                    'due_date'          => $proforma->due_date,
-                    'type'              => 'cash',
-                    'source'            => 'warehouse',
-                    'status'            => 'waiting',
-                    'issued_date'       => $date_created,
-                    'delivery_fee'      => $proforma->delivery_fee
-                    // 'user_created'      => $user_created
+                    'number'       => $invoice_number,
+                    'customer_id'  => $proforma->customer_id,
+                    'due_date'     => $proforma->due_date,
+                    'type'         => 'cash',
+                    'source'       => 'warehouse',
+                    'status'       => 'waiting',
+                    'issued_date'  => $date_created,
+                    'delivery_fee' => $proforma->delivery_fee,
+                    'total_weight' => $total_weight
                 ];
                 $this->db->insert('invoice', $add);
 
                 // ID faktur terbaru untuk diisi buku
                 $invoice_id = $this->db->insert_id();
-
-                $total_weight = 0;
 
                 //pemindahan data dari proforma_book ke invoice_book
                 foreach ($books as $book) {
@@ -105,9 +119,6 @@ class Proforma extends Sales_Controller
                         'royalty'       => $this->invoice->get_book_royalty($book->book_id)
                     ];
                     $this->db->insert('invoice_book', $add_book);
-
-                    $book_weight = $this->proforma->get_book($book->book_id)->weight;
-                    $total_weight +=  $book_weight * $book->qty;
 
                     // Kurangi Stock Buku
                     $book_stock = $this->book_stock->where('book_id', $book->book_id)->get();
@@ -218,29 +229,43 @@ class Proforma extends Sales_Controller
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
             }
-            echo json_encode(['status' => TRUE]);
+            echo json_encode([
+                'status' => TRUE,
+                'proforma_id' => $proforma_id
+            ]);
         }
-
         //View add proforma
         else {
             $customer_type = get_customer_type();
 
             $dropdown_book_options = $this->proforma->get_ready_book_list();
+            $proforma = (object)[
+                'proforma_id'   => '',
+                'customer_id'   => '',
+                'delivery_fee'   => 0,
+            ];
+            $proforma_book = [];
 
             $form_action = "proforma/add";
             $form_type = "add";
             $pages       = $this->pages;
             $main_view   = 'proforma/form_proforma';
-            $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options', 'form_action', 'form_type'));
+            $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options', 'form_action', 'form_type', 'proforma_book', 'proforma'));
         }
     }
 
-    public function edit($proforma_id)
+    public function edit($proforma_id = null)
     {
+        if (!isset($proforma_id)) {
+            redirect('proforma');
+        }
         //post edit proforma
         if ($_POST) {
             //validasi input edit
             $this->proforma->validate_proforma();
+
+            $this->db->trans_begin();
+
             //Nentuin customer id jika customer diambil dari database
             if (!empty($this->input->post('customer-id'))) {
                 $customer_id = $this->input->post('customer-id');
@@ -261,8 +286,6 @@ class Proforma extends Sales_Controller
                 'customer_id'  => $customer_id,
                 'due_date'     => $this->input->post('due-date'),
                 'delivery_fee' => $this->input->post('delivery-fee')
-                // 'date_edited'   => date('Y-m-d H:i:s'),
-                // 'user_edited'   => $_SESSION['username']
             ];
 
             $this->db->set($edit)->where('proforma_id', $proforma_id)->update('proforma');
@@ -284,16 +307,35 @@ class Proforma extends Sales_Controller
                 ];
                 $this->db->insert('proforma_book', $book);
             }
-            echo json_encode(['status' => TRUE]);
-            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+
+            if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_fail'));
+            } else {
+                $this->db->trans_commit();
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+                echo json_encode([
+                    'status' => TRUE,
+                    'proforma_id' => $proforma_id
+                ]);
+            }
         }
         //view edit proforma
         else {
             $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
-
+            if ($this->_check_if_expired($proforma->due_date)) {
+                $this->session->set_flashdata('warning', 'Proforma sudah melewati tangal jatuh tempo');
+                redirect($this->pages);
+            }
             //info customer dan diskon
-            $customer = $this->db->select('*')->from('customer')->where('customer_id', $proforma->customer_id)->get()->row();
-            $discount_data = $this->db->select('discount')->from('discount')->where('membership', $customer->type)->get()->row();
+            $customer = $this->db->select('*')->from('customer')
+                ->where('customer_id', $proforma->customer_id)
+                ->get()
+                ->row();
+            $discount_data = $this->db->select('discount')->from('discount')
+                ->where('membership', $customer->type)
+                ->get()
+                ->row();
             $discount = $discount_data->discount;
 
             $customer_type = get_customer_type();
@@ -313,6 +355,10 @@ class Proforma extends Sales_Controller
     public function generate_pdf($proforma_id)
     {
         $proforma      = $this->proforma->fetch_proforma_id($proforma_id);
+        if (!$proforma) {
+            echo 'proforma tidak ditemukan';
+            return;
+        }
         $proforma_books = $this->proforma->fetch_proforma_book($proforma->proforma_id);
         $proforma->customer = $this->proforma->get_customer($proforma->customer_id);
 
@@ -345,5 +391,12 @@ class Proforma extends Sales_Controller
     {
         $discount = $this->proforma->get_discount($customerType);
         return $this->send_json_output(true, $discount);
+    }
+
+    private function _check_if_expired($date)
+    {
+        $now = (new Datetime())->format('Y-m-d');
+        $due_date = (new Datetime($date))->format('Y-m-d');
+        return $due_date < $now;
     }
 }

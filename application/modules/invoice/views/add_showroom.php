@@ -425,6 +425,7 @@ $(document).ready(function() {
         var bookId = $selector.children("input").val()
         $("#book-id").prepend(new Option(bookTitle, bookId))
         $(this).closest("tr").remove();
+        updateGrandTotal()
     });
 
     $('#book-id').change(function(e) {
@@ -535,7 +536,7 @@ $(document).ready(function() {
                         $('#' + response.input_error[i]).removeClass('d-none');
                     }
                 } else {
-                    location.href = "<?= base_url("invoice/view/"); ?>" + response.redirect
+                    location.href = "<?= base_url("invoice/view/"); ?>" + response.invoice_id
                 }
             },
             error: function(xhr, status, error) {
@@ -575,14 +576,13 @@ function add_book_to_invoice(stock) {
     html += '<td class="align-middle"> <span id="invoice-book-total-' + bookId.value + '"> Rp ' + parseFloat(totalPrice).toFixed(0) + '</span></td>';
 
     // Button Hapus
-    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove" onclick="decreaseGrandTotal(' + bookId.value + ')">Hapus</button></td></tr>';
+    html += '<td class="align-middle"><button type="button" class="btn btn-danger remove">Hapus</button></td></tr>';
 
     $('#invoice_items').append(html);
     $('#book-id option[value="' + bookId.value + '"]').remove()
 }
 
 function reset_book() {
-
     document.getElementById('qty').value = 1;
     $("#book-id").val('').trigger('change')
     $('#book-info').hide();
@@ -605,14 +605,7 @@ function updateGrandTotal() {
         $selector = $(this).find("td:first")
         book_id = $selector.find("input").val()
         grandTotal += Math.round($('#invoice-book-qty-' + book_id).val() * $('#invoice-book-price-' + book_id).val() * (1 - $('#invoice-book-discount-' + book_id).val() / 100))
-        $('#grand_total').html('Rp ' + grandTotal)
     })
-}
-
-function decreaseGrandTotal(book_id) {
-    var total_html = $('#invoice-book-total-' + book_id).html()
-    var res = total_html.split(" ")
-    var grandTotal = parseInt($('#grand_total').html()) - parseInt(res[1])
     $('#grand_total').html('Rp ' + grandTotal)
 }
 </script>

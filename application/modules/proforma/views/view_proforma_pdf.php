@@ -108,6 +108,10 @@
         border-collapse: collapse;
     }
 
+    .proforma-table td {
+        padding: 5px 10px;
+    }
+
     </style>
 </head>
 
@@ -135,9 +139,14 @@
             <td style="width:70%;">
                 Kepada Yth.<br>
                 <?= $proforma->customer->name ?><br>
-                <?= $proforma->customer->address ?><br>
-                <?= $proforma->customer->phone_number ?><br><br>
-                No Faktur : <?= $proforma->number ?>
+                <?php if ($proforma->customer->address) : ?>
+                    <?= $proforma->customer->address ?><br>
+                <?php endif ?>
+                <?php if ($proforma->customer->phone_number) : ?>
+                    <?= $proforma->customer->phone_number ?><br>
+                <?php endif ?>
+                <br>
+                No Faktur : <b><?= $proforma->number ?></b>
             </td>
             <td style="width:30%; vertical-align: top;">
                 <?php $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] ?>
@@ -209,7 +218,7 @@
                             class="proforma-table"
                             style="height: 33px;"
                         ><?= $i ?></td>
-                        <td class="proforma-table"></td>
+                        <td class="proforma-table"><?= $proforma_book->book_location ?></td>
                         <td class="proforma-table"><?= $proforma_book->book_title ?></td>
                         <td
                             class="proforma-table"
@@ -222,11 +231,12 @@
                         <td
                             class="proforma-table"
                             style="text-align: right;"
-                        ><?= $proforma_book->price ?></td>
+                        ><?= number_format($proforma_book->price, 0, ',', '.') ?></td>
+                        <?php $total_price_per_book = $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100) ?>
                         <td
                             class="proforma-table"
                             style="text-align: right;"
-                        ><?= $proforma_book->price * $proforma_book->qty * (1 - $proforma_book->discount / 100) ?></td>
+                        ><?= number_format($total_price_per_book, 0, ',', '.') ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
@@ -242,21 +252,17 @@
         </tbody>
     </table>
 
-    <table style="width: 100%;">
+    <table style="width: 100%; margin-bottom:20px">
         <tr>
             <td
                 scope="col"
-                style="height: 33px;"
+                colspan="2"
             ></td>
             <td scope="col"><b>Jumlah</b></td>
             <td
                 scope="col"
-                style="text-align: right;"
-            ></td>
-            <td
-                scope="col"
                 style="text-align: right; border-bottom: 4px double black"
-            ><b><?= $total ?></b></td>
+            ><b><?= number_format($total, 0, ',', '.') ?></b></td>
         </tr>
         <tr>
             <td
@@ -268,13 +274,9 @@
         <tr>
             <td
                 scope="col"
-                style="height: 33px;"
+                colspan="2"
             ></td>
             <td scope="col">Bayar</td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            ></td>
             <td
                 scope="col"
                 style="text-align: right;"
@@ -283,17 +285,13 @@
         <tr>
             <td
                 scope="col"
-                style="height: 33px;"
+                colspan="2"
             ></td>
             <td scope="col">Kurang</td>
             <td
                 scope="col"
                 style="text-align: right;"
-            ></td>
-            <td
-                scope="col"
-                style="text-align: right;"
-            ><?= $total ?></td>
+            ><?= number_format($total, 0, ',', '.') ?></td>
         </tr>
     </table>
 

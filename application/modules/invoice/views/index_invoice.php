@@ -22,30 +22,6 @@ $customer_type_options = array_merge([''  => '- Filter Kategori Customer -'], ge
 $status_options = array_merge([''  => '- Filter Kategori Status Faktur -'], get_invoice_status());
 
 $receipt_options = array_merge([''  => '- Filter Bukti Bayar Faktur -'], get_invoice_receipt());
-
-function generate_invoice_action($invoice_id)
-{
-    return html_escape('
-    <div class="list-group list-group-bordered" style="margin: -9px -15px;border-radius:0;">
-      <a href="' . base_url("invoice/action/{$invoice_id}/confirm") . '" class="list-group-item list-group-item-action p-2">
-        <div class="list-group-item-figure">
-        <div class="tile bg-success">
-        <span class="fa fa-check"></span>
-        </div>
-        </div>
-        <div class="list-group-item-body"> Setuju </div>
-      </a>
-      <a href="' . base_url("invoice/action/{$invoice_id}/cancel") . '" class="list-group-item list-group-item-action p-2">
-        <div class="list-group-item-figure">
-        <div class="tile bg-danger">
-        <span class="fa fa-ban"></span>
-        </div>
-        </div>
-        <div class="list-group-item-body"> Tolak </div>
-      </a>
-    </div>
-    ');
-}
 ?>
 
 
@@ -77,23 +53,6 @@ function generate_invoice_action($invoice_id)
             <section class="card card-fluid">
                 <div class="card-body p-0">
                     <div class="p-3">
-                        <div
-                            class="alert alert-info alert-dismissible fade show"
-                            role="alert"
-                        >
-                            <h5>Info</h5>
-                            <p class="m-0">Klik tombol <button class="btn btn-sm btn-secondary"><i class="fa fa-thumbs-up"></i>
-                                    Aksi</button> untuk menyetujui atau menolak faktur
-                            </p>
-                            <button
-                                type="button"
-                                class="close"
-                                data-dismiss="alert"
-                                aria-label="Close"
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
                         <?= form_open($pages, ['method' => 'GET']); ?>
                         <div class="row">
                             <div class="col-12 col-md-4 mt-2">
@@ -228,32 +187,34 @@ function generate_invoice_action($invoice_id)
                                         <td class="align-middle pr-4">
                                             <?= get_invoice_status()[$lData->status]; ?>
                                         </td>
-                                        <td class="align-middle text-right d-flex">
+                                        <td class="align-middle ">
                                             <?php if ($lData->status == 'waiting') : ?>
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-secondary"
-                                                    data-container="body"
-                                                    data-toggle="popover"
-                                                    data-placement="left"
-                                                    data-html="true"
-                                                    data-content="<?= generate_invoice_action($lData->invoice_id); ?>"
-                                                    data-trigger="focus"
-                                                    style="margin-right:5px;"
-                                                >
-                                                    <i class="fa fa-thumbs-up">Aksi</i>
-                                                </button>
-                                                <a
-                                                    title="Edit"
-                                                    href="<?= base_url('invoice/edit/' . $lData->invoice_id . ''); ?>"
-                                                    class="btn btn-sm btn-secondary"
-                                                >
-                                                    <i class="fa fa-pencil-alt"></i>
-                                                    <span class="sr-only">Edit</span>
-                                                </a>
-                                            <?php endif; ?>
-                                            <!-- Faktur Selesai Diproses -->
-                                            <?php if ($lData->status == 'preparing_finish') : ?>
+                                                <div class="d-flex">
+                                                    <button
+                                                        class="btn btn-sm btn-success mr-1"
+                                                        onclick="accept_invoice(<?= $lData->invoice_id ?>)"
+                                                        title="Faktur disetujui"
+                                                    >
+                                                        <i class="fa fa-check"></i>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-sm btn-danger mr-1"
+                                                        onclick="decline_invoice(<?= $lData->invoice_id ?>)"
+                                                        title="Faktur ditolak"
+                                                    >
+                                                        <i class="fa fa-ban"></i>
+                                                    </button>
+                                                    <a
+                                                        title="Edit"
+                                                        href="<?= base_url('invoice/edit/' . $lData->invoice_id . ''); ?>"
+                                                        class="btn btn-sm btn-secondary"
+                                                    >
+                                                        <i class="fa fa-pencil-alt"></i>
+                                                        <span class="sr-only">Edit</span>
+                                                    </a>
+                                                </div>
+                                            <?php elseif ($lData->status == 'preparing_finish') : ?>
+                                                <!-- Faktur Selesai Diproses -->
                                                 <button
                                                     type="button"
                                                     class="btn btn-sm btn-secondary font-weight-bold w-100"
@@ -334,5 +295,22 @@ $(document).ready(function() {
         }
     <?php endif ?>
     $('#flashmessage').delay(2000).hide(0);
+
 })
+
+const baseUrl = '<?= base_url() ?>'
+
+function accept_invoice(invoiceId) {
+    const acceptUrl = `${baseUrl}/invoice/action/${invoiceId}/confirm`
+    if (window.confirm('Apakah anda yakin akan menyetujui faktur ini?')) {
+        location.href = acceptUrl
+    }
+}
+
+function decline_invoice(invoiceId) {
+    const declineUrl = `${baseUrl}/invoice/action/${invoiceId}/cancel`
+    if (window.confirm('Apakah anda yakin akan menolak faktur ini?')) {
+        location.href = declineUrl
+    }
+}
 </script>

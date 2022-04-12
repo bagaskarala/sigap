@@ -5,6 +5,17 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Invoice extends Sales_Controller
 {
+    public $invoice_type_options = array(
+        'credit'      => 'Kredit',
+        'online'      => 'Online',
+        'cash'        => 'Tunai',
+    );
+
+    public $source_options = array(
+        'warehouse' => 'Gudang',
+        'library'   => 'Perpustakaan',
+    );
+
     public function __construct()
     {
         parent::__construct();
@@ -18,6 +29,11 @@ class Invoice extends Sales_Controller
 
     public function index($page = NULL)
     {
+        // SIDE EFFECT
+        // run command to set expired invoice which exceed due date
+        $this->set_expired();
+
+
         $filters = [
             'keyword'           => $this->input->get('keyword', true),
             'invoice_type'      => $this->input->get('invoice_type', true),
@@ -39,6 +55,10 @@ class Invoice extends Sales_Controller
         $total      = $get_data['total'];
         $pagination = $this->invoice->make_pagination(site_url('invoice'), 2, $total);
 
+        foreach ($invoice as $key => $value) {
+            $invoice[$key]->is_expired = $this->_check_if_expired($invoice[$key]->due_date);
+        }
+
         $pages      = $this->pages;
         $main_view  = 'invoice/index_invoice';
         $this->load->view('template', compact('pages', 'main_view', 'invoice', 'pagination', 'total'));
@@ -47,13 +67,17 @@ class Invoice extends Sales_Controller
         }
     }
 
-    public function view($invoice_id)
+    public function view($invoice_id = null)
     {
+        if (!isset($invoice_id)) {
+            redirect('invoice');
+        }
         $pages          = $this->pages;
         $main_view      = 'invoice/view_invoice';
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
         $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
         $invoice->customer = $this->invoice->get_customer($invoice->customer_id);
+        $invoice->is_expired = $this->_check_if_expired($invoice->due_date);
 
         $this->load->view('template', compact('pages', 'main_view', 'invoice', 'invoice_books'));
     }
@@ -175,31 +199,43 @@ class Invoice extends Sales_Controller
             } else {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_add_success'));
-                if ($type != 'showroom') echo json_encode(['status' => TRUE]);
-                else echo json_encode(['status' => TRUE, 'redirect' => $invoice_id]);
+                echo json_encode(['status' => TRUE, 'invoice_id' => $invoice_id]);
             }
         }
-
         //View add invoice
         else {
-            $invoice_type = array(
-                'credit'      => 'Kredit',
-                'online'      => 'Online',
-                'cash'        => 'Tunai',
-            );
+            $invoice = (object)[
+                'invoice_id'   => '',
+                'due_date'   => '',
+                'customer_id'   => '',
+                'delivery_fee'   => 0,
+            ];
 
-            $source = array(
-                'library'   => 'Perpustakaan',
-                'warehouse' => 'Gudang'
-            );
+            $customer = (object)[
+                'name'   => '',
+                'address'   => '',
+                'phone_number'   => '',
+                'email'   => '',
+                'type'   => '',
+            ];
+
+            $discount = 0;
+
+            $invoice_type_options = $this->invoice_type_options;
+
+            $source_options = $this->source_options;
 
             $customer_type = get_customer_type();
 
+            $invoice_book = [];
+
             $dropdown_book_options = $this->invoice->get_available_book_list('warehouse', '');
 
+            $form_type = 'add';
+
             $pages       = $this->pages;
-            $main_view   = 'invoice/add_invoice';
-            $this->load->view('template', compact('pages', 'main_view', 'invoice_type', 'source', 'customer_type', 'dropdown_book_options'));
+            $main_view   = 'invoice/form_invoice';
+            $this->load->view('template', compact('pages', 'main_view', 'invoice_type_options', 'source_options', 'customer_type', 'dropdown_book_options', 'form_type', 'invoice', 'invoice_book', 'customer', 'discount'));
         }
     }
 
@@ -214,8 +250,11 @@ class Invoice extends Sales_Controller
         $this->load->view('template', compact('pages', 'main_view', 'customer_type', 'dropdown_book_options'));
     }
 
-    public function edit($invoice_id)
+    public function edit($invoice_id = null)
     {
+        if (!isset($invoice_id)) {
+            redirect('invoice');
+        }
         //post edit invoice
         if ($_POST) {
             //validasi input edit
@@ -245,8 +284,6 @@ class Invoice extends Sales_Controller
                 'due_date'          => $this->input->post('due-date'),
                 'status'            => 'waiting',
                 'delivery_fee'      => $this->input->post('delivery-fee')
-                // 'date_edited'   => date('Y-m-d H:i:s'),
-                // 'user_edited'   => $_SESSION['username']
             ];
 
             $this->db->set($edit)->where('invoice_id', $invoice_id)->update('invoice');
@@ -351,48 +388,51 @@ class Invoice extends Sales_Controller
             } else {
                 $this->db->trans_commit();
                 $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
-                echo json_encode(['status' => TRUE]);
+                echo json_encode(['status' => TRUE, 'invoice_id' => $invoice_id]);
             }
         }
         //view edit invoice
         else {
             $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+            if ($this->_check_if_expired($invoice->due_date)) {
+                $this->session->set_flashdata('warning', 'Faktur sudah melewati tangal jatuh tempo');
+                redirect($this->pages);
+            }
 
             //info customer dan diskon
             $customer = $this->db->select('*')->from('customer')->where('customer_id', $invoice->customer_id)->get()->row();
             $discount_data = $this->db->select('discount')->from('discount')->where('membership', $customer->type)->get()->row();
             $discount = $discount_data->discount;
 
-            $invoice_type = array(
-                'credit'      => 'Kredit',
-                'online'      => 'Online',
-                'cash'        => 'Tunai',
-            );
+            $invoice_type_options = $this->invoice_type_options;
 
-            $source = array(
-                'library'   => 'Perpustakaan',
-                'warehouse' => 'Gudang',
-            );
+            $source_options = $this->source_options;
 
             $customer_type = get_customer_type();
 
             $invoice_book = $this->invoice->fetch_invoice_book($invoice->invoice_id);
 
-
             $dropdown_book_options = $this->invoice->get_available_book_list($invoice->source, $invoice->source_library_id);
 
+            $form_type = 'edit';
+
             $pages       = $this->pages;
-            $main_view   = 'invoice/edit_invoice';
-            $this->load->view('template', compact('pages', 'invoice', 'invoice_book', 'customer', 'discount', 'main_view', 'invoice_type', 'source', 'customer_type', 'dropdown_book_options'));
+            $main_view   = 'invoice/form_invoice';
+            $this->load->view('template', compact('pages', 'invoice', 'invoice_book', 'customer', 'discount', 'main_view', 'invoice_type_options', 'source_options', 'customer_type', 'dropdown_book_options', 'form_type'));
         }
     }
 
-    public function action($id, $invoice_status)
+    // internal_use: skip redirection and toast flash data
+    public function action($id, $invoice_status, $internal_use = false)
     {
         $invoice = $this->invoice->where('invoice_id', $id)->get();
         if (!$invoice) {
-            $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
-            redirect($this->pages);
+            if (!$internal_use) {
+                $this->session->set_flashdata('warning', $this->lang->line('toast_data_not_available'));
+                redirect($this->pages);
+            } else {
+                return;
+            }
         }
 
         $this->db->trans_begin();
@@ -416,65 +456,63 @@ class Invoice extends Sales_Controller
                     'confirm_date' => now(),
                     'preparing_deadline' => $preparing_deadline
                 ]);
-            } else
+            } elseif ($invoice_status == 'cancel') {
                 // Cancel Faktur
-                if ($invoice_status == 'cancel') {
-                    $this->invoice->where('invoice_id', $id)->update([
-                        'status' => $invoice_status,
-                        'cancel_date' => now(),
-                    ]);
-                    $invoice_books  = $this->invoice->fetch_invoice_book($id);
-                    // Harga dibuat 0 (Untuk bagian pendapatan)
-                    foreach ($invoice_books as $invoice_book) {
-                        $this->db->set('price', 0)->where('invoice_id', $id)->update('invoice_book');
-                    }
-
-
-                    if ($invoice->type != 'showroom') {
-                        // Kembalikan stock buku
-                        $invoice_books  = $this->invoice->fetch_invoice_book($id);
-                        foreach ($invoice_books as $invoice_book) {
-                            if ($invoice->source == 'warehouse') {
-                                $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
-                                $book_stock->warehouse_present += $invoice_book->qty;
-                                $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-                            } else
-                            if ($invoice->source == 'library') {
-                                $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
-                                $library_id = $invoice->source_library_id;
-                                $library_stock = ($this->book_stock->get_one_library_stock($book_stock->book_stock_id, $library_id))->library_stock;
-                                $book_stock->library_present += $invoice_book->qty;
-                                $library_stock += $invoice_book->qty;
-                                $this->db->set('library_stock', $library_stock)
-                                    ->where('book_stock_id', $book_stock->book_stock_id)
-                                    ->where('library_id', $library_id)
-                                    ->update('library_stock_detail');
-                            }
-                            $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
-                        }
-                        if ($invoice->source == 'warehouse') {
-                            // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
-                            $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $id)->get()->result();
-                            foreach ($book_transactions as $book_transaction) {
-                                $mutation = $book_transaction->stock_mutation;
-                                $newer_transactions = $this->db->select('*')
-                                    ->from('book_transaction')
-                                    ->where('book_transaction_id >', $book_transaction->book_transaction_id)
-                                    ->where('book_id', $book_transaction->book_id)
-                                    ->get()->result();
-                                foreach ($newer_transactions as $newer_transaction) {
-                                    $newer_transaction->stock_initial += $mutation;
-                                    $newer_transaction->stock_last += $mutation;
-                                    $this->book_transaction->where('book_transaction_id', $newer_transaction->book_transaction_id)->update($newer_transaction);
-                                }
-                            }
-                        }
-                        // Hapus Transaction yang sudah ada
-                        $this->db->where('invoice_id', $id)->delete('book_transaction');
-                    }
+                $this->invoice->where('invoice_id', $id)->update([
+                    'status' => $invoice_status,
+                    'cancel_date' => now(),
+                ]);
+                $invoice_books  = $this->invoice->fetch_invoice_book($id);
+                // Harga dibuat 0 (Untuk bagian pendapatan)
+                foreach ($invoice_books as $invoice_book) {
+                    $this->db->set('price', 0)->where('invoice_id', $id)->update('invoice_book');
                 }
-        } else
-        if ($invoice->status == 'preparing_finish') {
+
+
+                if ($invoice->type != 'showroom') {
+                    // Kembalikan stock buku
+                    $invoice_books  = $this->invoice->fetch_invoice_book($id);
+                    foreach ($invoice_books as $invoice_book) {
+                        if ($invoice->source == 'warehouse') {
+                            $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                            $book_stock->warehouse_present += $invoice_book->qty;
+                            $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
+                        } else
+                                if ($invoice->source == 'library') {
+                            $book_stock = $this->book_stock->where('book_id', $invoice_book->book_id)->get();
+                            $library_id = $invoice->source_library_id;
+                            $library_stock = ($this->book_stock->get_one_library_stock($book_stock->book_stock_id, $library_id))->library_stock;
+                            $book_stock->library_present += $invoice_book->qty;
+                            $library_stock += $invoice_book->qty;
+                            $this->db->set('library_stock', $library_stock)
+                                ->where('book_stock_id', $book_stock->book_stock_id)
+                                ->where('library_id', $library_id)
+                                ->update('library_stock_detail');
+                        }
+                        $this->book_stock->where('book_id', $invoice_book->book_id)->update($book_stock);
+                    }
+                    if ($invoice->source == 'warehouse') {
+                        // Update stock_initial dan stock_last di transaksi yang lebih baru dengan stock setelah dikembalikan
+                        $book_transactions = $this->db->select('*')->from('book_transaction')->where('invoice_id', $id)->get()->result();
+                        foreach ($book_transactions as $book_transaction) {
+                            $mutation = $book_transaction->stock_mutation;
+                            $newer_transactions = $this->db->select('*')
+                                ->from('book_transaction')
+                                ->where('book_transaction_id >', $book_transaction->book_transaction_id)
+                                ->where('book_id', $book_transaction->book_id)
+                                ->get()->result();
+                            foreach ($newer_transactions as $newer_transaction) {
+                                $newer_transaction->stock_initial += $mutation;
+                                $newer_transaction->stock_last += $mutation;
+                                $this->book_transaction->where('book_transaction_id', $newer_transaction->book_transaction_id)->update($newer_transaction);
+                            }
+                        }
+                    }
+                    // Hapus Transaction yang sudah ada
+                    $this->db->where('invoice_id', $id)->delete('book_transaction');
+                }
+            }
+        } elseif ($invoice->status == 'preparing_finish') {
             // Finish Faktur
             if ($invoice_status == 'finish') {
                 $this->invoice->where('invoice_id', $id)->update([
@@ -486,16 +524,24 @@ class Invoice extends Sales_Controller
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
-            $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
-        } else if ($this->db->trans_status() != false && $invoice_status == 'confirm') {
+            if (!$internal_use) {
+                $this->session->set_flashdata('error', $this->lang->line('toast_edit_fail'));
+            }
+        } elseif ($this->db->trans_status() != false && $invoice_status == 'confirm') {
             $this->db->trans_commit();
-            $this->session->set_flashdata('confirm_invoice', 'Permintaan diteruskan ke gudang');
+            if (!$internal_use) {
+                $this->session->set_flashdata('confirm_invoice', 'Permintaan diteruskan ke gudang');
+            }
         } else {
             $this->db->trans_commit();
-            $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+            if (!$internal_use) {
+                $this->session->set_flashdata('success', $this->lang->line('toast_edit_success'));
+            }
         }
 
-        redirect($this->pages);
+        if (!$internal_use) {
+            redirect("{$this->pages}/view/{$invoice->invoice_id}");
+        }
     }
 
     public function update_delivery_fee($invoice_id)
@@ -508,11 +554,14 @@ class Invoice extends Sales_Controller
         echo json_encode(['status' => TRUE]);
     }
 
-    public function generate_pdf($invoice_id)
+    public function generate_pdf($invoice_type, $invoice_id)
     {
         $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
+        if (!$invoice) {
+            echo 'invoice tidak ditemukan';
+            return;
+        }
         if ($invoice->status != 'waiting' && $invoice->status != 'cancel') {
-            $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
             $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
             $customer       = $this->invoice->get_customer($invoice->customer_id);
 
@@ -522,32 +571,22 @@ class Invoice extends Sales_Controller
             $data_format['invoice_books'] = $invoice_books ?? '';
             $data_format['customer'] = $customer ?? '';
 
-            $html = $this->load->view('invoice/view_invoice_pdf', $data_format, true);
+            $invoicePath = '';
+            if ($invoice_type === 'showroom') {
+                $invoicePath = 'invoice/view_showroom_receipt_pdf';
+            } else {
+                $invoicePath = 'invoice/view_invoice_pdf';
+            }
+            $html = $this->load->view($invoicePath, $data_format, true);
 
             $file_name = $invoice->number . '_Invoice';
 
-            $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+            if ($invoice_type === 'showroom') {
+                $this->pdf->generate_pdf_thermal($html, $file_name);
+            } else {
+                $this->pdf->generate_pdf_a4_portrait($html, $file_name);
+            }
         }
-    }
-
-    public function showroom_pdf($invoice_id)
-    {
-        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
-        $invoice        = $this->invoice->fetch_invoice_id($invoice_id);
-        $invoice_books  = $this->invoice->fetch_invoice_book($invoice_id);
-        $customer       = $this->invoice->get_customer($invoice->customer_id);
-
-        // PDF
-        $this->load->library('pdf');
-        $data_format['invoice'] = $invoice ?? '';
-        $data_format['invoice_books'] = $invoice_books ?? '';
-        $data_format['customer'] = $customer ?? '';
-
-        $html = $this->load->view('invoice/view_showroom_receipt_pdf', $data_format, true);
-
-        $file_name = $invoice->number . '_Invoice';
-
-        $this->pdf->generate_pdf_a4_portrait($html, $file_name);
     }
 
     public function generate_excel($filters)
@@ -555,12 +594,22 @@ class Invoice extends Sales_Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $filename = 'Data_Faktur';
-        $invoice_test = $this->invoice->filter_invoice($filters, -1);
+
+        // get all invoice without pagination
+        $invoice_data = $this->invoice->filter_invoice($filters, -1);
+        $invoices = $invoice_data['invoice'];
+
         $i = 2;
         $no = 1;
         // Column Content
-        foreach ($invoice_test['invoice'] as $data) {
-            foreach (range('A', 'J') as $v) {
+        foreach ($invoices as $data) {
+            $invoice_books = $this->invoice->fetch_invoice_book($data->invoice_id);
+            $total = 0;
+            foreach ($invoice_books as $invoice_book) {
+                $total += $invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100);
+            }
+
+            foreach (range('A', 'K') as $v) {
                 $receipt = explode("-", $data->receipt);
                 switch ($v) {
                     case 'A': {
@@ -603,6 +652,10 @@ class Invoice extends Sales_Controller
                             $value = $receipt[1] ?? '';
                             break;
                         }
+                    case 'K': {
+                            $value = $total;
+                            break;
+                        }
                 }
                 $sheet->setCellValue($v . $i, $value);
             }
@@ -619,6 +672,7 @@ class Invoice extends Sales_Controller
         $sheet->setCellValue('H1', 'Jatuh Tempo');
         $sheet->setCellValue('I1', 'Bukti Bayar');
         $sheet->setCellValue('J1', 'Marketplace');
+        $sheet->setCellValue('K1', 'Total Harga');
         // Auto width
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -630,6 +684,7 @@ class Invoice extends Sales_Controller
         $sheet->getColumnDimension('H')->setAutoSize(true);
         $sheet->getColumnDimension('I')->setAutoSize(true);
         $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');
@@ -645,7 +700,7 @@ class Invoice extends Sales_Controller
         return $this->send_json_output(true, $book);
     }
 
-    public function api_get_book_dynamic_stock($book_id, $source, $library_id)
+    public function api_get_book_dynamic_stock($book_id, $source, $library_id = null)
     {
         $book = $this->invoice->get_book_dynamic_stock($book_id, $source, $library_id);
         return $this->send_json_output(true, $book);
@@ -668,5 +723,21 @@ class Invoice extends Sales_Controller
     {
         $data = $this->invoice->get_available_book_list($type, $library_id);
         return $this->send_json_output(true, $data);
+    }
+
+    // check for expired then action cancel if due_date exceed now
+    public function set_expired()
+    {
+        $expired_invoices = $this->invoice->get_all_expired_invoice();
+        foreach ($expired_invoices as $invoice) {
+            $this->action($invoice->invoice_id, 'cancel', true);
+        }
+    }
+
+    private function _check_if_expired($date)
+    {
+        $now = (new Datetime())->format('Y-m-d');
+        $due_date = (new Datetime($date))->format('Y-m-d');
+        return $due_date < $now;
     }
 }
