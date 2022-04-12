@@ -28,18 +28,8 @@ class Royalty extends Sales_Controller
 
         $royalty = $get_data['royalty'];
 
-        // echo '<pre>';
-        // print_r($get_data['royalty']);
-        // echo '</pre>';
-        // die();
-
         // Hilangkan author yang tidak dapat royalti periode ini
         $royalty = $this->filter_author($royalty, $filters);
-
-        // echo '<pre>';
-        // print_r($royalty);
-        // echo '</pre>';
-        // die();
 
         //set dropdown filter penulis
         $filter_dropdown = [
@@ -126,15 +116,9 @@ class Royalty extends Sales_Controller
         }
 
         if ($latest_royalty != NULL) {
-            // if ($latest_royalty->status == 'paid') {
             // Sudah pernah bayar
             $last_paid_date = $latest_royalty->end_date;
             $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
-            // } else {
-            //     // Sedang diajukan
-            //     $last_paid_date = date('Y-m-d H:i:s', strtotime($latest_royalty->start_date) - 1);
-            //     $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
-            // }
         } else {
             // Baru pertama kali
             $last_paid_date = $this->input->get('start-date');
