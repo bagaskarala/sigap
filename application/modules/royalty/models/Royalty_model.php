@@ -95,7 +95,7 @@ class Royalty_model extends MY_Model
     public function author_earning($filters, $page)
     {
         $this->db->start_cache();
-        $this->db->select('author.author_id, author_name, royalty.start_date as start_date, royalty.end_date as end_date, royalty.status as status, SUM(qty*price) AS total_sales, SUM(qty*price*book.royalty/100) as earned_royalty')
+        $this->db->select('author.author_id, author_name, royalty.start_date as start_date, royalty.end_date as end_date, royalty.status as status, SUM(invoice_book.qty*invoice_book.price) AS total_sales, SUM(invoice_book.qty*invoice_book.price*book.royalty/100) as earned_royalty')
             ->from('book')
             ->join('draft_author', 'draft_author.draft_id = book.draft_id', 'right')
             ->join('author', 'draft_author.author_id = author.author_id')
@@ -113,6 +113,7 @@ class Royalty_model extends MY_Model
         } else {
             $this->db->where('issued_date BETWEEN IFNULL((SELECT IF(royalty.status = "paid", end_date, start_date - INTERVAL 1 SECOND)), "2000/01/01") and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
         }
+        $this->db->where('draft_author.draft_author_status', 1);
         $this->db->where('invoice.status', 'finish')->limit($this->per_page, $this->calculate_real_offset($page));
 
         $this->db->stop_cache();
@@ -141,7 +142,7 @@ class Royalty_model extends MY_Model
         } else {
             $this->db->where('issued_date BETWEEN "' . $filters['last_paid_date'] .  '" and addtime(CURDATE(), "23:59:59") - INTERVAL 1 DAY');
         }
-
+        $this->db->where('draft_author.draft_author_status', 1);
         return $this->db->get()->result();
     }
 
@@ -165,7 +166,7 @@ class Royalty_model extends MY_Model
 
         return $this->db->get()->result();
     }
-    
+
 
     public function get_sold_books($author_id, $filters)
     {
