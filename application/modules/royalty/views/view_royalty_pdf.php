@@ -77,11 +77,13 @@
                     width="25%"
                     class="align-middle royalty-table"
                 >Judul Buku</th>
-                <th
-                    scope="col"
-                    width="10%"
-                    class="align-middle royalty-table"
-                >Stok Lalu (Eks)</th>
+                <?php if ($pdf_type == 'author') : ?>
+                    <th
+                        scope="col"
+                        width="10%"
+                        class="align-middle royalty-table"
+                    >Stok Lalu (Eks)</th>
+                <?php endif ?>
                 <th
                     scope="col"
                     width="10%"
@@ -92,11 +94,13 @@
                     width="10%"
                     class="align-middle royalty-table"
                 >Terjual (Eks)</th>
-                <th
-                    scope="col"
-                    width="10%"
-                    class="align-middle royalty-table"
-                >Non Penjualan (Eks)</th>
+                <?php if ($pdf_type == 'author') : ?>
+                    <th
+                        scope="col"
+                        width="10%"
+                        class="align-middle royalty-table"
+                    >Non Penjualan (Eks)</th>
+                <?php endif ?>
                 <th
                     scope="col"
                     width="10%"
@@ -107,11 +111,13 @@
                     width="10%"
                     class="align-middle royalty-table"
                 >Dibayar</th>
-                <th
-                    scope="col"
-                    width="10%"
-                    class="align-middle royalty-table"
-                >Sisa Stok (Eks)</th>
+                <?php if ($pdf_type == 'author') : ?>
+                    <th
+                        scope="col"
+                        width="10%"
+                        class="align-middle royalty-table"
+                    >Sisa Stok (Eks)</th>
+                <?php endif ?>
             </tr>
         </thead>
         <tbody class="royalty-table">
@@ -132,11 +138,13 @@
                         width="25%"
                         style="padding-left:5px;"
                     ><?= $royalty->book_title ?></td>
-                    <td
-                        class="royalty-table"
-                        style="text-align: center;"
-                        width="10%"
-                    ><?= $prev_stock ?></td>
+                    <?php if ($pdf_type == 'author') : ?>
+                        <td
+                            class="royalty-table"
+                            style="text-align: center;"
+                            width="10%"
+                        ><?= $prev_stock ?></td>
+                    <?php endif ?>
                     <td
                         class="royalty-table"
                         style="text-align: left; padding-left:5px;"
@@ -147,11 +155,13 @@
                         style="text-align: center;"
                         width="10%"
                     ><?= $royalty->sold_books ?></td>
-                    <td
-                        class="royalty-table"
-                        style="text-align: center;"
-                        width="10%"
-                    ><?= isset($book_details[$index]->non_sales_last) ? $book_details[$index]->non_sales_last : 0 ?></td>
+                    <?php if ($pdf_type == 'author') : ?>
+                        <td
+                            class="royalty-table"
+                            style="text-align: center;"
+                            width="10%"
+                        ><?= isset($book_details[$index]->non_sales_last) ? $book_details[$index]->non_sales_last : 0 ?></td>
+                    <?php endif ?>
                     <td
                         class="royalty-table"
                         style="text-align: center;"
@@ -162,11 +172,13 @@
                         width="10%"
                         style="padding-left:5px;"
                     >Rp <?= number_format($royalty->earned_royalty, 0, ',', '.'); ?></td>
-                    <td
-                        class="royalty-table"
-                        style="text-align: center;"
-                        width="10%"
-                    ><?= $prev_stock - $royalty->sold_books - $book_details[$index]->non_sales_last ?></td>
+                    <?php if ($pdf_type == 'author') : ?>
+                        <td
+                            class="royalty-table"
+                            style="text-align: center;"
+                            width="10%"
+                        ><?= $prev_stock - $royalty->sold_books - $book_details[$index]->non_sales_last ?></td>
+                    <?php endif ?>
                 </tr>
                 <?php $index++;
                 $total_royalty += $royalty->earned_royalty; ?>
@@ -174,33 +186,12 @@
         </tbody>
     </table>
     <table style="width: 100%;">
-        <?php if ($pdf_type == 'author') : ?>
-            <tr>
-                <td style="width:55%; height: 33px;"></td>
-                <td style="width:20%">Jumlah</td>
-                <td style="width:15%">Rp <?= number_format($total_royalty, 0, ',', '.'); ?></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="height: 33px;"></td>
-                <td>PPh 15%</td>
-                <td style="border-bottom: 1px solid black;">Rp <?= number_format((0.15 *  $total_royalty), 0, ',', '.'); ?></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td style="height: 33px;"></td>
-                <td><b>Netto</b></td>
-                <td style="border-bottom: 4px double black;"><b>Rp <?= number_format((0.85 *  $total_royalty), 0, ',', '.'); ?></b></td>
-                <td></td>
-            </tr>
-        <?php else : ?>
-            <tr>
-                <td style="width:55%; height: 33px;"></td>
-                <td style="width:20%"><b>Jumlah</b></td>
-                <td style="width:15%;border-bottom: 4px double black;">Rp <?= number_format($total_royalty, 0, ',', '.'); ?></td>
-                <td></td>
-            </tr>            
-        <?php endif ?>
+        <tr>
+            <td style="width:55%; height: 33px;"></td>
+            <td style="width:20%"><b>Jumlah</b></td>
+            <td style="width:15%;border-bottom: 4px double black;">Rp <?= number_format($total_royalty, 0, ',', '.'); ?></td>
+            <td></td>
+        </tr>
     </table>
 </body>
 
