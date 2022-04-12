@@ -27,6 +27,7 @@ class Royalty extends Sales_Controller
         $get_data = $this->royalty->author_earning($filters, $page);
 
         $royalty = $get_data['royalty'];
+
         // Hilangkan author yang tidak dapat royalti periode ini
         $royalty = $this->filter_author($royalty, $filters);
 
@@ -115,15 +116,9 @@ class Royalty extends Sales_Controller
         }
 
         if ($latest_royalty != NULL) {
-            if ($latest_royalty->status == 'paid') {
-                // Sudah pernah bayar
-                $last_paid_date = $latest_royalty->end_date;
-                $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
-            } else {
-                // Sedang diajukan
-                $last_paid_date = date('Y-m-d H:i:s', strtotime($latest_royalty->start_date) - 1);
-                $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
-            }
+            // Sudah pernah bayar
+            $last_paid_date = $latest_royalty->end_date;
+            $current_start_date = date('Y-m-d H:i:s', strtotime($latest_royalty->end_date) + 1);
         } else {
             // Baru pertama kali
             $last_paid_date = $this->input->get('start-date');
@@ -132,8 +127,8 @@ class Royalty extends Sales_Controller
 
 
         $filters = [
-            'period_end'        => $period_end,
-            'last_paid_date'    => $last_paid_date
+            'period_end'     => $period_end,
+            'last_paid_date' => $last_paid_date
         ];
         $royalty_details = $this->royalty->author_details($author_id, $filters);
 
@@ -178,11 +173,11 @@ class Royalty extends Sales_Controller
         foreach ($book_details as $book_detail) {
             // log pada hari mulai royalti
             $start_stock =  $this->db->select('*')
-                                ->from('book_stock_log')
-                                ->where('book_id', $book_detail->book_id)
-                                ->where('date BETWEEN "' . $royalty->start_date . '" AND ADDTIME("'. $royalty->start_date .'", "23:59:59")')
-                                ->order_by('date', 'DESC')
-                                ->get()->row();
+                ->from('book_stock_log')
+                ->where('book_id', $book_detail->book_id)
+                ->where('date BETWEEN "' . $royalty->start_date . '" AND ADDTIME("' . $royalty->start_date . '", "23:59:59")')
+                ->order_by('date', 'DESC')
+                ->get()->row();
             if ($start_stock != NULL) {
                 $book_detail->warehouse_start = $start_stock->warehouse_stock;
                 $book_detail->showroom_start = $start_stock->showroom_stock;
@@ -193,28 +188,28 @@ class Royalty extends Sales_Controller
             else {
                 // stock 1 hari sebelum
                 $start_stock =  $this->db->select('*')
-                                ->from('book_stock_log')
-                                ->where('book_id', $book_detail->book_id)
-                                ->where('date BETWEEN SUBTIME("'. $royalty->start_date .'", "1 00:00:00") AND "' . $royalty->start_date . '"')
-                                ->order_by('date', 'DESC')
-                                ->get()->row();
+                    ->from('book_stock_log')
+                    ->where('book_id', $book_detail->book_id)
+                    ->where('date BETWEEN SUBTIME("' . $royalty->start_date . '", "1 00:00:00") AND "' . $royalty->start_date . '"')
+                    ->order_by('date', 'DESC')
+                    ->get()->row();
                 if ($start_stock != NULL) {
                     // buku non penjualan 1 hari sebelum
                     $non_sales_one_day_ago =  $this->db->select('sum(qty) as qty_non_sales')
-                            ->from('book_non_sales_list')
-                            ->join('book_non_sales', 'book_non_sales_list.book_non_sales_id = book_non_sales.book_non_sales_id', 'left')
-                            ->where('book_id', $book_detail->book_id)
-                            ->where('issued_date BETWEEN SUBTIME("'. $royalty->start_date .'", "1 00:00:00") AND "' . $royalty->start_date . '"')
-                            ->get()->row();
+                        ->from('book_non_sales_list')
+                        ->join('book_non_sales', 'book_non_sales_list.book_non_sales_id = book_non_sales.book_non_sales_id', 'left')
+                        ->where('book_id', $book_detail->book_id)
+                        ->where('issued_date BETWEEN SUBTIME("' . $royalty->start_date . '", "1 00:00:00") AND "' . $royalty->start_date . '"')
+                        ->get()->row();
                     // buku terjual 1 hari sebelum
                     $sold_one_day_ago = $this->db->select('SUM(qty) AS sold_books')
-                            ->from('invoice_book')
-                            ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
-                            ->where('invoice.status', 'finish')
-                            ->where('invoice_book.book_id', $book_detail->book_id)
-                            ->where('issued_date BETWEEN SUBTIME("'. $royalty->start_date .'", "1 00:00:00") AND "' . $royalty->start_date . '"')
-                            ->group_by('invoice_book.book_id')
-                            ->get()->row();
+                        ->from('invoice_book')
+                        ->join('invoice', 'invoice_book.invoice_id = invoice.invoice_id')
+                        ->where('invoice.status', 'finish')
+                        ->where('invoice_book.book_id', $book_detail->book_id)
+                        ->where('issued_date BETWEEN SUBTIME("' . $royalty->start_date . '", "1 00:00:00") AND "' . $royalty->start_date . '"')
+                        ->group_by('invoice_book.book_id')
+                        ->get()->row();
                     // echo $this->db->last_query();
                     // var_dump($sold_one_day_ago);
 
@@ -232,7 +227,7 @@ class Royalty extends Sales_Controller
                 }
             }
 
-            $book_detail->non_sales_last = $this->royalty->get_non_sales_book($book_detail->book_id, $filters, 'last')->qty_non_sales;            
+            $book_detail->non_sales_last = $this->royalty->get_non_sales_book($book_detail->book_id, $filters, 'last')->qty_non_sales;
         }
         // PDF
         $this->load->library('pdf');
@@ -248,8 +243,7 @@ class Royalty extends Sales_Controller
         $html = $this->load->view('royalty/view_royalty_pdf', $data, true);
         if ($type == 'author') {
             $file_name = 'Royalti_Penulis_' . $data['author']->author_name;
-        }
-        else {
+        } else {
             $file_name = 'Royalti_' . $data['author']->author_name;
         }
 
@@ -272,8 +266,7 @@ class Royalty extends Sales_Controller
             // ada invoice yang tidak finish / cancel
             if ($unfinished_invoice != NULL) {
                 $this->session->set_flashdata('error', $this->lang->line('toast_royalty_unfinished_invoice'));
-            }
-            else {
+            } else {
                 //tambahkan data royalti author
                 $data = [
                     'author_id' => $author_id,
@@ -304,8 +297,7 @@ class Royalty extends Sales_Controller
                 // ada invoice yang tidak finish / cancel
                 if ($unfinished_invoice != NULL) {
                     $this->session->set_flashdata('error', $this->lang->line('toast_royalty_unfinished_invoice'));
-                }
-                else {
+                } else {
                     $data = [
                         'author_id' => $author_id,
                         'start_date' => $start_date,

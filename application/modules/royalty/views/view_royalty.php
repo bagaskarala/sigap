@@ -395,7 +395,7 @@ if ($latest_royalty == NULL) {
                                     <b><?= date("d F Y", strtotime($latest_royalty->start_date)) ?></b>
                                     hingga
                                     <b><?= date("d F Y", strtotime($latest_royalty->end_date)) ?></b>
-                                    atas nama 
+                                    atas nama
                                     <b><?= $author->author_name ?></b>?
                                 </p>
                                 <div class="modal-footer">
