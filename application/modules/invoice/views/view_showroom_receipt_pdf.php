@@ -9,17 +9,44 @@
     >
     <title>Faktur Showroom UGM Press</title>
 
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap"
+        rel="stylesheet"
+    >
+
     <style>
     @page {
-        size: 5.5cm 15cm;
+        size: 3in 11.7in;
         margin: 0;
-        max-width: 5.5cm;
+        max-width: 3in;
     }
 
     body {
-        font-size: 7px;
-        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-family: 'Inconsolata', monospace;
         color: black;
+        padding-left: 19px;
+        padding-right: 19px;
+    }
+
+    table,
+    th,
+    td {
+        padding: 0;
+        margin: 0;
+    }
+
+    table {
+        border-collapse: collapse;
     }
 
     </style>
@@ -34,7 +61,7 @@
     ?>
     <table style="width: 100%;">
         <tr>
-            <td style="text-align:center;">
+            <td style="text-align:center">
                 GADJAH MADA UNIVERSITY PRESS<br>
                 Jl. Sendok, Karanggayam CT VIII<br>
                 Caturtunggal Depok, Sleman <br>
@@ -67,7 +94,7 @@
                     ><?= $invoice_book->book_title ?></td>
                 </tr>
                 <tr>
-                    <td style="width:5%">x<?= $invoice_book->qty ?></td>
+                    <td style="width:8%">x<?= $invoice_book->qty ?></td>
                     <td style="width:20%; text-align:right;">@<?= number_format($invoice_book->price, 0, ',', '.'); ?></td>
                     <td
                         style="width:25%; text-align:right;"
@@ -100,8 +127,7 @@
     <hr style="border-top: 1px dotted black; border-bottom:none;" />
 
     <table style="width: 100%;">
-        <tr style="font-weight: bold;">
-            <td style="width:45%;"></td>
+        <tr style="font-weight: bold; font-size:larger">
             <td style="width:30%; text-transform: uppercase;">Total</td>
             <td style="width:25%; text-align:right;"><?= number_format($total, 0, ',', '.'); ?></td>
         </tr>
