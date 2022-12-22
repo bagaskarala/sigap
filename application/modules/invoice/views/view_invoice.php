@@ -436,7 +436,15 @@ function show_modal_edit() {
 }
 
 function generate_pdf() {
-    const pdfUrl = "<?= base_url("invoice/generate_pdf/{$invoice->type}/{$invoice->invoice_id}"); ?>"
+    const pay_cash = window.prompt('Masukkan nominal uang yang dibayarkan pembeli')
+    const isInvalid = Number.isNaN(+pay_cash)
+    if (!pay_cash || isInvalid) {
+        window.alert('Input tidak valid, hanya boleh memasukkan angka.')
+        generate_pdf()
+        return;
+    }
+
+    const pdfUrl = "<?= base_url("invoice/generate_pdf/{$invoice->type}/{$invoice->invoice_id}"); ?>" + `?pay_cash=${pay_cash}`
     window.open(pdfUrl, '_blank')
 }
 

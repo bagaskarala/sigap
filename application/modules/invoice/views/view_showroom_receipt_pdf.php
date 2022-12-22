@@ -120,6 +120,16 @@
             foreach ($invoice_books as $invoice_book) {
                 $total += $invoice_book->price * $invoice_book->qty * (1 - $invoice_book->discount / 100);
             }
+
+            $cash = $pay_cash ?: $total;
+            $change = $cash - $total;
+
+            if ($cash < $total) {
+                $cash = $total;
+            }
+            if ($change < 0) {
+                $change = 0;
+            }
             ?>
         </tbody>
     </table>
@@ -127,9 +137,17 @@
     <hr style="border-top: 1px dotted black; border-bottom:none;" />
 
     <table style="width: 100%;">
-        <tr style="font-weight: bold; font-size:larger">
+        <tr style="font-weight: bold;">
             <td style="width:30%; text-transform: uppercase;">Total</td>
             <td style="width:25%; text-align:right;"><?= number_format($total, 0, ',', '.'); ?></td>
+        </tr>
+        <tr>
+            <td style="width:30%; text-transform: uppercase;">Tunai</td>
+            <td style="width:25%; text-align:right;"><?= number_format($cash, 0, ',', '.'); ?></td>
+        </tr>
+        <tr>
+            <td style="width:30%; text-transform: uppercase;">Kembali</td>
+            <td style="width:25%; text-align:right;"><?= number_format($change, 0, ',', '.'); ?></td>
         </tr>
     </table>
 

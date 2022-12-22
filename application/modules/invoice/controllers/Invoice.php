@@ -570,6 +570,7 @@ class Invoice extends Sales_Controller
             $data_format['invoice'] = $invoice ?? '';
             $data_format['invoice_books'] = $invoice_books ?? '';
             $data_format['customer'] = $customer ?? '';
+            $data_format['pay_cash'] = $this->input->get('pay_cash') ?? 0;
 
             $invoicePath = '';
             if ($invoice_type === 'showroom') {
