@@ -32,24 +32,6 @@ Developed for UGM PRESS internal system
 
 ### Formatting Convention
 - Install **PHP intelephense** extension in vs code
-- Configure this setting in setting.json
-
-```json
-    "editor.insertSpaces": true,
-    "html.format.contentUnformatted": "pre,code,textarea",
-    "html.format.endWithNewline": false,
-    "html.format.extraLiners": "head, body, /html",
-    "html.format.indentHandlebars": false,
-    "html.format.indentInnerHtml": false,
-    "html.format.maxPreserveNewLines": null,
-    "html.format.preserveNewLines": true,
-    "html.format.wrapLineLength": 120,
-    "html.format.wrapAttributes": "force-expand-multiline",
-    "intelephense.format.enable": false,
-     "[php]": {
-        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
-        "editor.formatOnSave": true
-    },
 ```
 
 ### Migration and Seeding
