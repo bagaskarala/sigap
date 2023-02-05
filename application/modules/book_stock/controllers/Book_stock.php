@@ -319,7 +319,7 @@ class Book_stock extends Warehouse_Sales_Controller
 
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
-        $filename = 'STOK BUKU GUDANG';
+        $filename = 'STOK BUKU ' . date('d-m-Y H:i:s');
 
         $libraries = array_map(function ($lib) {
             return  "Stok " . $lib->library_name;
@@ -327,10 +327,9 @@ class Book_stock extends Warehouse_Sales_Controller
         $headers =  array_merge(['No', 'Judul', 'Penulis', 'Stok Gudang', 'Stok Showroom'], $libraries);
         $max_column_string = Coordinate::stringFromColumnIndex(count($headers));
         $date      = new DateTime();
-        $timestamp = $date->format('d-m-Y H:i:s');
 
         // set title
-        $sheet->setCellValue('A1', 'STOK BUKU - ' . $timestamp);
+        $sheet->setCellValue('A1', $filename);
         $sheet->mergeCells("A1:{$max_column_string}1");
         $spreadsheet->getActiveSheet()
             ->getStyle('A1')
