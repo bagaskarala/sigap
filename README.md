@@ -32,7 +32,6 @@ Developed for UGM PRESS internal system
 
 ### Formatting Convention
 - Install **PHP intelephense** extension in vs code
-```
 
 ### Migration and Seeding
 - Run `php index.php tools help` to show available CLI commands
