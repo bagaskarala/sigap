@@ -330,8 +330,7 @@ class Book_stock extends Warehouse_Sales_Controller
         $timestamp = $date->format('d-m-Y H:i:s');
 
         // set title
-        $sheet->setCellValue('A1', 'STOK BUKU');
-        $sheet->setCellValue('A2', $timestamp);
+        $sheet->setCellValue('A1', 'STOK BUKU - ' . $timestamp);
         $sheet->mergeCells("A1:{$max_column_string}1");
         $spreadsheet->getActiveSheet()
             ->getStyle('A1')
