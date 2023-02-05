@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class Book_stock extends Warehouse_Sales_Controller
 {
@@ -14,18 +15,23 @@ class Book_stock extends Warehouse_Sales_Controller
         $this->load->model('book_stock/book_stock_model', 'book_stock');
         $this->load->model('book/book_model', 'book');
         $this->load->model('book_transaction/book_transaction_model', 'book_transaction');
+        $this->load->model('library/library_model', 'library');
     }
 
     public function index($page = NULL)
     {
-        //all filter
         $filters = [
             'keyword'           => $this->input->get('keyword', true),
             'published_year'    => $this->input->get('published_year', true),
             'stock_moreeq'      => $this->input->get('stock_moreeq', true),
             'stock_lesseq'      => $this->input->get('stock_lesseq', true),
-            'excel'             => $this->input->get('excel', true)
         ];
+
+        if ($this->input->get('excel', true) == 1) {
+            $this->generate_excel($filters);
+            return;
+        }
+
         //custom per page
         $this->book_stock->per_page = $this->input->get('per_page', true) ?? 10;
         $get_data = $this->book_stock->filter_book_stock($filters, $page);
@@ -41,10 +47,6 @@ class Book_stock extends Warehouse_Sales_Controller
         $pages      = $this->pages;
         $main_view  = 'book_stock/index_bookstock';
         $this->load->view('template', compact('pages', 'main_view', 'book_stocks', 'pagination', 'total', 'max_stock'));
-
-        if ($filters['excel'] == 1) {
-            $this->generate_excel($filters);
-        }
     }
 
     public function add()
@@ -310,84 +312,84 @@ class Book_stock extends Warehouse_Sales_Controller
 
     public function generate_excel($filters)
     {
+        $library = $this->library->get_all();
+        $get_data = $this->book_stock->filter_excel_stock($filters);
+        $header_row_number = 3;
+        $content_start_row = $header_row_number + 1;
+
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
         $filename = 'STOK BUKU GUDANG';
 
-        // Column Title
-        $sheet->setCellValue('A1', 'STOK BUKU GUDANG');
+        $libraries = array_map(function ($lib) {
+            return  "Stok " . $lib->library_name;
+        }, $library);
+        $headers =  array_merge(['No', 'Judul', 'Penulis', 'Stok Gudang', 'Stok Showroom'], $libraries);
+        $max_column_string = Coordinate::stringFromColumnIndex(count($headers));
+        $date      = new DateTime();
+        $timestamp = $date->format('d-m-Y H:i:s');
+
+        // set title
+        $sheet->setCellValue('A1', 'STOK BUKU');
+        $sheet->setCellValue('A2', $timestamp);
+        $sheet->mergeCells("A1:{$max_column_string}1");
         $spreadsheet->getActiveSheet()
             ->getStyle('A1')
             ->getFont()
             ->setBold(true);
-        $sheet->setCellValue('A3', 'No');
-        $sheet->setCellValue('B3', 'Judul');
-        $sheet->setCellValue('C3', 'Penulis');
-        $sheet->setCellValue('D3', 'Stok Gudang');
-        $sheet->setCellValue('E3', 'Stok Showroom');
-        $sheet->setCellValue('F3', 'Stok Perpustakaan');
+
+        // set value
+        $content = [
+            $headers,
+        ];
+        foreach ($get_data as $index => $item) {
+            $library_stocks = array_map(function ($l, $idx) use ($item) {
+                return $item->libraries[$idx]->library_stock ?? '0';
+            }, $library, array_keys($library));
+
+            array_push($content, array_merge([$index + 1, $item->book_title, $item->author_name, $item->warehouse_present ?? '0', $item->showroom_present ?? '0'], $library_stocks));
+        }
+
+        $spreadsheet->getActiveSheet()->fromArray(
+            $content,
+            NULL,
+            "A{$header_row_number}"
+        );
+
+        // set header style
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:F3')
+            ->getStyle("A3:{$max_column_string}3")
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
             ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:F3')
+            ->getStyle("A3:{$max_column_string}3")
             ->getFont()
             ->setBold(true);
 
-        // Auto width
-        $sheet->getColumnDimension('B')->setAutoSize(true);
-        $sheet->getColumnDimension('C')->setAutoSize(true);
-        $sheet->getColumnDimension('D')->setAutoSize(true);
-        $sheet->getColumnDimension('E')->setAutoSize(true);
-        $sheet->getColumnDimension('F')->setAutoSize(true);
-
-        $get_data = $this->book_stock->filter_excel_stock($filters);
-        $no = 1;
-        $i = 4;
-        // Column Content
-        foreach ($get_data as $data) {
-            foreach (range('A', 'F') as $v) {
-                switch ($v) {
-                    case 'A': {
-                            $value = $no++;
-                            break;
-                        }
-                    case 'B': {
-                            $value = $data->book_title;
-                            break;
-                        }
-                    case 'C': {
-                            $value = $data->author_name;
-                            break;
-                        }
-                    case 'D': {
-                            $value = $data->warehouse_present;
-                            if ($value <= 50) {
-                                $spreadsheet->getActiveSheet()
-                                    ->getStyle('D' . $i)
-                                    ->getFill()
-                                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                                    ->getStartColor()
-                                    ->setARGB('FFC000');
-                            }
-                            break;
-                        }
-                    case 'E': {
-                            $value = $data->showroom_present;
-                            break;
-                        }
-                    case 'F': {
-                            $value = $data->library_present;
-                            break;
-                        }
-                }
-                $sheet->setCellValue($v . $i, $value);
-            }
-            $i++;
+        // set auto width
+        $startColumn = 'A';
+        for ($i = 0; $i < count($headers); $i++) {
+            $sheet->getColumnDimension($startColumn)->setAutoSize(true);
+            $startColumn++;
         }
+
+        // set conditional column style
+        $index = $content_start_row;
+        foreach ($get_data as $data) {
+            $value = $data->warehouse_present;
+            if ($value <= 50) {
+                $spreadsheet->getActiveSheet()
+                    ->getStyle('D' . $index)
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('FFC000');
+            }
+            $index++;
+        }
+
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');

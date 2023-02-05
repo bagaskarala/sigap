@@ -97,7 +97,7 @@ class Book_stock_model extends MY_Model
     {
         $book_stocks =  $this->select([
             'author.author_name', 'draft.draft_id',
-            'book_stock_id', 'book.book_id',
+            'book_stock.book_stock_id', 'book.book_id',
             'book.book_title', 'book.published_date',
             'book_stock.*'
         ])
@@ -106,13 +106,22 @@ class Book_stock_model extends MY_Model
             ->join_table('category', 'draft', 'category')
             ->join_table('draft_author', 'draft', 'draft')
             ->join_table('author', 'draft_author', 'author')
+            ->join_table('library_stock_detail', 'book_stock', 'book_stock')
+            ->join_table('library', 'library_stock_detail', 'library')
             ->when('keyword', $filters['keyword'])
             ->when('published_year', $filters['published_year'])
             ->when('stock_moreeq', $filters['stock_moreeq'])
             ->when('stock_lesseq', $filters['stock_lesseq'])
             ->order_by('book.book_title')
-            ->group_by('draft.draft_id')
+            ->group_by(array('draft.draft_id'))
             ->get_all();
+
+        foreach ($book_stocks as $bs) {
+            $bs->libraries = $this->select(["library.*", 'library_stock'])
+                ->join_table('library_stock_detail', 'library', 'library')
+                ->where("library_stock_detail.book_stock_id", $bs->book_stock_id)
+                ->get_all('library');
+        }
         return $book_stocks;
     }
 
