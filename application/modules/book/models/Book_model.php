@@ -296,13 +296,14 @@ class Book_model extends MY_Model
 
     public function filter_excel_book($filters)
     {
-        return $this->select('draft.draft_id,book.*,author_name,category_name')
+        return $this->select('draft.draft_id,book.*,author_name,category_name,book_stock.*')
             ->when('keyword', $filters['keyword'])
             ->join('draft')
             ->join_table('category', 'draft', 'category')
             ->join_table('draft_author', 'draft', 'draft')
             ->join_table('author', 'draft_author', 'author')
             ->join_table('work_unit', 'author', 'work_unit')
+            ->join_table('book_stock', 'book', 'book')
             ->when('category', $filters['category'])
             ->when('status', $filters['status'])
             ->when('reprint', $filters['reprint'])

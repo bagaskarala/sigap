@@ -393,7 +393,9 @@ class Book extends Admin_Controller
     {
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
-        $filename = 'DATA BUKU ' . date('Y-m-d');
+        $date      = new DateTime();
+        $timestamp = $date->format('d-m-Y H:i:s');
+        $filename = 'DATA BUKU - ' . $timestamp;
 
         // Column Title
         $sheet->setCellValue('A1', $filename);
@@ -410,27 +412,33 @@ class Book extends Admin_Controller
         $sheet->setCellValue('G3', 'Harga');
         $sheet->setCellValue('H3', 'Tanggal Terbit');
         $sheet->setCellValue('I3', 'Kategori');
+        $sheet->setCellValue('J3', 'Tersedia');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:I3')
+            ->getStyle('A3:J3')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
             ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:I3')
+            ->getStyle('A3:J3')
             ->getFont()
             ->setBold(true);
 
-        $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
+        $spreadsheet->getActiveSheet()->mergeCells('A1:J1');
 
 
-        $get_data = $this->book->filter_excel_book($filters);
+        $get_data = array_map(function ($item) {
+            $stock_available = $item->warehouse_present + $item->library_present + $item->showroom_present >= 25;
+            $item->is_available = $stock_available;
+            return $item;
+        }, $this->book->filter_excel_book($filters));
+
         $no = 1;
         $i = 4;
         // Column Content
         foreach ($get_data as $data) {
 
-            foreach (range('A', 'I') as $v) {
+            foreach (range('A', 'J') as $v) {
                 if ($v == 'B') {
                     $sheet->getColumnDimension($v)->setWidth(50);
                 } else {
@@ -471,6 +479,10 @@ class Book extends Admin_Controller
                         }
                     case 'I': {
                             $value = $data->category_name;
+                            break;
+                        }
+                    case 'J': {
+                            $value = $data->is_available ? 'ya' : 'tidak';
                             break;
                         }
                 }
