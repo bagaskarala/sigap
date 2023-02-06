@@ -319,14 +319,13 @@ class Book_stock extends Warehouse_Sales_Controller
 
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
-        $filename = 'STOK BUKU ' . date('d-m-Y H:i:s');
+        $filename = 'STOK BUKU - ' . date('d-m-Y H:i:s');
 
         $libraries = array_map(function ($lib) {
             return  "Stok " . $lib->library_name;
         }, $library);
         $headers =  array_merge(['No', 'Judul', 'Penulis', 'Stok Gudang', 'Stok Showroom'], $libraries);
         $max_column_string = Coordinate::stringFromColumnIndex(count($headers));
-        $date      = new DateTime();
 
         // set title
         $sheet->setCellValue('A1', $filename);
@@ -369,7 +368,11 @@ class Book_stock extends Warehouse_Sales_Controller
         // set auto width
         $startColumn = 'A';
         for ($i = 0; $i < count($headers); $i++) {
-            $sheet->getColumnDimension($startColumn)->setAutoSize(true);
+            if ($startColumn == 'B') {
+                $sheet->getColumnDimension('B')->setWidth(50);
+            } else {
+                $sheet->getColumnDimension($startColumn)->setAutoSize(true);
+            }
             $startColumn++;
         }
 
@@ -387,6 +390,8 @@ class Book_stock extends Warehouse_Sales_Controller
             }
             $index++;
         }
+
+        $spreadsheet->getDefaultStyle()->getAlignment()->setWrapText(true);
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');
