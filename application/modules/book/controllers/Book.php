@@ -26,16 +26,20 @@ class Book extends Admin_Controller
 
     public function index($page = null)
     {
-        // all filter
         $filters = [
-            'category' => $this->input->get('category', true),
-            'keyword'  => $this->input->get('keyword', true),
-            'status'  => $this->input->get('status', true),
-            'reprint'  => $this->input->get('reprint', true),
-            'published_year'  => $this->input->get('published_year', true),
-            'from_outside'  => intval($this->input->get('from_outside', true)),
-            'excel'             => $this->input->get('excel', true)
+            'category'       => $this->input->get('category', true),
+            'keyword'        => $this->input->get('keyword', true),
+            'status'         => $this->input->get('status', true),
+            'reprint'        => $this->input->get('reprint', true),
+            'published_year' => $this->input->get('published_year', true),
+            'from_outside'   => intval($this->input->get('from_outside', true)),
+            'work_unit'      => $this->input->get('work_unit', true),
         ];
+
+        if ($this->input->get('excel', true) == 1) {
+            $this->generate_excel($filters);
+            return;
+        }
 
         // custom per page
         $this->book->per_page = $this->input->get('per_page', true) ?? 10;
@@ -61,10 +65,6 @@ class Book extends Admin_Controller
         $pages      = $this->pages;
         $main_view  = 'book/index_book';
         $this->load->view('template', compact('pages', 'main_view', 'books', 'pagination', 'total'));
-
-        if ($filters['excel'] == 1) {
-            $this->generate_excel($filters);
-        }
     }
 
     public function add()

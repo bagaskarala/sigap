@@ -244,6 +244,22 @@ function get_dropdown_list_category($all_categories = true)
 }
 
 /**
+ * Membuat array unit kerja
+ *
+ * @return array
+ */
+function get_dropdown_list_work_unit()
+{
+    $condition = function () {
+        $CI = &get_instance();
+        $CI->db->order_by('work_unit_name', 'asc');
+        return $CI;
+    };
+
+    return get_dropdown_list('work_unit', ['work_unit_id', 'work_unit_name'], $condition);
+}
+
+/**
  * Membuat array user
  *
  * @return array

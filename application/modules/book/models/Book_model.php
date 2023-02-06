@@ -128,6 +128,7 @@ class Book_model extends MY_Model
             ->when('reprint', $filters['reprint'])
             ->when('published_year', $filters['published_year'])
             ->when('from_outside', $filters['from_outside'])
+            ->when('work_unit', $filters['work_unit'])
             ->order_by('status_hak_cipta')
             ->order_by('published_date')
             ->order_by('book_title')
@@ -147,6 +148,7 @@ class Book_model extends MY_Model
             ->when('reprint', $filters['reprint'])
             ->when('published_year', $filters['published_year'])
             ->when('from_outside', $filters['from_outside'])
+            ->when('work_unit', $filters['work_unit'])
             ->order_by('status_hak_cipta')
             ->order_by('published_date')
             ->order_by('book_title')
@@ -190,8 +192,9 @@ class Book_model extends MY_Model
 
             if ($params == 'keyword') {
                 $this->group_start();
-                // $this->like('draft_title', $data);
-                $this->or_like('book_title', $data);
+                $this->like('book_title', $data);
+                $this->or_like('book_code', $data);
+                $this->or_like('isbn', $data);
                 // if ($this->session->userdata('level') != 'reviewer') {
                 $this->or_like('author_name', $data);
                 // }
@@ -200,6 +203,10 @@ class Book_model extends MY_Model
 
             if ($params == 'from_outside') {
                 $this->where('from_outside', $data);
+            }
+
+            if ($params == 'work_unit') {
+                $this->where('author.work_unit_id', $data);
             }
 
             // if ($params == 'status') {

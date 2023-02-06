@@ -6,6 +6,7 @@ $status         = $this->input->get('status');
 $reprint        = $this->input->get('reprint');
 $published_year = $this->input->get('published_year');
 $from_outside   = $this->input->get('from_outside');
+$work_unit      = $this->input->get('work_unit');
 $page           = $this->uri->segment(2);
 // data table series number
 $i = isset($page) ? $page * $per_page - $per_page : 0;
@@ -74,15 +75,19 @@ $reprint_options = [
                                 <label for="hakcipta_status">Status Hak Cipta</label>
                                 <?= form_dropdown('hakcipta_status', $hakcipta_status_options, $status, 'id="hakcipta_status" class="form-control custom-select d-block" title="Filter Status Hak Cipta"'); ?>
                             </div>
-                            <div class="col-12 col-lg-2 mb-3">
+                            <div class="col-12 col-lg-3 col-xl-2 mb-3">
                                 <label for="from_outside">Asal Buku</label>
-                                <?= form_dropdown('from_outside', ['' => '-- Pilih --', 0 => 'Buku UGM Press', 1 => 'Buku dari Luar'], $from_outside, 'id="from_outside" class="form-control custom-select d-block" title="List per page"'); ?>
+                                <?= form_dropdown('from_outside', ['' => '-- Pilih --', 0 => 'Buku UGM Press', 1 => 'Buku dari Luar'], $from_outside, 'id="from_outside" class="form-control custom-select d-block" title="Asal buku"'); ?>
                             </div>
-                            <div class="col-12 col-lg-5 mb-3">
-                                <label>&nbsp;</label>
-                                <?= form_input('keyword', $keyword, 'id="keyword" placeholder="Cari berdasarkan Judul Buku, Kode Buku, Penulis, atau ISBN" class="form-control"'); ?>
+                            <div class="col-12 col-lg-3 col-xl-2 mb-3">
+                                <label for="work_unit">Unit kerja</label>
+                                <?= form_dropdown('work_unit', get_dropdown_list_work_unit(), $work_unit, 'id="work_unit" class="form-control custom-select d-block" title="Unit kerja"'); ?>
                             </div>
-                            <div class="col-12 col-lg-5">
+                            <div class="col-12 col-lg-6 col-xl-4 mb-3">
+                                <label>Pencarian</label>
+                                <?= form_input('keyword', $keyword, 'id="keyword" placeholder="Cari berdasarkan Judul Buku, Penulis, Kode Buku, atau ISBN" class="form-control"'); ?>
+                            </div>
+                            <div class="col-12 col-xl-4">
                                 <label>&nbsp;</label>
                                 <div
                                     class="btn-group btn-block"
@@ -139,10 +144,10 @@ $reprint_options = [
                                             scope="col"
                                             style="min-width:150px;"
                                         >Penulis</th>
-                                        <!-- <th
+                                        <th
                                             scope="col"
                                             style="min-width:150px;"
-                                        >Fakultas</th> -->
+                                        >Unit Kerja</th>
                                         <th scope="col">Kode</th>
                                         <th
                                             scope="col"
@@ -184,9 +189,15 @@ $reprint_options = [
                                                     <i class="fa fa-users"></i>
                                                 </button>
                                             </td>
-                                            <!-- <td class="align-middle"><?= $book->work_unit_name; ?></td> -->
-                                            <td class="align-middle"><?= $book->book_code; ?></td>
-                                            <td class="align-middle"><?= $book->isbn; ?></td>
+                                            <td class="align-middle">
+                                                <?= isset($book->work_unit_name) ? $book->work_unit_name : '-'; ?>
+                                            </td>
+                                            <td class="align-middle">
+                                                <?= isset($book->book_code) ? highlight_keyword($book->book_code, $keyword) : '-'; ?>
+                                            </td>
+                                            <td class="align-middle">
+                                                <?= isset($book->isbn) ? highlight_keyword($book->isbn, $keyword) : '-'; ?>
+                                            </td>
                                             <td class="align-middle"><?= $book->is_reprint == 'y' ? 'Cetak Ulang' : 'Baru'; ?></td>
                                             <td class="align-middle">
                                                 <?= $book->status_hak_cipta == '2' ? '<span class="badge badge-success">Sudah Jadi</span>' : ''; ?>
@@ -227,5 +238,10 @@ $reprint_options = [
 <script type="text/javascript">
 $(document).ready(function() {
     doublescroll();
+    $("#category,#published_year,#work_unit").select2({
+        placeholder: '- Semua -',
+        allowClear: true,
+        dropdownParent: $('#app-main')
+    });
 });
 </script>
