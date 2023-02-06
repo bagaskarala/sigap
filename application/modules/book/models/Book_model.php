@@ -296,7 +296,7 @@ class Book_model extends MY_Model
 
     public function filter_excel_book($filters)
     {
-        return $this->select('draft.draft_id,book.*,author_name,category_name,book_stock.*')
+        return $this->select(['draft.draft_id', 'book.*', 'author_name', 'category_name', 'book_stock.*', 'work_unit_name'])
             ->when('keyword', $filters['keyword'])
             ->join('draft')
             ->join_table('category', 'draft', 'category')
