@@ -340,9 +340,14 @@ class Book_stock extends Warehouse_Sales_Controller
             $headers,
         ];
         foreach ($get_data as $index => $item) {
-            $library_stocks = array_map(function ($l, $idx) use ($item) {
-                return $item->libraries[$idx]->library_stock ?? '0';
-            }, $library, array_keys($library));
+            $library_stocks = array_map(function ($lib_column) use ($item) {
+                foreach ($item->libraries as $item_lib) {
+                    if ($item_lib->library_id === $lib_column->library_id) {
+                        return $item_lib->library_stock;
+                    }
+                }
+                return '0';
+            }, $library);
 
             array_push($content, array_merge([$index + 1, $item->book_title, $item->author_name, $item->warehouse_present ?? '0', $item->showroom_present ?? '0'], $library_stocks));
         }
