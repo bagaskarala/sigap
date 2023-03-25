@@ -15,5 +15,6 @@
         "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
         "editor.formatOnSave": true
     },
-    "php.suggest.basic": false
+    "php.suggest.basic": false,
+    "editor.snippetSuggestions": "top",
 }

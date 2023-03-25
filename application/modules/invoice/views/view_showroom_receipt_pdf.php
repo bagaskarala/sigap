@@ -31,7 +31,8 @@
     }
 
     body {
-        font-size: 11px;
+        font-size: 9px;
+        line-height: 9px;
         font-family: 'Inconsolata', monospace;
         color: black;
         padding-left: 19px;
@@ -57,6 +58,7 @@
     $month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     $date_string = date("d", strtotime($invoice->issued_date)) . " " . $month[intval(date("m", strtotime($invoice->issued_date)) - 1)] . " " . date("Y", strtotime($invoice->issued_date));
     $time_string = date('H:i:s', strtotime($invoice->issued_date));
+    const MAX_WORD_ON_BOOK_TITLE = 38;
 
     ?>
     <table style="width: 100%;">
@@ -83,15 +85,16 @@
             <td>No: <?= $invoice->number ?></td>
         </tr>
     </table>
-    <hr style="border-top: 1px dotted black; border-bottom:none;" />
-    <table style="width:100%">
+    <hr style="border-top: 1px dotted black; border-bottom:none; margin-bottom:0" />
+    <table style="width:100%; table-layout: fixed; border-collapse: collapse;">
         <tbody>
             <?php foreach ($invoice_books as $invoice_book) : ?>
                 <tr>
-                    <td
-                        colspan="4"
-                        style="padding-top: 5px;"
-                    ><?= $invoice_book->book_title ?></td>
+                    <td colspan="5">
+                        <span style="display:block;padding-top:5px; overflow: hidden; white-space: nowrap;  text-overflow: ellipsis;">
+                            <?= substr($invoice_book->book_title, 0, MAX_WORD_ON_BOOK_TITLE) . (strlen($invoice_book->book_title) >= MAX_WORD_ON_BOOK_TITLE ? '..' : '') ?>
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td style="width:8%">x<?= $invoice_book->qty ?></td>
@@ -138,22 +141,34 @@
 
     <table style="width: 100%;">
         <tr style="font-weight: bold;">
-            <td style="width:30%; text-transform: uppercase;">Total</td>
+            <td
+                style="width:30%; text-transform: uppercase;"
+                colspan="2"
+                align="right"
+            >Total</td>
             <td style="width:25%; text-align:right;"><?= number_format($total, 0, ',', '.'); ?></td>
         </tr>
         <tr>
-            <td style="width:30%; text-transform: uppercase;">Tunai</td>
+            <td
+                style="width:30%; text-transform: uppercase;"
+                colspan="2"
+                align="right"
+            >Tunai</td>
             <td style="width:25%; text-align:right;"><?= number_format($cash, 0, ',', '.'); ?></td>
         </tr>
         <tr>
-            <td style="width:30%; text-transform: uppercase;">Kembali</td>
+            <td
+                style="width:30%; text-transform: uppercase;"
+                colspan="2"
+                align="right"
+            >Kembali</td>
             <td style="width:25%; text-align:right;"><?= number_format($change, 0, ',', '.'); ?></td>
         </tr>
     </table>
 
     <hr style="border-top: 1px dotted black; border-bottom:none;" />
 
-    <table style="width: 100%; margin-top:10px;margin-bottom:10px;">
+    <table style="width: 100%; margin:5px 0;">
         <tr>
             <td style="text-align: center;">TERIMA KASIH</td>
         </tr>

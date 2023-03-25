@@ -26,16 +26,20 @@ class Book extends Admin_Controller
 
     public function index($page = null)
     {
-        // all filter
         $filters = [
-            'category' => $this->input->get('category', true),
-            'keyword'  => $this->input->get('keyword', true),
-            'status'  => $this->input->get('status', true),
-            'reprint'  => $this->input->get('reprint', true),
-            'published_year'  => $this->input->get('published_year', true),
-            'from_outside'  => intval($this->input->get('from_outside', true)),
-            'excel'             => $this->input->get('excel', true)
+            'category'       => $this->input->get('category', true),
+            'keyword'        => $this->input->get('keyword', true),
+            'status'         => $this->input->get('status', true),
+            'reprint'        => $this->input->get('reprint', true),
+            'published_year' => $this->input->get('published_year', true),
+            'from_outside'   => intval($this->input->get('from_outside', true)),
+            'work_unit'      => $this->input->get('work_unit', true),
         ];
+
+        if ($this->input->get('excel', true) == 1) {
+            $this->generate_excel($filters);
+            return;
+        }
 
         // custom per page
         $this->book->per_page = $this->input->get('per_page', true) ?? 10;
@@ -61,10 +65,6 @@ class Book extends Admin_Controller
         $pages      = $this->pages;
         $main_view  = 'book/index_book';
         $this->load->view('template', compact('pages', 'main_view', 'books', 'pagination', 'total'));
-
-        if ($filters['excel'] == 1) {
-            $this->generate_excel($filters);
-        }
     }
 
     public function add()
@@ -391,93 +391,71 @@ class Book extends Admin_Controller
 
     public function generate_excel($filters)
     {
+        $stock_available_threshold = 25;
+        $get_data = array_map(function ($item) use ($stock_available_threshold) {
+            $stock_available = $item->warehouse_present + $item->library_present + $item->showroom_present >= $stock_available_threshold;
+            $item->is_available = $stock_available;
+            return $item;
+        }, $this->book->filter_excel_book($filters));
+
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
-        $filename = 'DATA BUKU ' . date('Y-m-d');
+        $date      = new DateTime();
+        $timestamp = $date->format('d-m-Y H:i:s');
+        $filename = 'DATA BUKU - ' . $timestamp;
 
-        // Column Title
+        $headers = ['No', 'Judul', 'Penulis', 'Unit Kerja', 'ISBN', 'Royalti', 'Berat (gram)', 'Harga', 'Tanggal Terbit', 'Kategori', 'Tersedia'];
+        $header_row_number = 3;
+        $max_column_string = PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($headers));
+
+        // set title
         $sheet->setCellValue('A1', $filename);
+        $sheet->mergeCells("A1:{$max_column_string}1");
         $spreadsheet->getActiveSheet()
             ->getStyle('A1')
             ->getFont()
             ->setBold(true);
-        $sheet->setCellValue('A3', 'No');
-        $sheet->setCellValue('B3', 'Judul');
-        $sheet->setCellValue('C3', 'Penulis');
-        $sheet->setCellValue('D3', 'ISBN');
-        $sheet->setCellValue('E3', 'Royalti');
-        $sheet->setCellValue('F3', 'Berat (gram)');
-        $sheet->setCellValue('G3', 'Harga');
-        $sheet->setCellValue('H3', 'Tanggal Terbit');
-        $sheet->setCellValue('I3', 'Kategori');
+
+        // set content values
+        $content = [
+            $headers,
+        ];
+        foreach ($get_data as $index => $item) {
+            array_push($content, [$index + 1, $item->book_title, $item->author_name, $item->work_unit_name, $item->isbn, $item->royalty, $item->weight, $item->harga, $item->published_date, $item->category_name, $item->is_available ? 'ya' : 'tidak']);
+        }
+        $spreadsheet->getActiveSheet()->fromArray(
+            $content,
+            NULL,
+            "A{$header_row_number}"
+        );
+
+        // set header style
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:I3')
+            ->getStyle("A3:{$max_column_string}3")
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
             ->setARGB('A6A6A6');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A3:I3')
+            ->getStyle("A3:{$max_column_string}3")
             ->getFont()
             ->setBold(true);
 
-        $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
-
-
-        $get_data = $this->book->filter_excel_book($filters);
-        $no = 1;
-        $i = 4;
-        // Column Content
-        foreach ($get_data as $data) {
-
-            foreach (range('A', 'I') as $v) {
-                if ($v == 'B') {
-                    $sheet->getColumnDimension($v)->setWidth(50);
-                } else {
-                    $sheet->getColumnDimension($v)->setAutoSize(true);
-                }
-                switch ($v) {
-                    case 'A': {
-                            $value = $no++;
-                            break;
-                        }
-                    case 'B': {
-                            $value = $data->book_title;
-                            break;
-                        }
-                    case 'C': {
-                            $value = $data->author_name;
-                            break;
-                        }
-                    case 'D': {
-                            $value = $data->isbn;
-                            break;
-                        }
-                    case 'E': {
-                            $value = $data->royalty;
-                            break;
-                        }
-                    case 'F': {
-                            $value = $data->weight;
-                            break;
-                        }
-                    case 'G': {
-                            $value = $data->harga;
-                            break;
-                        }
-                    case 'H': {
-                            $value = $data->published_date;
-                            break;
-                        }
-                    case 'I': {
-                            $value = $data->category_name;
-                            break;
-                        }
-                }
-                $sheet->setCellValue($v . $i, $value);
+        // set auto width
+        $startColumn = 'A';
+        for ($i = 0; $i < count($headers); $i++) {
+            if ($startColumn == 'B') {
+                $sheet->getColumnDimension('B')->setWidth(50);
+            } else if ($startColumn == 'D') {
+                $sheet->getColumnDimension('D')->setWidth(30);
+            } else {
+                $sheet->getColumnDimension($startColumn)->setAutoSize(true);
             }
-            $i++;
+            $startColumn++;
         }
+
+        $spreadsheet->getDefaultStyle()->getAlignment()->setWrapText(true);
+
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
